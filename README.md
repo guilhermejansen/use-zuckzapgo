@@ -15,6 +15,38 @@
   <a href="https://github.com/guilhermejansen/use-zuckzapgo/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Commercial-red?style=flat-square" alt="License"></a>
 </p>
 
+## 📝 Assine o ZuckZapGo
+
+Para adquirir sua licença e acessar todos os recursos premium, faça sua assinatura de forma rápida e segura:
+
+👉 [Assinar agora via Kiwify](https://kiwify.app/3Rqbytr)
+
+---
+
+## 🎥 Vídeos Úteis
+
+### Instalação Passo a Passo
+
+[![Assista ao vídeo de instalação](https://img.youtube.com/vi/3pB2selupGg/0.jpg)](https://youtu.be/3pB2selupGg)
+
+<details open>
+  <summary>Ver vídeo incorporado</summary>
+  <p>
+    <iframe width="100%" height="400" src="https://www.youtube.com/embed/3pB2selupGg" title="Instalação ZuckZapGo" frameborder="0" allowfullscreen></iframe>
+  </p>
+</details>
+
+### Apresentação e Depoimento sobre a API (Inicio)
+
+[![Assista à apresentação e depoimento](https://img.youtube.com/vi/I557BU3_3zE/0.jpg)](https://www.youtube.com/watch?v=I557BU3_3zE&t=5906s)
+
+<details open>
+  <summary>Ver vídeo incorporado</summary>
+  <p>
+    <iframe width="100%" height="400" src="https://www.youtube.com/embed/I557BU3_3zE?start=5906" title="Apresentação e Depoimento ZuckZapGo" frameborder="0" allowfullscreen></iframe>
+  </p>
+</details>
+
 ## 📋 Sobre o Projeto
 
 **ZuckZapGo Private** é uma implementação profissional da biblioteca [@tulir/whatsmeow](https://github.com/tulir/whatsmeow) como um serviço de API RESTful completo com suporte a múltiplos dispositivos, sessões simultâneas e integração com diversas ferramentas empresariais.
