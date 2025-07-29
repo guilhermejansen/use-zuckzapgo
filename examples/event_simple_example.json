@@ -1,0 +1,13 @@
+{
+  "Phone": "5521979232690",
+  "Name": "Team Meeting",
+  "Description": "Weekly team meeting to discuss project progress and upcoming milestones",
+  "StartTime": 1672531200,
+  "EndTime": 1672534800,
+  "ExtraGuestsAllowed": true,
+  "IsCanceled": false,
+  "IsScheduleCall": false,
+  "Id": "event_123456789",
+  "Presence": 2000,
+  "Duration": 3600
+} 

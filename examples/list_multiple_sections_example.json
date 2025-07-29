@@ -1,0 +1,59 @@
+{
+  "Phone": "5521979232690",
+  "Title": "🍕 Food Delivery Menu",
+  "Text": "Choose from our delicious menu options. All items are prepared fresh and delivered hot!",
+  "Footer": "🚚 Free delivery for orders over $30",
+  "ButtonText": "Order Now",
+  "Sections": [
+    {
+      "Title": "🍕 Pizzas",
+      "Rows": [
+        {
+          "RowId": "pizza_margherita",
+          "Title": "Margherita Pizza",
+          "Description": "Classic tomato sauce, mozzarella, basil - $18.99"
+        },
+        {
+          "RowId": "pizza_pepperoni",
+          "Title": "Pepperoni Pizza",
+          "Description": "Spicy pepperoni, mozzarella, tomato sauce - $22.99"
+        },
+        {
+          "RowId": "pizza_quattro",
+          "Title": "Quattro Formaggi",
+          "Description": "Four cheese blend, tomato sauce - $24.99"
+        }
+      ]
+    },
+    {
+      "Title": "🍝 Pasta",
+      "Rows": [
+        {
+          "RowId": "pasta_carbonara",
+          "Title": "Carbonara",
+          "Description": "Eggs, pancetta, parmesan, black pepper - $16.99"
+        },
+        {
+          "RowId": "pasta_bolognese",
+          "Title": "Bolognese",
+          "Description": "Ground beef, tomato sauce, parmesan - $17.99"
+        }
+      ]
+    },
+    {
+      "Title": "🥤 Beverages",
+      "Rows": [
+        {
+          "RowId": "drink_cola",
+          "Title": "Cola",
+          "Description": "Refreshing cola drink - $3.99"
+        },
+        {
+          "RowId": "drink_water",
+          "Title": "Mineral Water",
+          "Description": "Natural mineral water - $2.99"
+        }
+      ]
+    }
+  ]
+} 

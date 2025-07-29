@@ -1,0 +1,29 @@
+{
+  "Phone": "5521979232690",
+  "Title": "🛍️ Product Catalog",
+  "Text": "Browse our products and select items to add to your cart. Each item includes price and description.",
+  "Footer": "Free shipping on orders over $50",
+  "ButtonText": "Browse Products",
+  "Sections": [
+    {
+      "Title": "🏆 Popular Products",
+      "Rows": [
+        {
+          "RowId": "product_001",
+          "Title": "Premium Package",
+          "Description": "Full access with premium features - $29.99/month"
+        },
+        {
+          "RowId": "product_002",
+          "Title": "Basic Package",
+          "Description": "Essential features for beginners - $9.99/month"
+        },
+        {
+          "RowId": "product_003",
+          "Title": "Enterprise Package",
+          "Description": "Advanced features for businesses - $99.99/month"
+        }
+      ]
+    }
+  ]
+} 

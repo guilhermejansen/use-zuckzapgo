@@ -1,0 +1,64 @@
+{
+  "Phone": "5521979232690",
+  "Title": "🔧 Technical Services",
+  "Text": "Select the service you need. Our team of experts is ready to help you!",
+  "Footer": "⚡ 24/7 support available",
+  "ButtonText": "Select Service",
+  "Sections": [
+    {
+      "Title": "💻 IT Services",
+      "Rows": [
+        {
+          "RowId": "service_webdev",
+          "Title": "Web Development",
+          "Description": "Custom websites and web applications - Starting at $500"
+        },
+        {
+          "RowId": "service_mobile",
+          "Title": "Mobile App Development",
+          "Description": "iOS and Android applications - Starting at $800"
+        },
+        {
+          "RowId": "service_maintenance",
+          "Title": "System Maintenance",
+          "Description": "Regular maintenance and updates - $100/month"
+        }
+      ]
+    },
+    {
+      "Title": "🎨 Design Services",
+      "Rows": [
+        {
+          "RowId": "service_logo",
+          "Title": "Logo Design",
+          "Description": "Professional logo creation - $150"
+        },
+        {
+          "RowId": "service_branding",
+          "Title": "Brand Identity",
+          "Description": "Complete branding package - $300"
+        },
+        {
+          "RowId": "service_uiux",
+          "Title": "UI/UX Design",
+          "Description": "User interface and experience design - $400"
+        }
+      ]
+    },
+    {
+      "Title": "📊 Business Services",
+      "Rows": [
+        {
+          "RowId": "service_consulting",
+          "Title": "Business Consulting",
+          "Description": "Strategic business advice - $200/hour"
+        },
+        {
+          "RowId": "service_marketing",
+          "Title": "Digital Marketing",
+          "Description": "Social media and online marketing - $300/month"
+        }
+      ]
+    }
+  ]
+} 

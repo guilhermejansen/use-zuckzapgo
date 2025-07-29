@@ -1,0 +1,18 @@
+{
+  "Phone": "5521979232690",
+  "Name": "Business Conference",
+  "Description": "Annual business conference with industry leaders and networking opportunities",
+  "StartTime": 1672531200,
+  "EndTime": 1672545600,
+  "ExtraGuestsAllowed": false,
+  "IsCanceled": false,
+  "IsScheduleCall": false,
+  "Location": {
+    "Name": "Convention Center",
+    "DegreesLongitude": -46.6333,
+    "DegreesLatitude": -23.5505
+  },
+  "Id": "event_conf_2024",
+  "Presence": 5000,
+  "Duration": 14400
+} 
