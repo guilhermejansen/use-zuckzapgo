@@ -19,7 +19,13 @@
 
 Para adquirir sua licença e acessar todos os recursos premium, faça sua assinatura de forma rápida e segura:
 
-👉 [Assinar agora via Kiwify](https://kiwify.app/3Rqbytr)
+👉 [Assinar agora via Hotmart](https://go.hotmart.com/S101068222H?dp=1)
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/guilhermejansen/use-zuckzapgo/main/qrcode.svg" alt="Assine Agora ZuckZapGo Private" width="120" height="120">
+</p>
+
+👉 [Seja um afiliado agora via Hotmart](https://app-vlc.hotmart.com/affiliate-recruiting/view/3115Z101068243)
 
 ---
 
@@ -61,8 +67,6 @@ Ao assinar, você pode instalar o ZuckZapGo em sua própria máquina ou servidor
 ### Docker (Recomendado)
 
 ```yml
-version: '3.7'
-
 # =================== ZUCKZAPGO STACK PARA PORTAINER ===================
 # Stack completa do ZuckZapGo com todos os serviços necessários
 # Configurada para uso em produção com Docker Swarm via Portainer
@@ -499,9 +503,9 @@ Esta imagem suporta múltiplas arquiteturas:
 ## 🆘 Suporte
 
 Para suporte técnico e comercial:
-- **Email**: [contato@zuckzapgo.com](mailto:contato@zuckzapgo.com)
+- **Email**: [contato@setupautomatizado.com.br](mailto:contato@setupautomatizado.com.br)
 - **Website**: [https://zuckzapgo.com](https://zuckzapgo.com)
-- **GitHub**: [https://github.com/guilhermejansen/zuckzapgo-private](https://github.com/guilhermejansen/zuckzapgo-private)
+- **GitHub**: [https://github.com/guilhermejansen/use-zuckzapgo](https://github.com/guilhermejansen/use-zuckzapgo)
 
 ## 📄 Licença
 
