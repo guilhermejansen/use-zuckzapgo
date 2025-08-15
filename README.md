@@ -80,7 +80,7 @@ services:
     environment:
       # =================== ADMIN & AUTHENTICATION ===================
       - ZUCKZAPGO_ADMIN_TOKEN=SEU_TOKEN_AQUI_DO_ADMIN
-      - ZUCKZAPGO_ADDRESS=api.seudominio.com
+      - ZUCKZAPGO_ADDRESS=api.seudominio.com # Adicione seu dominio
       - ZUCKZAPGO_PORT=8080
 
       - SERVER_IP=SEU_IP_AQUI #exemplo: 192.168.1.100
@@ -92,18 +92,113 @@ services:
       
       # =================== DATABASE CONFIGURATION ===================
       # Option 1: Individual database variables (current method)
-      - DB_USER=zuckzapgo
-      - DB_PASSWORD=SUA_SENHA_DO_BANCO_DE_DADOS # SENHA DO BANCO DE DADOS
-      - DB_NAME=zuckzapgo # NOME DO BANCO DE DADOS
-      - DB_HOST=postgres_zuckzapgo # NOME DO SERVIÇO DO BANCO DE DADOS
-      - DB_PORT=5432
-      - DB_SSLMODE=disable
-      - DB_SCHEMA=public
+      # - DB_USER=zuckzapgo
+      # - DB_PASSWORD=SUA_SENHA_DO_BANCO_DE_DADOS # SENHA DO BANCO DE DADOS
+      # - DB_NAME=zuckzapgo # NOME DO BANCO DE DADOS
+      # - DB_HOST=postgres_zuckzapgo # NOME DO SERVIÇO DO BANCO DE DADOS
+      # - DB_PORT=5432
+      # - DB_SSLMODE=disable
+      # - DB_SCHEMA=public
 
       # Option 2: Single database connection string (production method)
       # Uncomment the line below and comment out the individual variables above
-      # - DATABASE_URL=postgres://zuckzapgo:SUA_SENHA_DO_BANCO_DE_DADOS@postgres_zuckzapgo:5432/zuckzapgo?sslmode=disable&search_path=public
+      - DATABASE_URL=postgres://zuckzapgo:SUA_SENHA_DO_BANCO_DE_DADOS@postgres_zuckzapgo:5432/zuckzapgo?sslmode=disable&search_path=public
       # For managed databases: DATABASE_URL=postgres://user:pass@managed-db.example.com:5432/zuckzapgo?sslmode=require
+      # For MySQL: DATABASE_URL=mysql://zuckzapgo:zuckzapgo_production_password@zuckzapgo_mysql:3306/zuckzapgo?charset=utf8mb4&parseTime=True&loc=Local
+
+      # ========== CONFIGURAÇÕES PADRÃO DE DISPOSITIVO WHATSAPP ==========
+      # ========================================
+      # NOTAS IMPORTANTES
+      # ========================================
+      #
+      # 1. TODAS as configurações são OPCIONAIS
+      # 2. Se não configuradas, usa padrões da whatsmeow
+      # 3. Configurações por usuário sobrepõem globais
+      # 4. Configurações aplicadas ANTES da conexão WhatsApp
+      # 5. Para alterar configurações existentes, desconecte e reconecte o usuário
+      # 6. Valores inválidos usam padrões com log de aviso
+      #
+      # ========================================
+      # VALORES VÁLIDOS POR CAMPO
+      # ========================================
+      #
+      # waPlatform:
+      # ANDROID, IOS, WINDOWS_PHONE, BLACKBERRY, BLACKBERRYX, S40, S60, 
+      # PYTHON_CLIENT, TIZEN, ENTERPRISE, SMB_ANDROID, KAIOS, SMB_IOS, 
+      # WINDOWS, WEB, PORTAL, GREEN_ANDROID, GREEN_IPHONE, BLUE_ANDROID, 
+      # BLUE_IPHONE, FBLITE_ANDROID, MLITE_ANDROID, IGLITE_ANDROID, PAGE, 
+      # MACOS, OCULUS_MSG, OCULUS_CALL, MILAN, CAPI, WEAROS, ARDEVICE, 
+      # VRDEVICE, BLUE_WEB, IPAD, TEST, SMART_GLASSES, BLUE_VR
+      #
+      # waReleaseChannel:
+      # RELEASE, BETA, ALPHA, DEBUG
+      #
+      # waWebSubPlatform:
+      # WEB_BROWSER, APP_STORE, WIN_STORE, DARWIN, WIN32, WIN_HYBRID
+      #
+      # waConnectType:
+      # CELLULAR_UNKNOWN, WIFI_UNKNOWN, CELLULAR_EDGE, CELLULAR_IDEN, 
+      # CELLULAR_UMTS, CELLULAR_EVDO, CELLULAR_GPRS, CELLULAR_HSDPA, 
+      # CELLULAR_HSUPA, CELLULAR_HSPA, CELLULAR_CDMA, CELLULAR_1XRTT, 
+      # CELLULAR_EHRPD, CELLULAR_LTE, CELLULAR_HSPAP
+      #
+      # waPlatformType:
+      # UNKNOWN, CHROME, FIREFOX, IE, OPERA, SAFARI, EDGE, DESKTOP, IPAD, 
+      # ANDROID_TABLET, OHANA, ALOHA, CATALINA, TCL_TV, IOS_PHONE, 
+      # IOS_CATALYST, ANDROID_PHONE, ANDROID_AMBIGUOUS, WEAR_OS, AR_WRIST, 
+      # AR_DEVICE, UWP, VR, CLOUD_API, SMARTGLASSES
+
+      # Este arquivo mostra como configurar as opções avançadas do WhatsApp
+      # através de variáveis de ambiente (globais) ou via API (por usuário).
+      #
+      # IMPORTANTE: Estas configurações são OPCIONAIS. Se não definidas,
+      # o ZuckZapGo usa os padrões da biblioteca whatsmeow.
+
+      # ========================================
+      # CONFIGURAÇÕES GLOBAIS (Variáveis de Ambiente)
+      # ========================================
+      # Aplicam-se a TODOS os usuários se não configuradas individualmente
+
+      # Versão do WhatsApp Web (formato: primary.secondary.tertiary)
+      - WA_VERSION=2.3000.1025465267
+      #2.3000.1024995419
+
+      # Plataforma do dispositivo
+      # Opções: WEB, ANDROID, IOS, WINDOWS, MACOS, IPAD, etc.
+      - WA_PLATFORM=WEB
+
+      # Canal de release
+      # Opções: RELEASE, BETA, ALPHA, DEBUG
+      - WA_RELEASE_CHANNEL=BETA
+
+      # Sub-plataforma para Web
+      # Opções: WEB_BROWSER, APP_STORE, WIN_STORE, DARWIN, WIN32, WIN_HYBRID
+      - WA_WEB_SUB_PLATFORM=WEB_BROWSER
+
+      # Sistema operacional
+      - WA_OS_NAME=Mac OS X
+      - WA_OS_VERSION=10.15.7
+
+      # Informações do dispositivo
+      - WA_DEVICE_NAME=MacBook Pro
+      - WA_MANUFACTURER=Apple
+      - WA_DEVICE_BOARD=Mac
+
+      # Configurações de localização
+      - WA_LOCALE_LANGUAGE=en
+      - WA_LOCALE_COUNTRY=US
+
+      # Códigos de rede móvel
+      - WA_MCC=000
+      - WA_MNC=000
+
+      # Tipo de conexão
+      # Opções: WIFI_UNKNOWN, CELLULAR_UNKNOWN, CELLULAR_LTE, etc.
+      - WA_CONNECT_TYPE=WIFI_UNKNOWN
+
+      # Tipo de plataforma para DeviceProps
+      # Opções: DESKTOP, CHROME, FIREFOX, SAFARI, EDGE, IPAD, etc.
+      - WA_PLATFORM_TYPE=DESKTOP
 
       # =================== SESSION & TIMEZONE ===================
       - TZ=America/Sao_Paulo
@@ -160,7 +255,7 @@ services:
       - GLOBAL_S3_SECRET_KEY=
       # Use path-style URLs (true for MinIO/compatible)
       - GLOBAL_S3_PATH_STYLE=true
-      # Custom public URL for S3 objects (optional)
+      # Custom public URL for S3 objects (Adicione o mesmo do S3_ENDPOINT para seguir a URL nos eventos)
       - GLOBAL_S3_PUBLIC_URL=
       # Media delivery method: base64, url, or both
       - GLOBAL_S3_MEDIA_DELIVERY=base64
@@ -377,7 +472,6 @@ networks:
   network_public:
     name: network_public
     external: true
-
 ```
 
 ## 🔧 Integrações
