@@ -24,11 +24,13 @@ services:
       - INSTANCE_ID=
 
       # =================== CONFIGURAÇÕES DE DEBUG ===================
-      # 🐛 Nível de debug do WhatsApp
-      # Valores aceitos: INFO, DEBUG ou vazio (desabilitado)
-      # INFO: Informações básicas de conexão e eventos
-      # DEBUG: Informações detalhadas incluindo dados de protocolo
-      - ZUCKZAPGO_DEBUG=INFO
+      # 📈 Controle geral de logs da aplicação (resolve logs DEBUG)
+      # Valores: debug, info, warn, error (em minúsculo)
+      - ZUCKZAPGO_LOG_LEVEL=info
+      
+      # 🐛 Debug específico do WhatsApp (biblioteca whatsmeow)
+      # Valores: info, debug ou vazio (em minúsculo)
+      - ZUCKZAPGO_DEBUG=info
       - LOG_TYPE=console
       - LOG_COLOR=true
       # =================== DATABASE CONFIGURATION ===================
@@ -347,7 +349,7 @@ services:
 
   # =================== BANCO DE DADOS POSTGRESQL ===================
   postgres_zuckzapgo:
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg16
     environment:
       - POSTGRES_USER=zuckzapgo
       - POSTGRES_PASSWORD=zuckzapgo
@@ -414,7 +416,7 @@ services:
 
   # =================== RABBITMQ (MENSAGERIA) ===================
   rabbitmq_zuckzapgo:
-    image: rabbitmq:4-management-alpine
+    image: rabbitmq:4-management
     environment:
       - RABBITMQ_DEFAULT_USER=zuckzapgo
       - RABBITMQ_DEFAULT_PASS=zuckzapgo
