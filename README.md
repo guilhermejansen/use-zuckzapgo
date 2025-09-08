@@ -90,8 +90,15 @@ services:
       - LICENSE_KEY=
       - INSTANCE_ID=
 
+      # =================== CONFIGURAÇÕES DE DEBUG ===================
+      # 🐛 Nível de debug do WhatsApp
+      # Valores aceitos: INFO, DEBUG ou vazio (desabilitado)
+      # INFO: Informações básicas de conexão e eventos
+      # DEBUG: Informações detalhadas incluindo dados de protocolo
+      - ZUCKZAPGO_DEBUG=INFO
       - LOG_TYPE=console
       - LOG_COLOR=true
+
       # =================== DATABASE CONFIGURATION ===================
       # Option 1: Individual database variables (current method)
       # - DB_TYPE=postgres
