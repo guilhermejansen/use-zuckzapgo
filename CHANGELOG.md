@@ -5,6 +5,91 @@ Todas as mudanças importantes neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [v1.2.4] - 2025-09-08
+
+### ✨ Destaques da versão
+- BaseURL em todos os eventos (Webhook + RabbitMQ) sem poluir o payload do usuário. Cabeçalhos e campos dedicados garantem rastreabilidade/end-to-end.
+- S3 Global com modo “Owner enforced”: novo `GLOBAL_S3_DISABLE_ACL` (default: true). Semântica clara de entrega (`base64`, `url` ou `both`).
+- Chamadas: rejeição automática com mensagem/tipo globais configuráveis e fallback robusto por usuário.
+- Mídia: detecção MIME inteligente, link preview “clean” (og:image, favicon e YouTube), thumbnails de vídeo (ffmpeg) e PDFs (páginas + miniatura).
+- LID (Link ID): novos endpoints para converter Phone/JID ↔ LID e listar mapeamentos. Store SQL entende `@lid` e `@s.whatsapp.net` no mesmo lookup.
+- Grupos/Comunidades: criação com `context.Context` e flags (announcement/locked/ephemeral/approval); disappearing timer com timestamp.
+- Whatsmeow (fork): pareamento híbrido (WhatsApp Business coexistente) e Presence sem PushName no contexto Messenger.
+
+### 🔧 Mudanças de configuração
+- Novas variáveis globais
+  - `GLOBAL_CALL_REJECT_MESSAGE`: mensagem padrão de rejeição de chamadas.
+  - `GLOBAL_CALL_REJECT_TYPE`: `busy` | `decline` | `unavailable` (default: `busy`).
+  - `GLOBAL_S3_DISABLE_ACL`: `true` para buckets AWS com “Bucket owner enforced”; `false` para provedores legados (default: `true`).
+- `WA_VERSION` atualizado para `2.3000.1026436087`.
+- BaseURL passa a ser calculado e cacheado (carregando `.env` automaticamente quando presente). Variáveis úteis: `ZUCKZAPGO_ADDRESS` e `ZUCKZAPGO_PORT`.
+
+### 🔌 API e Eventos
+- BaseURL incorporado nos eventos
+  - Cabeçalhos adicionais nos webhooks: `X-ZuckZapGo-BaseURL` (além de usuário/token/jid/eventType).
+  - Envelope dos eventos inclui `baseURL` e `source` (p.ex. `zuckzapgo-global`).
+- Novos endpoints LID
+  - `GET/POST /user/lid/get` — Converte Phone/JID → LID.
+  - `GET/POST /user/lid/from-lid` — Converte LID → Phone/JID.
+  - `GET /user/lid/mappings` — Lista todos os mapeamentos LID ↔ Phone do usuário.
+- Exemplo (curl) — obter LID a partir de JID
+  ```bash
+  curl -H "token: <USER_TOKEN>" \
+       "https://<BASE_URL>/user/lid/get?phone=5521971532700@s.whatsapp.net"
+  ```
+- Exemplo (Webhook payload — campos relevantes)
+  ```json
+  {
+    "userToken":"***",
+    "userID":"***",
+    "eventType":"message",
+    "userName":"Alice",
+    "userJID":"55219...@s.whatsapp.net",
+    "baseURL":"https://api.seudominio.com",
+    "timestamp": 1725750000,
+    "source": "zuckzapgo-global",
+    "data": { "...": "payload do evento sem poluição por metadados de S3" }
+  }
+  ```
+
+### ☁️ S3 (Global e por usuário)
+- Modo delivery global: `GLOBAL_S3_MEDIA_DELIVERY=base64|url|both`.
+  - `url`: upload para S3 e remoção do campo `base64` do payload.
+  - `both`: upload para S3 mantendo o `base64` no payload.
+- `GLOBAL_S3_DISABLE_ACL=true` (AWS moderno) evita aplicar ACL no upload; quando `false`, ACL pública é aplicada (compatibilidade com provedores legados).
+- Endpoints de S3 do usuário expostos com `disable_acl` no retorno e nos testes de conexão.
+
+### 📞 Chamadas: rejeição automática
+- Fallback global quando usuário não definiu mensagem/tipo:
+  - `GLOBAL_CALL_REJECT_MESSAGE` e `GLOBAL_CALL_REJECT_TYPE`.
+  - Validação de tipo — valores inválidos caem para `busy` com aviso em log.
+
+### 🖼️ Mídia e Previews
+- Detecção MIME inteligente — corrige `application/octet-stream` em áudios/documentos.
+- PTT (voice note): força `audio/ogg; codecs=opus` quando necessário.
+- Link preview “clean”: coleta metadados (OpenGraph/Twitter), baixa thumbnail e envia como `MediaLinkThumbnail`. Suporte expandido para YouTube via oEmbed e scraping.
+- PDF: página inicial renderizada como thumbnail (com largura/altura reais) + `pageCount` no documento.
+- Vídeo: thumbnail gerado em memória com fallback automático para imagem padrão quando `ffmpeg` ausente.
+
+### 👥 Grupos/Comunidades
+- `CreateGroup(context, req)` com suporte a `announcement`, `locked`, `ephemeral` e `membership_approval_mode`.
+- `SetDisappearingTimer(..., settingTS)` grava timestamp de configuração para melhor compatibilidade com o cliente.
+
+### 🔐 Whatsmeow (fork privado)
+- Pareamento híbrido (coexistente): fallback de verificação de assinatura com tipo de conta oposto para lidar com inconsistências de detecção (Business/Hosted/regular).
+- Presence: envia sem `PushName` quando em contexto Messenger E2EE.
+
+### 🗃️ Migrações de banco
+- Migração 15 — cache de avatar: adiciona `avatar_url` e `avatar_updated_at`.
+- Migração 16 — S3 sem ACL: adiciona `s3_disable_acl` (default TRUE).
+- Compatível com PostgreSQL e MySQL (SQLite auxilia desenvolvimento). Aplicadas automaticamente no startup.
+
+### 📦 Dependências e Tooling
+- Go toolchain 1.24.x, bibliotecas atualizadas (protobuf, goquery, unipdf, x/*, etc.).
+- CI: matriz Go 1.24/1.25; pre-commit atualizado.
+- Protobufs WhatsApp atualizados (E2E/Wa6/SyncAction/HistorySync/StatusAttributions/CompanionReg/Armadillo) e migração de `WAWebProtobufsBotMetadata` → `WABotMetadata`.
+
+
 ## [v1.2.3] - 2025-08-15
 
 ### 🚀 Novos Recursos

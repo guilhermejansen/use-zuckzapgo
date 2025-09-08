@@ -1,39 +1,44 @@
+version: '3.7'
+
 # =================== ZUCKZAPGO STACK PARA PORTAINER ===================
 # Stack completa do ZuckZapGo com todos os serviços necessários
 # Configurada para uso em produção com Docker Swarm via Portainer
 
 services:
   zuckzapgo_private:
-    # IMAGEM DISPONÍVEL: https://hub.docker.com/r/setupautomatizado/zuckzapgo-private
-    image: setupautomatizado/zuckzapgo-private:latest # ou a versão que você deseja usar (exemplo: setupautomatizado/zuckzapgo-private:v1.0.0)
+    image: setupautomatizado/zuckzapgo-private:latest
     networks:
       - network_public
     environment:
       # =================== ADMIN & AUTHENTICATION ===================
-      - ZUCKZAPGO_ADMIN_TOKEN=SEU_TOKEN_AQUI_DO_ADMIN
-      - ZUCKZAPGO_ADDRESS=api.seudominio.com # Adicione seu dominio
+      - ZUCKZAPGO_ADMIN_TOKEN=H4Zbhw72PBKdTIgS
+      # ZUCKZAPGO_ADDRESS: Define o endereço base para a API ZuckZapGo
+      # Esta URL será incluída em TODOS os eventos (webhook + RabbitMQ)
+      # tanto globais quanto individuais, permitindo que sistemas externos 
+      # saibam exatamente de onde o evento está vindo
+      - ZUCKZAPGO_ADDRESS=https://api.zuckzapgo.app
       - ZUCKZAPGO_PORT=8080
 
-      - SERVER_IP=SEU_IP_AQUI #exemplo: 192.168.1.100
-      - LICENSE_KEY=SUA_LICENÇA_AQUI_DA_ZUCKZAPGO
-      - INSTANCE_ID=SUA_INSTANCE_NAME_AQUI #exemplo: zuckzapgo-1
+      - SERVER_IP=
+      - LICENSE_KEY=
+      - INSTANCE_ID=
 
-      - LOG_TYPE=console # "console" ou "json"
-      - LOG_COLOR=true # true ou false
-      
+      - LOG_TYPE=console
+      - LOG_COLOR=true
       # =================== DATABASE CONFIGURATION ===================
       # Option 1: Individual database variables (current method)
+      # - DB_TYPE=postgres
       # - DB_USER=zuckzapgo
-      # - DB_PASSWORD=SUA_SENHA_DO_BANCO_DE_DADOS # SENHA DO BANCO DE DADOS
-      # - DB_NAME=zuckzapgo # NOME DO BANCO DE DADOS
-      # - DB_HOST=postgres_zuckzapgo # NOME DO SERVIÇO DO BANCO DE DADOS
+      # - DB_PASSWORD=senha-super-segura-aqui
+      # - DB_NAME=zuckzapgo
+      # - DB_HOST=db
       # - DB_PORT=5432
       # - DB_SSLMODE=disable
       # - DB_SCHEMA=public
 
       # Option 2: Single database connection string (production method)
       # Uncomment the line below and comment out the individual variables above
-      - DATABASE_URL=postgres://zuckzapgo:SUA_SENHA_DO_BANCO_DE_DADOS@postgres_zuckzapgo:5432/zuckzapgo?sslmode=disable&search_path=public
+      - DATABASE_URL=postgres://zuckzapgo:zuckzapgo@postgres_zuckzapgo:5432/zuckzapgo?sslmode=disable&search_path=public
       # For managed databases: DATABASE_URL=postgres://user:pass@managed-db.example.com:5432/zuckzapgo?sslmode=require
       # For MySQL: DATABASE_URL=mysql://zuckzapgo:zuckzapgo_production_password@zuckzapgo_mysql:3306/zuckzapgo?charset=utf8mb4&parseTime=True&loc=Local
 
@@ -91,7 +96,7 @@ services:
       # Aplicam-se a TODOS os usuários se não configuradas individualmente
 
       # Versão do WhatsApp Web (formato: primary.secondary.tertiary)
-      - WA_VERSION=2.3000.1025465267
+      - WA_VERSION=2.3000.1026436087
       #2.3000.1024995419
 
       # Plataforma do dispositivo
@@ -133,11 +138,11 @@ services:
 
       # =================== SESSION & TIMEZONE ===================
       - TZ=America/Sao_Paulo
-      - SESSION_DEVICE_NAME=ZuckZapGo # NOME DO DISPOSITIVO
+      - SESSION_DEVICE_NAME=ZuckZapGo
 
       # =================== WEBHOOK INDIVIDUAL POR INSTANICA CONFIGURATIONS ===================
       # "json" or "form" for the default
-      - WEBHOOK_FORMAT=json 
+      - WEBHOOK_FORMAT=json
 
       # Timeout principal da requisição HTTP
       - WEBHOOK_TIMEOUT=30s
@@ -170,12 +175,16 @@ services:
       - GLOBAL_SKIP_OWN_MESSAGES=false
       # Skip call events (offers, accepts, terminates)
       - GLOBAL_SKIP_CALLS=false
+      # Global default message for call rejection (default: 'Sorry, I cannot take calls at the moment.')
+      - GLOBAL_CALL_REJECT_MESSAGE=Sorry, I cannot take calls at the moment.
+      # Global default call rejection type: 'busy', 'decline', or 'unavailable' (default: 'busy')
+      - GLOBAL_CALL_REJECT_TYPE=busy  
 
       # =================== GLOBAL S3 CONFIGURATION ===================
       # Enable/disable global S3 for media processing
       - GLOBAL_S3_ENABLED=false
       # S3 endpoint (leave empty for AWS S3)
-      - GLOBAL_S3_ENDPOINT=
+      - GLOBAL_S3_ENDPOINT=https://s3.example.com
       # S3 region
       - GLOBAL_S3_REGION=us-east-1
       # S3 bucket name for global media
@@ -186,16 +195,20 @@ services:
       - GLOBAL_S3_SECRET_KEY=
       # Use path-style URLs (true for MinIO/compatible)
       - GLOBAL_S3_PATH_STYLE=true
-      # Custom public URL for S3 objects (Adicione o mesmo do S3_ENDPOINT para seguir a URL nos eventos)
-      - GLOBAL_S3_PUBLIC_URL=
+      # Custom public URL for S3 objects (obrigatório)
+      - GLOBAL_S3_PUBLIC_URL=https://s3.example.com
       # Media delivery method: base64, url, or both
-      - GLOBAL_S3_MEDIA_DELIVERY=base64
+      - GLOBAL_S3_MEDIA_DELIVERY=url
       # Retention days for media (0 = no expiration)
       - GLOBAL_S3_RETENTION_DAYS=0
+      # S3 ACL Configuration
+      # Set to true for AWS S3 buckets with "Bucket owner enforced" Object Ownership
+      # Set to false for legacy buckets or other S3-compatible providers that support ACLs
+      - GLOBAL_S3_DISABLE_ACL=true
 
       # =================== GLOBAL WEBHOOK CONFIGURATION ===================
       # Enable/disable global webhook for all users
-      - GLOBAL_WEBHOOK_ENABLED=false 
+      - GLOBAL_WEBHOOK_ENABLED=false
       # URL endpoint to receive all global events
       - GLOBAL_WEBHOOK_URL=https://hook.prod.setupautomatizado.com/webhook/global-events
       # Event types to capture (comma-separated or "All")
@@ -215,9 +228,9 @@ services:
 
       # =================== GLOBAL RABBITMQ BASIC CONFIGURATION ===================
       # Enable/disable global RabbitMQ for all users
-      - GLOBAL_RABBITMQ_ENABLED=false
+      - GLOBAL_RABBITMQ_ENABLED=true
       # RabbitMQ connection URL (production cluster)
-      - GLOBAL_RABBITMQ_URL=amqp://zuckzapgo:SUA_SENHA_DO_RABBITMQ@rabbitmq_zuckzapgo:5672/zuckzapgo
+      - GLOBAL_RABBITMQ_URL=amqp://zuckzapgo:zuckzapgo@rabbitmq_zuckzapgo:5672/zuckzapgo
       # Event types to publish (comma-separated or "All")
       - GLOBAL_RABBITMQ_EVENTS=All
       # Exchange name for global events
@@ -228,11 +241,13 @@ services:
       # GLOBAL_RABBITMQ_QUEUE=zuckzapgo.events
       # GLOBAL_RABBITMQ_ROUTING_KEY=events.#
       # ===== OPÇÃO 2: FILAS POR EVENTO (NOVO) =====
-      - GLOBAL_RABBITMQ_QUEUE=zuckzapgo_{event_type}_events
-      - GLOBAL_RABBITMQ_ROUTING_KEY=events.{event_type}.#
+      # Exemplo alternativo (filas por evento) — comente as duas linhas abaixo se não for usar
+      # - GLOBAL_RABBITMQ_QUEUE=zuckzapgo_{event_type}_events
+      # - GLOBAL_RABBITMQ_ROUTING_KEY=events.{event_type}.#
+      # Exemplo de fila única dedicada
       # - GLOBAL_RABBITMQ_QUEUE=zuckzapgo.events.prod
       - GLOBAL_RABBITMQ_QUEUE_TYPE=classic
-      # Routing key pattern for message routing
+      # Routing key pattern for message routing (padrão)
       - GLOBAL_RABBITMQ_ROUTING_KEY=events.#
       # Make exchange and queue durable (survive broker restart)
       - GLOBAL_RABBITMQ_DURABLE=true
@@ -304,11 +319,14 @@ services:
         constraints: [node.role == manager]
       resources:
         limits:
-          cpus: "1" # QUANTIDADE DE CPU
-          memory: 512MB # QUANTIDADE DE MEMÓRIA
+          cpus: "2"      # Increased for RabbitMQ Global performance
+          memory: 2GB    # Increased for high-throughput message processing
+        reservations:
+          cpus: "1"
+          memory: 1GB
       labels:
         - traefik.enable=true
-        - traefik.http.routers.zuckzapgo_private.rule=Host(`api.seudominio.com`) # DOMINIO DA API
+        - traefik.http.routers.zuckzapgo_private.rule=Host(`api.zuckzapgo.app`)
         - traefik.http.routers.zuckzapgo_private.entrypoints=websecure
         - traefik.http.routers.zuckzapgo_private.priority=1
         - traefik.http.routers.zuckzapgo_private.tls.certresolver=letsencryptresolver
@@ -325,9 +343,9 @@ services:
   postgres_zuckzapgo:
     image: postgres:16-alpine
     environment:
-      - POSTGRES_USER=zuckzapgo # USUÁRIO DO BANCO DE DADOS
-      - POSTGRES_PASSWORD=SUA_SENHA_DO_BANCO_DE_DADOS # SENHA DO BANCO DE DADOS
-      - POSTGRES_DB=zuckzapgo # NOME DO BANCO DE DADOS
+      - POSTGRES_USER=zuckzapgo
+      - POSTGRES_PASSWORD=zuckzapgo
+      - POSTGRES_DB=zuckzapgo
     volumes:
       - postgres_data_zuckzapgo:/var/lib/postgresql/data
     networks: 
@@ -344,8 +362,11 @@ services:
         max_attempts: 3
       resources:
         limits:
-          cpus: '0.5' # QUANTIDADE DE CPU
-          memory: 512MB # QUANTIDADE DE MEMÓRIA
+          cpus: '1'
+          memory: 1GB
+        reservations:
+          cpus: '0.5'
+          memory: 512MB
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-zuckzapgo} -d ${POSTGRES_DB:-zuckzapgo}"]
       interval: 30s
@@ -353,13 +374,45 @@ services:
       retries: 3
       start_period: 60s
 
+  # =================== MYSQL DATABASE (OPCIONAL) ===================
+  # Descomente as linhas abaixo para usar MySQL ao invés de PostgreSQL
+  # zuckzapgo_mysql:
+  #   image: mysql:8.0
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root_password_super_seguro
+  #     MYSQL_DATABASE: zuckzapgo
+  #     MYSQL_USER: zuckzapgo
+  #     MYSQL_PASSWORD: zuckzapgo_production_password
+  #     MYSQL_ROOT_HOST: '%'
+  #   networks:
+  #     - network_public
+  #   volumes:
+  #     - mysql_data_zuckzapgo:/var/lib/mysql
+  #   command: >
+  #     --default-authentication-plugin=mysql_native_password
+  #     --character-set-server=utf8mb4
+  #     --collation-server=utf8mb4_unicode_ci
+  #     --innodb-buffer-pool-size=1G
+  #     --max-connections=500
+  #     --innodb-log-file-size=256M
+  #   deploy:
+  #     replicas: 1
+  #     restart_policy:
+  #       condition: on-failure
+  #       delay: 5s
+  #       max_attempts: 3
+  #       window: 120s
+  #     placement:
+  #       constraints:
+  #         - node.role == manager
+
   # =================== RABBITMQ (MENSAGERIA) ===================
   rabbitmq_zuckzapgo:
     image: rabbitmq:4-management-alpine
     environment:
-      - RABBITMQ_DEFAULT_USER=zuckzapgo # USUÁRIO DO RABBITMQ
-      - RABBITMQ_DEFAULT_PASS=SUA_SENHA_DO_RABBITMQ # SENHA DO RABBITMQ
-      - RABBITMQ_DEFAULT_VHOST=zuckzapgo # VHOST DO RABBITMQ
+      - RABBITMQ_DEFAULT_USER=zuckzapgo
+      - RABBITMQ_DEFAULT_PASS=zuckzapgo
+      - RABBITMQ_DEFAULT_VHOST=zuckzapgo
     volumes:
       - rabbitmq_data_zuckzapgo:/var/lib/rabbitmq
     networks:
@@ -375,11 +428,14 @@ services:
         max_attempts: 3
       resources:
         limits:
-          cpus: '0.5' # QUANTIDADE DE CPU
-          memory: 512MB # QUANTIDADE DE MEMÓRIA
+          cpus: '1'
+          memory: 1GB
+        reservations:
+          cpus: '0.5'
+          memory: 512MB
       labels:
         - traefik.enable=true
-        - traefik.http.routers.rabbitmq_zuckzapgo.rule=Host(`rabbitmq.seudominio.com`) # DOMINIO DO RABBITMQ
+        - traefik.http.routers.rabbitmq_zuckzapgo.rule=Host(`rabbitmq.zuckzapgo.app`)
         - traefik.http.routers.rabbitmq_zuckzapgo.entrypoints=websecure
         - traefik.http.routers.rabbitmq_zuckzapgo.tls.certresolver=letsencryptresolver
         - traefik.http.routers.rabbitmq_zuckzapgo.service=rabbitmq_zuckzapgo
@@ -398,6 +454,9 @@ volumes:
   rabbitmq_data_zuckzapgo:
     name: rabbitmq_data_zuckzapgo
     external: true
+  # mysql_data_zuckzapgo:  # Descomente para MySQL
+  #   name: mysql_data_zuckzapgo
+  #   external: true
 
 networks:
   network_public:
