@@ -105,7 +105,6 @@ services:
 
       # Versão do WhatsApp Web (formato: primary.secondary.tertiary)
       - WA_VERSION=2.3000.1026436087
-      #2.3000.1024995419
 
       # Plataforma do dispositivo
       # Opções: WEB, ANDROID, IOS, WINDOWS, MACOS, IPAD, etc.
@@ -113,7 +112,7 @@ services:
 
       # Canal de release
       # Opções: RELEASE, BETA, ALPHA, DEBUG
-      - WA_RELEASE_CHANNEL=BETA
+      - WA_RELEASE_CHANNEL=RELEASE
 
       # Sub-plataforma para Web
       # Opções: WEB_BROWSER, APP_STORE, WIN_STORE, DARWIN, WIN32, WIN_HYBRID
@@ -146,7 +145,6 @@ services:
 
       # =================== SESSION & TIMEZONE ===================
       - TZ=America/Sao_Paulo
-      - SESSION_DEVICE_NAME=ZuckZapGo
 
       # =================== WEBHOOK INDIVIDUAL POR INSTANICA CONFIGURATIONS ===================
       # "json" or "form" for the default
