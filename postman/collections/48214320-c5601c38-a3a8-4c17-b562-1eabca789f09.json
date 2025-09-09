@@ -1,0 +1,5342 @@
+{
+	"info": {
+		"_postman_id": "48214320-c5601c38-a3a8-4c17-b562-1eabca789f09",
+		"name": "ZUCKZAPGO v1.2.4",
+		"description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 9/8/2025, 11:32:07 PM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "⚙️ Admin (5 endpoints)",
+			"item": [
+				{
+					"name": "Create a new ZuckZapGo user account",
+					"id": "48214320-0edeaceb-8a48-4eb6-ab51-870c6df834aa",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"description": "🔐 Admin authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Create a new ZuckZapGo user account\n// 🔗 POST /admin/users\n// 💡 All optional fields included for complete reference\n\n{\n  \"name\": \"John Doe\",\n  \"token\": \"1234ABCD\",\n  \"webhook\": \"https://webhook.site/1234567890\",\n  \"events\": \"All\",\n  \"skipMedia\": false,\n  \"skipGroups\": false,\n  \"skipNewsletters\": false,\n  \"skipBroadcasts\": false,\n  \"skipOwnMessages\": false,\n  \"skipCalls\": false,\n  \"callRejectMessage\": \"Sorry, I cannot take calls at the moment.\",\n  \"callRejectType\": \"busy\",\n  \"proxyConfig\": {\n    \"enabled\": true,\n    \"proxyURL\": \"https://serverproxy.com:9080\"\n  },\n  \"s3Config\": {\n    \"enabled\": true,\n    \"endpoint\": \"https://s3.amazonaws.com\",\n    \"region\": \"us-east-1\",\n    \"bucket\": \"my-whatsapp-media\",\n    \"access_key\": \"AKIAIOSFODNN7EXAMPLE\",\n    \"secret_key\": \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLE\",\n    \"path_style\": false,\n    \"public_url\": \"https://cdn.example.com\",\n    \"media_delivery\": \"both\",\n    \"retention_days\": 30,\n    \"disable_acl\": true\n  },\n  \"rabbitmqConfig\": {\n    \"enabled\": true,\n    \"url\": \"amqp://guest:guest@localhost:5672/\",\n    \"exchange\": \"whatsapp.events\",\n    \"exchange_type\": \"topic\",\n    \"queue\": \"whatsapp.user.{user_id}\",\n    \"queue_type\": \"classic\",\n    \"routing_key\": \"whatsapp.{event_type}\",\n    \"events\": \"All\",\n    \"durable\": true,\n    \"auto_delete\": false,\n    \"exclusive\": false,\n    \"no_wait\": false,\n    \"delivery_mode\": 2\n  },\n  \"whatsappConfig\": {\n    \"waVersion\": \"2.3000.1025473630\",\n    \"waPlatform\": \"WEB\",\n    \"waReleaseChannel\": \"RELEASE\",\n    \"waWebSubPlatform\": \"WEB_BROWSER\",\n    \"waOSName\": \"Mac OS 10\",\n    \"waOSVersion\": \"10.15.7\",\n    \"waDeviceName\": \"Desktop\",\n    \"waManufacturer\": \"Apple\",\n    \"waDeviceBoard\": \"Mac-123456\",\n    \"waLocaleLanguage\": \"en\",\n    \"waLocaleCountry\": \"US\",\n    \"waMCC\": \"000\",\n    \"waMNC\": \"000\",\n    \"waConnectType\": \"WIFI_UNKNOWN\",\n    \"waPlatformType\": \"DESKTOP\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"users"
+							]
+						}
+					},
+					"response": [
+						{
+							"id": "48214320-d2a56cd0-f270-4fa2-8443-6edfc52d6829",
+							"name": "201 User created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Authorization",
+										"value": "{{admin_token}}",
+										"type": "text",
+										"description": "🔐 Admin authentication token"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "// 📝 Create a new ZuckZapGo user account\n// 🔗 POST /admin/users\n// 💡 All optional fields included for complete reference\n\n{\n  \"name\": \"John Doe\",\n  \"token\": \"1234ABCD\",\n  \"webhook\": \"https://webhook.site/1234567890\",\n  \"events\": \"All\",\n  \"skipMedia\": false,\n  \"skipGroups\": false,\n  \"skipNewsletters\": false,\n  \"skipBroadcasts\": false,\n  \"skipOwnMessages\": false,\n  \"skipCalls\": false,\n  \"callRejectMessage\": \"Sorry, I cannot take calls at the moment.\",\n  \"callRejectType\": \"busy\",\n  \"proxyConfig\": {\n    \"enabled\": true,\n    \"proxyURL\": \"https://serverproxy.com:9080\"\n  },\n  \"s3Config\": {\n    \"enabled\": true,\n    \"endpoint\": \"https://s3.amazonaws.com\",\n    \"region\": \"us-east-1\",\n    \"bucket\": \"my-whatsapp-media\",\n    \"access_key\": \"AKIAIOSFODNN7EXAMPLE\",\n    \"secret_key\": \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLE\",\n    \"path_style\": false,\n    \"public_url\": \"https://cdn.example.com\",\n    \"media_delivery\": \"both\",\n    \"retention_days\": 30,\n    \"disable_acl\": true\n  },\n  \"rabbitmqConfig\": {\n    \"enabled\": true,\n    \"url\": \"amqp://guest:guest@localhost:5672/\",\n    \"exchange\": \"whatsapp.events\",\n    \"exchange_type\": \"topic\",\n    \"queue\": \"whatsapp.user.{user_id}\",\n    \"queue_type\": \"classic\",\n    \"routing_key\": \"whatsapp.{event_type}\",\n    \"events\": \"All\",\n    \"durable\": true,\n    \"auto_delete\": false,\n    \"exclusive\": false,\n    \"no_wait\": false,\n    \"delivery_mode\": 2\n  },\n  \"whatsappConfig\": {\n    \"waVersion\": \"2.3000.1025473630\",\n    \"waPlatform\": \"WEB\",\n    \"waReleaseChannel\": \"RELEASE\",\n    \"waWebSubPlatform\": \"WEB_BROWSER\",\n    \"waOSName\": \"Mac OS 10\",\n    \"waOSVersion\": \"10.15.7\",\n    \"waDeviceName\": \"Desktop\",\n    \"waManufacturer\": \"Apple\",\n    \"waDeviceBoard\": \"Mac-123456\",\n    \"waLocaleLanguage\": \"en\",\n    \"waLocaleCountry\": \"US\",\n    \"waMCC\": \"000\",\n    \"waMNC\": \"000\",\n    \"waConnectType\": \"WIFI_UNKNOWN\",\n    \"waPlatformType\": \"DESKTOP\"\n  }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/admin/users",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"admin",
+										"users"
+									]
+								}
+							},
+							"status": "User created",
+							"code": 201,
+							"_postman_previewlanguage": "Text",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"responseTime": null,
+							"body": "{\n  \"code\": 201,\n  \"data\": {\n    \"id\": \"5663e0c52063ec35d0ba45f7c2011c06\",\n    \"name\": \"John Doe\",\n    \"token\": \"1234ABCD\",\n    \"skip_media_download\": false,\n    \"skip_groups\": false,\n    \"skip_newsletters\": false,\n    \"skip_broadcasts\": false,\n    \"skip_own_messages\": false,\n    \"skip_calls\": false,\n    \"call_reject_message\": \"Sorry, I cannot take calls at the moment.\",\n    \"call_reject_type\": \"busy\",\n    \"webhook\": \"https://webhook.site/1234567890\",\n    \"events\": \"All\",\n    \"proxy_config\": {\n      \"enabled\": true,\n      \"proxy_url\": \"https://serverproxy.com:9080\"\n    },\n    \"s3_config\": {\n      \"enabled\": true,\n      \"endpoint\": \"https://s3.amazonaws.com\",\n      \"region\": \"us-east-1\",\n      \"bucket\": \"my-bucket\",\n      \"access_key\": \"***\",\n      \"path_style\": true,\n      \"public_url\": \"https://s3.amazonaws.com\",\n      \"media_delivery\": \"both\",\n      \"retention_days\": 30,\n      \"disable_acl\": true\n    },\n    \"rabbitmq_config\": {\n      \"enabled\": true,\n      \"url\": \"amqp://guest:guest@localhost:5672/\",\n      \"events\": \"All\",\n      \"exchange\": \"whatsapp.events\",\n      \"exchange_type\": \"topic\",\n      \"queue\": \"whatsapp.user.{user_id}\",\n      \"queue_type\": \"classic\",\n      \"routing_key\": \"whatsapp.{event_type}\",\n      \"durable\": true,\n      \"auto_delete\": false,\n      \"exclusive\": false,\n      \"no_wait\": false,\n      \"delivery_mode\": 2\n    },\n    \"whatsapp_config\": {\n      \"wa_version\": \"2.3000.1026436087\",\n      \"wa_platform\": \"WEB\",\n      \"wa_release_channel\": \"RELEASE\",\n      \"wa_web_sub_platform\": \"WEB_BROWSER\",\n      \"wa_os_name\": \"Mac OS 10\",\n      \"wa_os_version\": \"10.15.7\",\n      \"wa_device_name\": \"Desktop\",\n      \"wa_manufacturer\": \"Apple\",\n      \"wa_device_board\": \"\",\n      \"wa_locale_language\": \"en\",\n      \"wa_locale_country\": \"US\",\n      \"wa_mcc\": \"000\",\n      \"wa_mnc\": \"000\",\n      \"wa_connect_type\": \"WIFI_UNKNOWN\",\n      \"wa_platform_type\": \"DESKTOP\"\n    }\n  }\n}"
+						}
+					]
+				},
+				{
+					"name": "Delete a user from DB",
+					"id": "48214320-db6810dc-2b00-4368-9ada-044a91c741d6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"description": "🔐 Admin authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/users/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"users",
+								"{id}"
+							],
+							"variable": [
+								{
+									"id": "443fec48-5c0a-4325-997c-fec2a954087f",
+									"key": "id",
+									"value": "4e4942c7dee1deef99ab8fd9f7350de5",
+									"description": "ID of the user to delete"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete a user from DB, S3, RabbitMQ, logout and disconnect from whatsapp and clear it up from memory",
+					"id": "48214320-52c16cbc-b7d2-42c7-be93-57d6366cc02f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"description": "🔐 Admin authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/users/{id}/full",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"users",
+								"{id}",
+								"full"
+							],
+							"variable": [
+								{
+									"id": "79d7cf0c-c775-4d11-86a3-6c9d34dc0840",
+									"key": "id",
+									"value": "4e4942c7dee1deef99ab8fd9f7350de5",
+									"description": "ID of the user to delete"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get specific user by ID",
+					"id": "48214320-86635bed-7523-4db5-839e-0a8492b6e108",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"description": "🔐 Admin authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/users/{id}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"users",
+								"{id}"
+							],
+							"variable": [
+								{
+									"id": "9a4304e6-82fd-474b-b703-feb01c3bb72f",
+									"key": "id",
+									"value": "4e4942c7dee1deef99ab8fd9f7350de5",
+									"description": "Unique ID of the user to retrieve"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List all users",
+					"id": "48214320-df9405cc-5d2c-414a-853d-dca2846f0213",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"description": "🔐 Admin authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48214320-660226b7-7a8b-4b0d-91fb-28c4608fee55",
+			"description": "Admin related endpoints - 5 requests available"
+		},
+		{
+			"name": "📰 Newsletter (17 endpoints)",
+			"item": [
+				{
+					"name": "Accept Terms of Service",
+					"id": "48214320-e60e68f0-ab92-4ec6-8bb1-18cf1d213e87",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"notice_id\": \"20601218\",\n  \"stage\": \"5\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/accept-tos",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"accept-tos"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create new newsletter/channel",
+					"id": "48214320-61bc516a-d545-4c8f-84d5-e03fe5be53ac",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"My Newsletter\",\n  \"description\": \"A newsletter about interesting topics\",\n  \"picture\": \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD...\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get newsletter information",
+					"id": "48214320-1ae4de54-1212-49cb-93ea-09d46c75a007",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jid\": \"120363025246817665@newsletter\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/info",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"info"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get newsletter message updates",
+					"id": "48214320-0ba110c6-8820-4186-8bcd-d75ff37bda79",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Get newsletter message updates\n// 🔗 POST /newsletter/message-updates\n// 💡 All optional fields included for complete reference\n\n{\n  \"jid\": \"120363025246817665@newsletter\",\n  \"count\": 25,\n  \"since\": 1640995200,\n  \"after\": 12345\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/message-updates",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"message-updates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get newsletter messages",
+					"id": "48214320-6446ca2c-6140-4f6d-bf54-fdcfb2d5265d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jid\": \"120363025246817665@newsletter\",\n  \"count\": 25,\n  \"before\": 12345\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/messages",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"messages"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get subscribed newsletters",
+					"id": "48214320-531eefba-7fa2-4602-a341-94a30f8470a7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/newsletter/subscribed",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"subscribed"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List subscribed newsletters",
+					"id": "48214320-f39a4a65-5694-47aa-924f-edc37677af3d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/newsletter/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mark newsletter messages as viewed",
+					"id": "48214320-e12b13b9-d57f-480c-b8ea-3b20737f8fc9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jid\": \"120363025246817665@newsletter\",\n  \"server_ids\": [\n    12345,\n    12346,\n    12347\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/mark-viewed",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"mark-viewed"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mute/unmute newsletter notifications",
+					"id": "48214320-dcd56570-e25a-4522-ae28-96a7400e6021",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jid\": \"120363025246817665@newsletter\",\n  \"mute\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/mute",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"mute"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send message to newsletter",
+					"id": "48214320-e7151037-933b-41dc-8a51-dc524c3b71c3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Send message to newsletter\n// 🔗 POST /newsletter/send\n// 💡 All optional fields included for complete reference\n\n{\n  \"jid\": \"120363025246817665@newsletter\",\n  \"message\": \"Hello subscribers!\",\n  \"image\": \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD...\",\n  \"video\": \"https://example.com/video.mp4\",\n  \"document\": \"data:application/pdf;base64,JVBERi0xLjQKJcfs...\",\n  \"audio\": \"data:audio/ogg;base64,T2dnUwACAAAAAAAAAAA...\",\n  \"caption\": \"Check this out!\",\n  \"filename\": \"document.pdf\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/send",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"send"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Newsletter Admin Invite",
+					"id": "48214320-3b1f4b16-81e8-440b-8064-395202f91852",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Send Newsletter Admin Invite\n// 🔗 POST /newsletter/admin-invite\n// 💡 All optional fields included for complete reference\n\n{\n  \"phone\": \"5491155553934\",\n  \"newsletter_jid\": \"120363025246817665@newsletter\",\n  \"image\": \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD...\",\n  \"caption\": \"You're invited to be an admin of our newsletter!\",\n  \"name\": \"Tech Newsletter Admin Invite\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/admin-invite",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"admin-invite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send reaction to newsletter message",
+					"id": "48214320-5fde9fde-301c-4ed5-baf7-e159df5a64fe",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jid\": \"120363025246817665@newsletter\",\n  \"server_id\": 12345,\n  \"reaction\": \"👍\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/reaction",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"reaction"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscribe to live updates",
+					"id": "48214320-405753b3-2142-4465-a209-9a2f4e7c193c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jid\": \"120363025246817665@newsletter\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/subscribe-live-updates",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"subscribe-live-updates"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscribe to newsletter",
+					"id": "48214320-70232940-2092-4e2f-b5fc-16d598aa33a4",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jid\": \"120363025246817665@newsletter\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/follow",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"follow"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Subscribe via invite code",
+					"id": "48214320-63b50300-cd02-44f8-ae3f-b29c0324f41b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"invite_code\": \"ABC123XYZ\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/follow-invite",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"follow-invite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unsubscribe from newsletter",
+					"id": "48214320-cd1303eb-0bcd-4422-8d40-d3e2caf70669",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"jid\": \"120363025246817665@newsletter\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/unfollow",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"unfollow"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Unsubscribe via invite code",
+					"id": "48214320-b6576003-d8df-4560-a0cb-c7125d46cc55",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"invite_code\": \"ABC123XYZ\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/newsletter/unfollow-invite",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"newsletter",
+								"unfollow-invite"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48214320-db8cd1d5-bb7f-48e0-8010-63d49bf96ef5",
+			"description": "Newsletter related endpoints - 17 requests available"
+		},
+		{
+			"name": "📋 System (1 endpoints)",
+			"item": [
+				{
+					"name": "Health check",
+					"id": "48214320-310da12e-4568-415d-be95-3fc6dc020c91",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48214320-aff8fccf-3e1b-4979-b5ac-c3d489757be2",
+			"description": "System related endpoints - 1 requests available"
+		},
+		{
+			"name": "🔔 Webhook (4 endpoints)",
+			"item": [
+				{
+					"name": "Deletes webhook",
+					"id": "48214320-3dcf51e9-b683-4476-a6b2-279fbc26c99f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/webhook",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sets webhook",
+					"id": "48214320-f90a6814-c260-40bf-8e48-f9684b853ed7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"webhook\": \"https://example.net/webhook\",\n  \"events\": [\n    \"Message\",\n    \"ReadReceipt\",\n    \"GroupInfo\",\n    \"Connected\",\n    \"All\"\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Shows webhook",
+					"id": "48214320-44aa5710-c926-45e2-a4a1-5b4b2b904a0f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/webhook",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Updates webhook",
+					"id": "48214320-794d1a86-0acf-4a86-9c3b-e69113e95359",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"webhook\": \"https://example.net/webhook\",\n  \"events\": [\n    \"Message\",\n    \"ReadReceipt\",\n    \"GroupInfo\",\n    \"Connected\",\n    \"All\"\n  ],\n  \"Active\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/webhook",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"webhook"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48214320-eba4fe76-295d-4693-93ba-4589bf0005f9",
+			"description": "Webhook related endpoints - 4 requests available"
+		},
+		{
+			"name": "🔗 Session (28 endpoints)",
+			"item": [
+				{
+					"name": "Configure RabbitMQ - Advanced with Dynamic Queues",
+					"id": "48214320-33a7c4a9-4364-47a1-b1e3-d2a44bac20eb",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Configure RabbitMQ - Advanced with Dynamic Queues\n// 🔗 POST /session/rabbitmq/config\n// 💡 All optional fields included for complete reference\n\n{\n  \"enabled\": true,\n  \"url\": \"amqp://guest:guest@localhost:5672/\",\n  \"exchange\": \"whatsapp.events\",\n  \"exchange_type\": \"topic\",\n  \"queue\": \"user_{user_id}_event_{event_type}\",\n  \"queue_type\": \"classic\",\n  \"routing_key\": \"whatsapp.{user_id}.{event_type}\",\n  \"events\": \"Message,ReadReceipt,Connected,All\",\n  \"durable\": true,\n  \"auto_delete\": false,\n  \"exclusive\": false,\n  \"no_wait\": false,\n  \"delivery_mode\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/session/rabbitmq/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"rabbitmq",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Configure S3 Storage",
+					"id": "48214320-0649b2b8-64f0-4d21-9751-07d359eeba65",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Configure S3 Storage\n// 🔗 POST /session/s3/config\n// 💡 All optional fields included for complete reference\n\n{\n  \"enabled\": true,\n  \"endpoint\": \"https://s3.amazonaws.com\",\n  \"region\": \"us-east-1\",\n  \"bucket\": \"my-whatsapp-media\",\n  \"access_key\": \"AKIAIOSFODNN7EXAMPLE\",\n  \"secret_key\": \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\",\n  \"path_style\": false,\n  \"public_url\": \"https://cdn.example.com\",\n  \"media_delivery\": \"both\",\n  \"retention_days\": 1,\n  \"disable_acl\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/session/s3/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"s3",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Configure Skip Broadcasts",
+					"id": "48214320-1676ac4a-f471-4660-9bfc-d15a8963b9b3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enabled\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/session/skipbroadcasts/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"skipbroadcasts",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Configure Skip Calls",
+					"id": "48214320-f07650dc-811b-4ebc-9f7f-1da66290486d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enabled\": true,\n  \"reject_message\": \"Sorry, I cannot take calls at the moment. Please send a message.\",\n  \"reject_type\": \"busy\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/session/skipcalls/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"skipcalls",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Configure Skip Groups",
+					"id": "48214320-fd3b3eaf-fc94-4271-951e-8554d74ae039",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enabled\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/session/skipgroups/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"skipgroups",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Configure Skip Media Download",
+					"id": "48214320-92ae9896-3d50-4d57-8624-b737482dc625",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enabled\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/session/skipmedia/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"skipmedia",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Configure Skip Newsletters",
+					"id": "48214320-e60c58ac-aa44-47f3-88fa-a937813f9214",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enabled\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/session/skipnewsletters/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"skipnewsletters",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Configure Skip Own Messages",
+					"id": "48214320-c6e6d9a1-4417-4d7e-bd54-1951f581cc83",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"enabled\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/session/skipownmessages/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"skipownmessages",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "connects to WhatsApp servers",
+					"id": "48214320-2bbca625-7384-4248-b99d-8312f0d57017",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Subscribe\": [\n    \"Message\",\n    \"ChatPresence\",\n    \"Connected\",\n    \"All\"\n  ],\n  \"Immediate\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/session/connect",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"connect"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete RabbitMQ Configuration",
+					"id": "48214320-19de0cb2-bb5c-4b71-8bfe-a2eff081c920",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/rabbitmq/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"rabbitmq",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete S3 Configuration",
+					"id": "48214320-e96d1155-d125-41ee-8944-b736c73eb256",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/s3/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"s3",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "disconnects from WhatsApp servers",
+					"id": "48214320-d9cadd3e-cd36-4a78-a05c-d90e281511ad",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/disconnect",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"disconnect"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get RabbitMQ Configuration with Queue Statistics",
+					"id": "48214320-6c446121-2281-4621-b46b-3621f57cddc1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/rabbitmq/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"rabbitmq",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get S3 Configuration",
+					"id": "48214320-f92eeee2-9940-4875-99c8-da4b7ba56164",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/s3/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"s3",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Skip Broadcasts Configuration",
+					"id": "48214320-56e80846-2c90-49c9-b61e-78ea18e73dc3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/skipbroadcasts/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"skipbroadcasts",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Skip Calls Configuration",
+					"id": "48214320-bfce67c3-f629-4045-9ebf-45c7ab41a95a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/skipcalls/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"skipcalls",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Skip Groups Configuration",
+					"id": "48214320-7a23141d-3803-4dd6-b36b-4182804a7ddd",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/skipgroups/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"skipgroups",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Skip Media Download Configuration",
+					"id": "48214320-763f9169-5d5b-40f4-8139-1f8f413e355a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/skipmedia/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"skipmedia",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Skip Newsletters Configuration",
+					"id": "48214320-b105a3ca-eba1-4338-be6d-950cff144a60",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/skipnewsletters/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"skipnewsletters",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Skip Own Messages Configuration",
+					"id": "48214320-3e8e5b02-c79e-44a1-bdc0-da98ff322f1a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/skipownmessages/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"skipownmessages",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gets connection and session status",
+					"id": "48214320-b9ccf392-6318-4fdd-9a98-5b9ff8a27b76",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gets pair by phone code",
+					"id": "48214320-e895bf44-cc05-4b75-8e38-7214f0760529",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Phone\": \"5491155553934\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/session/pairphone",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"pairphone"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gets QR code for scanning",
+					"id": "48214320-4558d4f5-7d7e-48ff-9a42-4a8976fca5a9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/qr",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"qr"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logs out from WhatsApp",
+					"id": "48214320-ac862f69-fd5f-4d9d-98a8-f58509fba074",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh and clean up session without disconnection",
+					"id": "48214320-119c1b00-75f3-444e-8a73-a0eaf73fd9b8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/refresh",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set Proxy Configuration",
+					"id": "48214320-16871d92-ca98-4f6e-9dc6-00d2bc38f1d1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"proxy_url\": \"https://example.com/resource\",\n  \"enable\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/session/proxy",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"proxy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test RabbitMQ Connection",
+					"id": "48214320-1a21790d-c32f-4db6-a55f-ce611c66c85c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/rabbitmq/test",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"rabbitmq",
+								"test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test S3 Connection",
+					"id": "48214320-bc643a4f-b64e-45be-b75e-07f6795de3a6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/session/s3/test",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"session",
+								"s3",
+								"test"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48214320-52cc16fd-2525-4057-9c1a-b16090164adb",
+			"description": "Session related endpoints - 28 requests available"
+		},
+		{
+			"name": "👤 User (15 endpoints)",
+			"item": [
+				{
+					"name": "Change user push name (display name)",
+					"id": "48214320-28206849-6fa2-49cd-b56b-9684e545aa4e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"push_name\": \"John Doe\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/pushname",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"pushname"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Checks if user has WhatsApp",
+					"id": "48214320-e298a3b5-a4f0-4ca4-b3f2-dac91a8d4765",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Phone\": [\n    \"5491155553934\",\n    \"5521971532700\"\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/check",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"check"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get business profile information",
+					"id": "48214320-b5c2fd6d-6d8e-43f5-874a-8c5286004cb8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"5491155553934\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/business/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"business",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get LID from Phone/JID (GET)",
+					"id": "48214320-0dcb3124-3330-4dab-9c9a-eb45728451c9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/lid/get?phone=5521971532700@s.whatsapp.net",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"lid",
+								"get"
+							],
+							"query": [
+								{
+									"key": "phone",
+									"value": "5521971532700@s.whatsapp.net",
+									"description": "Phone number or JID to convert to LID"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get LID from Phone/JID (POST)",
+					"id": "48214320-f39f6c8a-6556-4aa6-8477-628818783f80",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"5521971532700@s.whatsapp.net\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/lid/get",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"lid",
+								"get"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Phone/JID from LID (GET)",
+					"id": "48214320-33f464eb-5492-4aed-b9ef-9848bdaee8bc",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/lid/from-lid?lid=2:abcd1234efgh5678@lid",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"lid",
+								"from-lid"
+							],
+							"query": [
+								{
+									"key": "lid",
+									"value": "2:abcd1234efgh5678@lid",
+									"description": "LID to convert to phone/JID"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Phone/JID from LID (POST)",
+					"id": "48214320-64c09cd9-dd79-4ab1-926e-2ff2005095f9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"lid\": \"2:abcd1234efgh5678@lid\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/lid/from-lid",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"lid",
+								"from-lid"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user information",
+					"id": "48214320-2cd27573-c0a9-46b9-8156-4b7deabdc725",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Phone\": \"5521971532700\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/info",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"info"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user privacy settings",
+					"id": "48214320-56697b30-1c4f-4c9d-8d3b-2e7e97217048",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/privacy/settings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"privacy",
+								"settings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get user status message",
+					"id": "48214320-214ca7be-96ef-46e2-bc12-7dd3d771ea72",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gets all contacts for the account",
+					"id": "48214320-0cd5a3aa-73cc-4374-a416-7297182213fe",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/contacts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"contacts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gets profile picture information",
+					"id": "48214320-66b26c5f-2e45-4d38-88fb-13010eddb0c1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Phone\": \"5491155553934\",\n  \"Preview\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/avatar",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"avatar"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List LID Mappings",
+					"id": "48214320-b86cab7f-65a9-4e0a-8360-d30d0287c678",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/user/lid/mappings",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"lid",
+								"mappings"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "50",
+									"description": "Maximum number of mappings to return (default 100)",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": "",
+									"description": "Number of mappings to skip for pagination (default 0)",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send user global presence",
+					"id": "48214320-cef7baf6-1f55-440c-9f04-64c40159c363",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"type\": \"available\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/presence",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"presence"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set user status message",
+					"id": "48214320-2c4ffa86-6c45-4ceb-955c-79e3cf8dc802",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"Working from home 🏠\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"status"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48214320-ae2547a9-b2f5-42e2-a2cb-66a79b070401",
+			"description": "User related endpoints - 15 requests available"
+		},
+		{
+			"name": "💬 Chat (30 endpoints)",
+			"item": [
+				{
+					"name": "Apply or remove label from chat",
+					"id": "48214320-82f04224-b198-486d-9b1e-de4ebcd1327f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"5491155553333\",\n  \"label_id\": \"label_1703123456\",\n  \"apply\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/label/chat",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"label",
+								"chat"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Apply or remove label from message",
+					"id": "48214320-aa02e6dc-422d-4f83-9716-1a7770393e17",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Apply or remove label from message\n// 🔗 POST /label/message\n// 💡 All optional fields included for complete reference\n\n{\n  \"phone\": \"5491155553333\",\n  \"message_id\": \"3EB0794DCEFA60\",\n  \"label_id\": \"label_1703123456\",\n  \"apply\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/label/message",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"label",
+								"message"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Archive or unarchive a chat",
+					"id": "48214320-b9a3f38d-a09a-411b-9cbd-d4e2d01b1e01",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Archive or unarchive a chat\n// 🔗 POST /chat/archive\n// 💡 All optional fields included for complete reference\n\n{\n  \"phone\": \"5491155553333\",\n  \"archive\": true,\n  \"last_message_timestamp\": 1703123456,\n  \"last_message_id\": \"3EB0794DCEFA60\",\n  \"last_message_from_me\": false,\n  \"last_message_remote_jid\": \"5491155553333@s.whatsapp.net\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/archive",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"archive"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create, edit or delete labels",
+					"id": "48214320-241f17f9-ff5f-4f4c-8327-117309aa93d5",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Create, edit or delete labels\n// 🔗 POST /label/manage\n// 💡 All optional fields included for complete reference\n\n{\n  \"label_id\": \"label_1703123456\",\n  \"label_name\": \"Important\",\n  \"label_color\": 1,\n  \"delete\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/label/manage",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"label",
+								"manage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Deletes a message sent by user",
+					"id": "48214320-972f80dd-28be-4a11-a6bf-31bcebaa932a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Phone\": \"5521971532700\",\n  \"Id\": \"1234-abcd-21234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/delete",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Downloads Audio from message",
+					"id": "48214320-2ef27905-2294-4c76-86f5-07c05adb38b8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Downloads Audio from message\n// 🔗 POST /chat/downloadaudio\n// 💡 All optional fields included for complete reference\n\n{\n  \"Url\": \"https://example.com/resource\",\n  \"DirectPath\": \"example_DirectPath\",\n  \"MediaKey\": \"example_MediaKey\",\n  \"Mimetype\": \"example_Mimetype\",\n  \"FileEncSHA256\": \"example_FileEncSHA256\",\n  \"FileSHA256\": \"example_FileSHA256\",\n  \"FileLength\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/downloadaudio",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"downloadaudio"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Downloads Document from message",
+					"id": "48214320-8540c3e6-e800-43dc-954c-495695d6a5aa",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Downloads Document from message\n// 🔗 POST /chat/downloaddocument\n// 💡 All optional fields included for complete reference\n\n{\n  \"Url\": \"https://example.com/resource\",\n  \"DirectPath\": \"example_DirectPath\",\n  \"MediaKey\": \"example_MediaKey\",\n  \"Mimetype\": \"example_Mimetype\",\n  \"FileEncSHA256\": \"example_FileEncSHA256\",\n  \"FileSHA256\": \"example_FileSHA256\",\n  \"FileLength\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/downloaddocument",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"downloaddocument"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Downloads Image from message",
+					"id": "48214320-43547f8e-e406-4ed1-8002-a99a94ac75bd",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Downloads Image from message\n// 🔗 POST /chat/downloadimage\n// 💡 All optional fields included for complete reference\n\n{\n  \"Url\": \"https://example.com/resource\",\n  \"DirectPath\": \"example_DirectPath\",\n  \"MediaKey\": \"example_MediaKey\",\n  \"Mimetype\": \"example_Mimetype\",\n  \"FileEncSHA256\": \"example_FileEncSHA256\",\n  \"FileSHA256\": \"example_FileSHA256\",\n  \"FileLength\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/downloadimage",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"downloadimage"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Downloads Sticker from message",
+					"id": "48214320-d990ff58-386e-4796-b27e-0d20d444d089",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Downloads Sticker from message\n// 🔗 POST /chat/downloadsticker\n// 💡 All optional fields included for complete reference\n\n{\n  \"Url\": \"https://example.com/resource\",\n  \"DirectPath\": \"example_DirectPath\",\n  \"MediaKey\": \"example_MediaKey\",\n  \"Mimetype\": \"example_Mimetype\",\n  \"FileEncSHA256\": \"example_FileEncSHA256\",\n  \"FileSHA256\": \"example_FileSHA256\",\n  \"FileLength\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/downloadsticker",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"downloadsticker"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Downloads Video from message",
+					"id": "48214320-997733a8-3330-4db6-ad94-c5a099fd4af3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Downloads Video from message\n// 🔗 POST /chat/downloadvideo\n// 💡 All optional fields included for complete reference\n\n{\n  \"Url\": \"https://example.com/resource\",\n  \"DirectPath\": \"example_DirectPath\",\n  \"MediaKey\": \"example_MediaKey\",\n  \"Mimetype\": \"example_Mimetype\",\n  \"FileEncSHA256\": \"example_FileEncSHA256\",\n  \"FileSHA256\": \"example_FileSHA256\",\n  \"FileLength\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/downloadvideo",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"downloadvideo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit an existing message",
+					"id": "48214320-59cda735-9929-4cdd-a37a-c3e99297ab66",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Edit an existing message\n// 🔗 POST /chat/send/edit\n// 💡 All optional fields included for complete reference\n\n{\n  \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n  \"Phone\": \"5521971532700\",\n  \"Body\": \"This is the updated message\",\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"5521971532700@s.whatsapp.net\",\n    \"IsForwarded\": true,\n    \"MentionedJID\": [\n      \"5521971532700@s.whatsapp.net\",\n      \"5491155553934@s.whatsapp.net\"\n    ],\n    \"MentionAll\": true\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/send/edit",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"send",
+								"edit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Marks a message as read",
+					"id": "48214320-6caf4725-c1db-4d40-83ef-14dda05c2dca",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Id\": [\n    \"AABBCC11223344\",\n    \"DDEEFF55667788\"\n  ],\n  \"Chat\": \"5491155553934.0:1@s.whatsapp.net\",\n  \"Sender\": \"5491155553111.0:1@s.whatsapp.net\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/markread",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"markread"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Mute or unmute a chat",
+					"id": "48214320-24a36db0-f63a-4b5c-8519-f6a707e7f1ac",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"5491155553333\",\n  \"mute\": true,\n  \"mute_duration\": \"8h\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/mute",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"mute"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Pin or unpin a chat",
+					"id": "48214320-b6487334-e2b2-473a-9496-da3940d81b10",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"phone\": \"5491155553333\",\n  \"pin\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/pin",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"pin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reacts to a message",
+					"id": "48214320-6cfc7eea-bb7a-4976-952f-d134faaa61bb",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Phone\": \"5521971532700\",\n  \"Body\": \"❤️\",\n  \"Id\": \"me:3EB06F9067F80BAB89FF\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/react",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"react"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send a link message with automatic preview from metadata.",
+					"id": "48214320-8e7e3941-f934-4f6c-a283-b67e0d939dba",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Send a link message with automatic preview from metadata.\n// 🔗 POST /chat/send/link\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Link\": \"https://example.com\",\n  \"Caption\": \"Link Description\",\n  \"Id\": \"ABCDABCD1234\",\n  \"NumberCheck\": true,\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"{{test_phone}}@s.whatsapp.net\",\n    \"IsForwarded\": false,\n    \"MentionedJID\": [\n      \"{{test_phone}}@s.whatsapp.net\"\n    ],\n    \"MentionAll\": false\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/send/link",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"send",
+								"link"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send event message",
+					"id": "48214320-80bce9e1-e532-4bcf-b1a2-972678106920",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Send event message\n// 🔗 POST /chat/send/event\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Name\": \"Team Meeting\",\n  \"Description\": \"Weekly team sync meeting to discuss project updates\",\n  \"StartTime\": 2524608000,\n  \"EndTime\": 2556143999,\n  \"ExtraGuestsAllowed\": true,\n  \"IsCanceled\": false,\n  \"IsScheduleCall\": true,\n  \"Id\": \"EVENT_001\",\n  \"Presence\": 2000,\n  \"NumberCheck\": true,\n  \"Location\": {\n    \"Name\": \"Conference Room A, Main Office\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"{{test_phone}}@s.whatsapp.net\",\n    \"IsForwarded\": false,\n    \"MentionedJID\": [\n      \"{{test_phone}}@s.whatsapp.net\"\n    ],\n    \"MentionAll\": false\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/send/event",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"send",
+								"event"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send PTV (Pre-Recorded Transfer Video)",
+					"id": "48214320-b61874eb-99ae-459d-8ae6-2af6dca79d13",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Phone\": \"5521971532700\",\n  \"Video\": \"data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDE=\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/send/ptv",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"send",
+								"ptv"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sends a contact message",
+					"id": "48214320-e901567f-b23b-4815-959f-a12d321582ee",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Sends a contact message\n// 🔗 POST /chat/send/contact\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Name\": \"John Doe\",\n  \"Id\": \"ABCDABCD1234\",\n  \"Vcard\": \"BEGIN:VCARD\\nVERSION:3.0\\nN:Doe;John;;;\\nFN:John Doe\\nORG:Example.com Inc.;\\nTITLE:Imaginary test person\\nEMAIL;type=INTERNET;type=WORK;type=pref:johnDoe@example.org\\nTEL;type=WORK;type=pref:+1 617 555 1212\\nTEL;type=WORK:+1 (617) 555-1234\\nTEL;type=CELL:+1 781 555 1212\\nTEL;type=HOME:+1 202 555 1212\\nitem1.ADR;type=WORK:;;2 Enterprise Avenue;Worktown;NY;01111;USA\\nitem1.X-ABADR:us\\nitem2.ADR;type=HOME;type=pref:;;3 Acacia Avenue;Hoitem2.X-ABADR:us\\nEND:VCARD\",\n  \"NumberCheck\": true,\n  \"Presence\": 3000,\n  \"Duration\": 86400,\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"{{test_phone}}@s.whatsapp.net\",\n    \"IsForwarded\": false,\n    \"MentionedJID\": [\n      \"{{test_phone}}@s.whatsapp.net\"\n    ],\n    \"MentionAll\": false\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/send/contact",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"send",
+								"contact"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sends a document message",
+					"id": "48214320-1d3fd7c9-24fd-49a8-91a0-8fa72eac6291",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Sends a document message\n// 🔗 POST /chat/send/document\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Document\": \"data:application/pdf;base64,JVBERi0xLjQKJcOkw7zDtsO...\",\n  \"FileName\": \"document.pdf\",\n  \"Caption\": \"Important document\",\n  \"Id\": \"ABCDABCD1234\",\n  \"MimeType\": \"application/pdf\",\n  \"Presence\": 3000,\n  \"Duration\": 86400,\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"{{test_phone}}@s.whatsapp.net\",\n    \"IsForwarded\": false,\n    \"MentionedJID\": [\n      \"{{test_phone}}@s.whatsapp.net\"\n    ],\n    \"MentionAll\": false\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/send/document",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"send",
+								"document"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sends a List message",
+					"id": "48214320-50cf2955-bbc4-4178-b000-1fa623c4cc12",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Sends a List message\n// 🔗 POST /chat/send/list\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Id\": \"LIST_001\",\n  \"NumberCheck\": true,\n  \"Presence\": 3000,\n  \"Text\": \"Choose one of the options below\",\n  \"Title\": \"Product Catalog\",\n  \"Footer\": \"Powered by ZuckZapGo API\",\n  \"ButtonText\": \"View Options\",\n  \"Sections\": [\n    {\n      \"Title\": \"Electronics\",\n      \"Rows\": [\n        {\n          \"RowId\": \"electronics_1\",\n          \"Title\": \"Smartphones\",\n          \"Description\": \"Latest mobile devices\"\n        },\n        {\n          \"RowId\": \"electronics_2\",\n          \"Title\": \"Laptops\",\n          \"Description\": \"High-performance computers\"\n        }\n      ]\n    },\n    {\n      \"Title\": \"Clothing\",\n      \"Rows\": [\n        {\n          \"RowId\": \"clothing_1\",\n          \"Title\": \"Men's Fashion\",\n          \"Description\": \"Trendy clothing for men\"\n        }\n      ]\n    }\n  ],\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"{{test_phone}}@s.whatsapp.net\",\n    \"IsForwarded\": false,\n    \"MentionedJID\": [\n      \"{{test_phone}}@s.whatsapp.net\"\n    ],\n    \"MentionAll\": false\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/send/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"send",
+								"list"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sends a location message",
+					"id": "48214320-e1d8f895-8f72-4f8e-bf10-beb1ac1d0ef3",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Sends a location message\n// 🔗 POST /chat/send/location\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Name\": \"Eiffel Tower\",\n  \"Id\": \"ABCDABCD1234\",\n  \"Latitude\": 48.85837,\n  \"Longitude\": 2.294481,\n  \"NumberCheck\": true,\n  \"Presence\": 3000,\n  \"Duration\": 86400,\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"{{test_phone}}@s.whatsapp.net\",\n    \"IsForwarded\": false,\n    \"MentionedJID\": [\n      \"{{test_phone}}@s.whatsapp.net\"\n    ],\n    \"MentionAll\": false\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/send/location",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"send",
+								"location"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sends a Poll to some group",
+					"id": "48214320-91df2abc-f680-4240-892a-5c4baaa9e0e4",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Sends a Poll to some group\n// 🔗 POST /chat/send/poll\n// 💡 All optional fields included for complete reference\n\n{\n  \"Group\": \"120363417042313103@g.us\",\n  \"Header\": \"What's your favorite color?\",\n  \"Options\": [\n    \"Option 1\",\n    \"Option 2\",\n    \"Option 3\"\n  ],\n  \"MaxAnswer\": 1,\n  \"Id\": \"3EB06F9067F80BAB89FF\",\n  \"NumberCheck\": true,\n  \"Presence\": 3000,\n  \"Duration\": 86400,\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"{{test_phone}}@s.whatsapp.net\",\n    \"IsForwarded\": false,\n    \"MentionedJID\": [\n      \"{{test_phone}}@s.whatsapp.net\"\n    ],\n    \"MentionAll\": false\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/send/poll",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"send",
+								"poll"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sends a sticker message",
+					"id": "48214320-b81cc30a-af6b-484d-9c3b-0d8823228d08",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Sends a sticker message\n// 🔗 POST /chat/send/sticker\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Sticker\": \"data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAAAAAAfQ//73v/+BiOh/AAA=\",\n  \"Id\": \"ABCDABCD1234\",\n  \"MimeType\": \"image/webp\",\n  \"PngThumbnail\": \"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==\",\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"{{test_phone}}@s.whatsapp.net\",\n    \"IsForwarded\": false,\n    \"MentionedJID\": [\n      \"{{test_phone}}@s.whatsapp.net\"\n    ],\n    \"MentionAll\": false\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/send/sticker",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"send",
+								"sticker"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sends a text message",
+					"id": "48214320-a4d01bb1-3ada-444d-af8a-d678925d09a8",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Sends a text message\n// 🔗 POST /chat/send/text\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Body\": \"How you doin\",\n  \"Id\": \"ABCDABCD1234\",\n  \"Presence\": 3000,\n  \"Duration\": 86400,\n  \"LinkPreview\": true,\n  \"NumberCheck\": true,\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"{{test_phone}}@s.whatsapp.net\",\n    \"IsForwarded\": false,\n    \"MentionedJID\": [\n      \"{{test_phone}}@s.whatsapp.net\"\n    ],\n    \"MentionAll\": false\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/send/text",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"send",
+								"text"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sends a video message",
+					"id": "48214320-a0d63ac3-7aff-44a4-ad06-a396d2c6997e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Sends a video message\n// 🔗 POST /chat/send/video\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Video\": \"data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDE=\",\n  \"Caption\": \"my video\",\n  \"Id\": \"ABCDABCD1234\",\n  \"MimeType\": \"video/mp4\",\n  \"JPEGThumbnail\": \"/9j/4AAQSkZJRgABAQEAYABgAAD/...\",\n  \"Presence\": 3000,\n  \"ViewOnce\": true,\n  \"Duration\": 86400,\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"{{test_phone}}@s.whatsapp.net\",\n    \"IsForwarded\": false,\n    \"MentionedJID\": [\n      \"{{test_phone}}@s.whatsapp.net\"\n    ],\n    \"MentionAll\": false\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/send/video",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"send",
+								"video"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sends an audio message",
+					"id": "48214320-a59f187e-a072-4d61-9bbc-d26ada3ff7f1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Sends an audio message\n// 🔗 POST /chat/send/audio\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Audio\": \"data:audio/ogg;base64,T2dnUwACAAAAAAAAAABK\",\n  \"Caption\": \"Voice message caption\",\n  \"Id\": \"ABCDABCD1234\",\n  \"PTT\": true,\n  \"Presence\": 3000,\n  \"ViewOnce\": true,\n  \"Duration\": 86400,\n  \"NumberCheck\": true,\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"{{test_phone}}@s.whatsapp.net\",\n    \"IsForwarded\": false,\n    \"MentionedJID\": [\n      \"{{test_phone}}@s.whatsapp.net\"\n    ],\n    \"MentionAll\": false\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/send/audio",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"send",
+								"audio"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sends an image/picture message",
+					"id": "48214320-deb00c80-0ab1-4720-a119-d42feb0af19f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Sends an image/picture message\n// 🔗 POST /chat/send/image\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Image\": \"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==\",\n  \"Caption\": \"Image Description\",\n  \"Id\": \"ABCDABCD1234\",\n  \"MimeType\": \"image/jpeg\",\n  \"Presence\": 3000,\n  \"ViewOnce\": true,\n  \"Duration\": 86400,\n  \"NumberCheck\": true,\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"{{test_phone}}@s.whatsapp.net\",\n    \"IsForwarded\": false,\n    \"MentionedJID\": [\n      \"{{test_phone}}@s.whatsapp.net\"\n    ],\n    \"MentionAll\": false\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/send/image",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"send",
+								"image"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Sets chat presence",
+					"id": "48214320-e56708c4-847f-4039-9646-d7fca46b0bc1",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Phone\": \"5521971532700\",\n  \"State\": \"composing\",\n  \"Media\": \"audio\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/presence",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"presence"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Star or unstar a message",
+					"id": "48214320-76295625-fe2a-4e4f-834c-c2f31aa7b42a",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Star or unstar a message\n// 🔗 POST /chat/star\n// 💡 All optional fields included for complete reference\n\n{\n  \"chat_jid\": \"5491155553333@s.whatsapp.net\",\n  \"sender_jid\": \"5491155554444@s.whatsapp.net\",\n  \"message_id\": \"3EB0794DCEFA60\",\n  \"from_me\": false,\n  \"star\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/chat/star",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"chat",
+								"star"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48214320-7431d3e0-79ce-476a-b38a-738038a879f7",
+			"description": "Chat related endpoints - 30 requests available"
+		},
+		{
+			"name": "👥 Group (15 endpoints)",
+			"item": [
+				{
+					"name": "Add, Remove, Promote or Demote members in group",
+					"id": "48214320-675e608a-b0ed-4ea0-94b1-2edc37d9adce",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"GroupJID\": \"120363312246943103@g.us\",\n  \"Action\": \"add\",\n  \"Phone\": [\n    \"5491112345678\",\n    \"5491123456789@s.whatsapp.net\"\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/group/updateparticipants",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"updateparticipants"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change group name",
+					"id": "48214320-2d99d879-10e3-4f3a-a1b7-f3a0497567cf",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"GroupJID\": \"120363312246943103@g.us\",\n  \"Name\": \"My New Group Name\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/group/name",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"name"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Changes group photo",
+					"id": "48214320-f8b8599a-50b2-4883-89f1-005f0397c826",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"GroupJID\": \"120362023605733675@g.us\",\n  \"Image\": \"data:image/jpeg;base64,Akd9300...\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/group/photo",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"photo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new WhatsApp group",
+					"id": "48214320-dd0ba56d-c812-4045-8c61-6d2301af92ca",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Name\": \"My New Group\",\n  \"Participants\": [\n    \"5491112345678\",\n    \"5491123456789\"\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/group/create",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Group Invite Link",
+					"id": "48214320-aad69696-3c83-4ffd-b5c9-9ec55f523585",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/group/invitelink?groupJID=",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"invitelink"
+							],
+							"query": [
+								{
+									"key": "groupJID",
+									"value": "",
+									"description": "The JID of the group to retrieve information from"
+								},
+								{
+									"key": "reset",
+									"value": "",
+									"description": "Whether to revoke the old invite link and generate a new one (default is false)",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get information about a group invite code",
+					"id": "48214320-7e2cbcb6-da5a-4947-82c1-c1a1bce13d33",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Code\": \"HffXhYmzzyJGec61oqMXiz\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/group/inviteinfo",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"inviteinfo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Gets group information",
+					"id": "48214320-6526a2a3-edd9-4323-88a1-c0154a5bba2c",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/group/info?groupJID=",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"info"
+							],
+							"query": [
+								{
+									"key": "groupJID",
+									"value": "",
+									"description": "The JID of the group to retrieve information from"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Join a WhatsApp group via invite code",
+					"id": "48214320-409c7122-ad95-45e6-8a9f-c34ba7eed51f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Code\": \"HffXhYmzzyJGec61oqMXiz\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/group/join",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"join"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Leave a WhatsApp group",
+					"id": "48214320-ea8c040a-1271-46ee-956c-cd68ae5b3218",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"GroupJID\": \"120363312246943103@g.us\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/group/leave",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"leave"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List subscribed groups",
+					"id": "48214320-25bbc212-9e65-4acb-9781-30e72d8a895e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/group/list",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"list"
+							],
+							"query": [
+								{
+									"key": "ignoreParticipants",
+									"value": "",
+									"description": "Set to 'true' to exclude participants data from response for better performance (default is false)",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove group photo",
+					"id": "48214320-9f0d2864-8383-43ad-b512-d08ba3c6bb94",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"GroupJID\": \"120363312246943103@g.us\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/group/photo/remove",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"photo",
+								"remove"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set disappearing timer for group messages",
+					"id": "48214320-e4e56ff7-329c-4237-9468-9ca096d7b23f",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"GroupJID\": \"120363312246943103@g.us\",\n  \"Duration\": \"24h\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/group/ephemeral",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"ephemeral"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set group announce mode",
+					"id": "48214320-24c4fc9a-a606-4188-85db-fc33c629017d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"GroupJID\": \"120363312246943103@g.us\",\n  \"Announce\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/group/announce",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"announce"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set group locked status",
+					"id": "48214320-4542bea9-b650-4129-8c5d-bc900f27957e",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"GroupJID\": \"120363312246943103@g.us\",\n  \"Locked\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/group/locked",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"locked"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Set group topic/description",
+					"id": "48214320-a47e287b-d96c-483d-90e5-a2829ce56b96",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"GroupJID\": \"120363312246943103@g.us\",\n  \"Topic\": \"Welcome to our project group!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/group/topic",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"topic"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48214320-47ebe5b6-0b3a-4685-8a67-d2eea4668064",
+			"description": "Group related endpoints - 15 requests available"
+		},
+		{
+			"name": "📋 Admin Global (5 endpoints)",
+			"item": [
+				{
+					"name": "Get global system configuration",
+					"id": "48214320-48a6bce7-8588-4904-abc5-0c0e185e94e7",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"description": "🔐 Admin authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/global/config",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"global",
+								"config"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get global system statistics",
+					"id": "48214320-30d0a1c5-493b-4504-b2d1-ef10f75bc415",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"description": "🔐 Admin authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/global/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"global",
+								"stats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reload global configuration",
+					"id": "48214320-8f701b8a-4529-4abf-ab8e-e5e7f6d4d4c6",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"description": "🔐 Admin authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/global/config/reload",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"global",
+								"config",
+								"reload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send test event through global systems",
+					"id": "48214320-41f640da-9e5e-4989-8da6-54cf7ce91ed9",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"description": "🔐 Admin authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Send test event through global systems\n// 🔗 POST /admin/global/event/test\n// 💡 All optional fields included for complete reference\n\n{\n  \"event_type\": \"AdminTest\",\n  \"user_id\": \"admin-test\",\n  \"user_token\": \"admin-test-token\",\n  \"data\": {\n    \"test\": true,\n    \"message\": \"This is a test event sent from the admin panel\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/global/event/test",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"global",
+								"event",
+								"test"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test global systems connectivity",
+					"id": "48214320-b3e44f38-f6b1-4fdb-921c-1a0ec6ab618b",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "{{admin_token}}",
+								"description": "🔐 Admin authentication token",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/admin/global/test",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"global",
+								"test"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48214320-d89264f3-bd44-41fb-8dc4-60cce104b2e8",
+			"description": "Admin Global related endpoints - 5 requests available"
+		},
+		{
+			"name": "📢 Status (4 endpoints)",
+			"item": [
+				{
+					"name": "Send a text status",
+					"id": "48214320-7744d027-3bb8-4f7b-b3ab-03a51c312ff4",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Send a text status\n// 🔗 POST /status/send/text\n// 💡 All optional fields included for complete reference\n\n{\n  \"text\": \"Hello World! This is my status update 🌟\",\n  \"background_color\": \"4294967295\",\n  \"text_color\": \"4278190080\",\n  \"font\": 7,\n  \"id\": \"custom-status-id-123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/status/send/text",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"status",
+								"send",
+								"text"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send a video status",
+					"id": "48214320-e5c79538-19c9-4b9f-84a2-384a000f252d",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"video\": \"data:video/mp4;base64,AAAAIGZ0eXBpc29tAAACAGlzb21pc28yYXZjMW1wNDE...\",\n  \"caption\": \"Check out this amazing video! 🎬\",\n  \"id\": \"status-video-123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/status/send/video",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"status",
+								"send",
+								"video"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send an audio status",
+					"id": "48214320-940c1474-7064-40af-9c1d-bb01d0349ad5",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Send an audio status\n// 🔗 POST /status/send/audio\n// 💡 All optional fields included for complete reference\n\n{\n  \"audio\": \"data:audio/ogg;base64,T2dnUwACAAAAAAAAAABK/wAAAAAAAIAuABBT...\",\n  \"caption\": \"Listen to this! 🎵\",\n  \"ptt\": false,\n  \"id\": \"status-audio-123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/status/send/audio",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"status",
+								"send",
+								"audio"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send an image status",
+					"id": "48214320-89e306b7-9345-4e11-b19e-03429d7156d5",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"image\": \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD...\",\n  \"caption\": \"Beautiful sunset today! 🌅\",\n  \"id\": \"status-image-123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/status/send/image",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"status",
+								"send",
+								"image"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48214320-0b5c9a51-5ef6-424e-aa38-36cfd7c0e38a",
+			"description": "Status related endpoints - 4 requests available"
+		},
+		{
+			"name": "📞 Call (1 endpoints)",
+			"item": [
+				{
+					"name": "Reject a call and send custom message",
+					"id": "48214320-c66450f2-3a21-4662-8c2d-86c92e291003",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "token",
+								"value": "{{api_token}}",
+								"description": "🔑 User authentication token",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "// 📝 Reject a call and send custom message\n// 🔗 POST /call/reject/send\n// 💡 All optional fields included for complete reference\n\n{\n  \"call_id\": \"call_12345_abcd\",\n  \"call_from\": \"5521971532700@s.whatsapp.net\",\n  \"reject_type\": \"busy\",\n  \"message\": \"Sorry, I'm currently busy and cannot take your call right now. I'll call you back later.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/call/reject/send",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"call",
+								"reject",
+								"send"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"id": "48214320-5d1cf90e-7422-492c-a5bf-d632ed8a2b23",
+			"description": "Call related endpoints - 1 requests available"
+		}
+	],
+	"auth": {
+		"type": "apikey",
+		"apikey": [
+			{
+				"key": "key",
+				"value": "token",
+				"type": "string"
+			},
+			{
+				"key": "value",
+				"value": "{{api_token}}",
+				"type": "string"
+			},
+			{
+				"key": "in",
+				"value": "header",
+				"type": "string"
+			}
+		]
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080",
+			"type": "string",
+			"description": "🌐 ZuckZapGo API Base URL"
+		},
+		{
+			"key": "api_token",
+			"value": "Z1234ABCDEF",
+			"type": "string",
+			"description": "🔑 User Authentication Token (get from /admin/users)"
+		},
+		{
+			"key": "admin_token",
+			"value": "admin_token_here",
+			"type": "string",
+			"description": "🔐 Admin Token (set in ZUCKZAPGO_ADMIN_TOKEN env)"
+		},
+		{
+			"key": "test_phone",
+			"value": "5521971532700",
+			"type": "string",
+			"description": "📱 Test phone number for demos"
+		},
+		{
+			"key": "test_group",
+			"value": "120363312246943103@g.us",
+			"type": "string",
+			"description": "👥 Test group JID for demos"
+		}
+	]
+}
