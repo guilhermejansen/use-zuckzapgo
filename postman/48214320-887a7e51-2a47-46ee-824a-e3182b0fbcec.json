@@ -4,18 +4,5 @@
 		"name": "ZUCKZAPGO API v1.2.4",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
-	"item": [
-		{
-			"name": "New Request",
-			"id": "48214320-76aab8de-97ea-4fcd-84a3-42b195be1e03",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		}
-	]
+	"item": []
 }
