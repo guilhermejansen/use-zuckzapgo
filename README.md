@@ -13,6 +13,7 @@
   <a href="https://hub.docker.com/r/setupautomatizado/zuckzapgo-private"><img src="https://img.shields.io/docker/image-size/setupautomatizado/zuckzapgo-private/latest?style=flat-square&logo=docker&color=blue" alt="Docker Image Size"></a>
   <a href="https://github.com/guilhermejansen/use-zuckzapgo"><img src="https://img.shields.io/github/stars/guilhermejansen/use-zuckzapgo?style=flat-square&logo=github&color=yellow" alt="GitHub Stars"></a>
   <a href="https://github.com/guilhermejansen/use-zuckzapgo/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Commercial-red?style=flat-square" alt="License"></a>
+  <a href="https://www.postman.com/setupautomatizado/"><img src="https://img.shields.io/badge/Postman-Collection-orange?style=flat-square&logo=postman" alt="Postman Collection"></a>
 </p>
 
 ## 📝 Assine o ZuckZapGo
