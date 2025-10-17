@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📘 Documentação ZuckZapGo
+    url: https://github.com/guilhermejansen/use-zuckzapgo
+    about: Consulte o guia completo de instalação, FAQs e exemplos antes de abrir uma issue.
+  - name: 💬 Canal de suporte
+    url: https://t.me/setupautomatizado
+    about: Precisa de ajuda imediata? Fale com o time no Telegram.

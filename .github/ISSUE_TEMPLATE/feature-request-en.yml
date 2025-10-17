@@ -1,0 +1,70 @@
+name: "Feature Request (EN)"
+description: "Suggest an improvement or new capability for ZuckZapGo"
+labels: ["enhancement", "triage-needed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Help us understand the value of your idea!
+        Fill in the details below so we can evaluate and prioritise the request.
+
+  - type: checkboxes
+    id: pre_check
+    attributes:
+      label: Initial checks
+      options:
+        - label: I confirmed this feature does not already exist.
+          required: true
+        - label: I searched existing issues to avoid duplicates.
+          required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Describe the feature
+      description: Provide a concise summary of the improvement you need.
+      placeholder: |
+        Example: Add native integration with service X using transport Y.
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: What problem or friction does this feature address?
+      placeholder: |
+        - What workflow is blocked today?
+        - Who is impacted?
+        - Why is it important now?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution / UX
+      description: Share ideas on how the feature should work (endpoints, payloads, UI, etc.).
+      placeholder: |
+        - New endpoint: /chat/send/new-flow
+        - Payload sample: {...}
+        - Expected behaviour: ...
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Mention any workaround or alternative solutions you already tried.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Any metrics, customer demand, or screenshots that help illustrate the need.
+      render: markdown
+
+  - type: input
+    id: contact
+    attributes:
+      label: Contact (optional)
+      description: Share an email/Telegram if we may reach out for clarification.

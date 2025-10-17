@@ -1,0 +1,39 @@
+{
+  "phone": "5511999999999",
+  "text": "Selecione o plano que melhor atende o seu time:",
+  "footer": "Equipe Comercial",
+  "title": "Planos disponíveis",
+  "buttonText": "Ver opções",
+  "sections": [
+    {
+      "title": "Planos Standard",
+      "rows": [
+        {
+          "title": "Standard Mensal",
+          "description": "Uso ilimitado + 1 IP exclusivo",
+          "rowId": "standard_monthly"
+        },
+        {
+          "title": "Standard Anual",
+          "description": "2 meses grátis no pagamento anual",
+          "rowId": "standard_yearly"
+        }
+      ]
+    },
+    {
+      "title": "Planos Premium",
+      "rows": [
+        {
+          "title": "Premium Mensal",
+          "description": "Botões interativos e flows avançados",
+          "rowId": "premium_monthly"
+        },
+        {
+          "title": "Premium Anual",
+          "description": "Até 2 instalações + recursos Enterprise",
+          "rowId": "premium_yearly"
+        }
+      ]
+    }
+  ]
+}

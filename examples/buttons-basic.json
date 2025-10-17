@@ -1,0 +1,28 @@
+{
+  "phone": "5511999999999",
+  "caption": "Escolha uma das opções abaixo:",
+  "title": "Central de atendimento",
+  "footer": "Equipe ZuckZapGo",
+  "image": {
+    "url": "https://images.unsplash.com/photo-1525182008055-f88b95ff7980?auto=format&fit=crop&w=800&q=80"
+  },
+  "buttons": [
+    {
+      "buttonId": "talk_to_support",
+      "buttonText": { "displayText": "Falar com suporte" },
+      "type": "reply"
+    },
+    {
+      "buttonId": "open_site",
+      "buttonText": { "displayText": "Abrir painel" },
+      "type": "url",
+      "url": "https://app.setupautomatizado.com.br"
+    },
+    {
+      "buttonId": "call_sales",
+      "buttonText": { "displayText": "Ligar para vendas" },
+      "type": "phone",
+      "phone": "+551130000000"
+    }
+  ]
+}

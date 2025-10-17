@@ -1,0 +1,69 @@
+name: "Sugestão de Recurso (PT-BR)"
+description: "Proponha melhorias ou novas funcionalidades para o ZuckZapGo"
+labels: ["enhancement", "triage-needed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Queremos evoluir junto com você!
+        Conte como essa ideia agrega valor para priorizarmos da melhor forma.
+
+  - type: checkboxes
+    id: verificacoes
+    attributes:
+      label: Verificações iniciais
+      options:
+        - label: Confirmei que esse recurso ainda não existe.
+          required: true
+        - label: Pesquisei issues abertas para evitar duplicidade.
+          required: true
+
+  - type: textarea
+    id: descricao
+    attributes:
+      label: Descreva a funcionalidade
+      description: Resuma qual melhoria ou recurso você gostaria de ver.
+      placeholder: |
+        Exemplo: Adicionar integração nativa com o serviço X usando o transporte Y.
+    validations:
+      required: true
+
+  - type: textarea
+    id: problema
+    attributes:
+      label: Problema a ser resolvido
+      description: Qual dor, fluxo ou limitação esse recurso resolveria?
+      placeholder: |
+        - Qual workflow está bloqueado hoje?
+        - Quem é impactado?
+        - Qual a urgência?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposta
+    attributes:
+      label: Proposta / UX desejada
+      description: Compartilhe ideias de como deve funcionar (endpoint, payload, UI, etc.).
+      placeholder: |
+        - Novo endpoint: /chat/send/nova-funcao
+        - Payload exemplo: {...}
+        - Comportamento esperado: ...
+
+  - type: textarea
+    id: alternativas
+    attributes:
+      label: Alternativas consideradas
+      description: Cite workarounds ou outras soluções que você já avaliou.
+
+  - type: textarea
+    id: contexto
+    attributes:
+      label: Contexto adicional
+      description: Métricas, demanda de clientes ou prints que reforcem a necessidade.
+      render: markdown
+
+  - type: input
+    id: contato
+    attributes:
+      label: Podemos entrar em contato? (opcional)

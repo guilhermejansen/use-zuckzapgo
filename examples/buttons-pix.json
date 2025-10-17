@@ -1,0 +1,22 @@
+{
+  "phone": "5511999999999",
+  "caption": "Finalize seu pagamento com Pix instantâneo:",
+  "title": "Checkout Seguro",
+  "footer": "ZuckZapGo Pagamentos",
+  "buttons": [
+    {
+      "buttonId": "pix_checkout_001",
+      "buttonText": { "displayText": "Pagar com Pix" },
+      "type": "pix",
+      "pix_key": "123e4567-pix-chave-empresa",
+      "merchant_name": "ZuckZapGo Store",
+      "pix_type": "EVP"
+    },
+    {
+      "buttonId": "copy_code",
+      "buttonText": { "displayText": "Copiar código" },
+      "type": "copy",
+      "code": "PIX-CODIGO-EXEMPLO-001"
+    }
+  ]
+}

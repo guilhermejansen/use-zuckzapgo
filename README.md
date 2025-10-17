@@ -18,15 +18,24 @@
 
 ## 📝 Assine o ZuckZapGo
 
-Para adquirir sua licença e acessar todos os recursos premium, faça sua assinatura de forma rápida e segura:
-
-👉 [Assinar agora via Hotmart](https://go.hotmart.com/S101068222H?dp=1)
+> Escolha o plano ideal para o seu negócio e desbloqueie todo o potencial do ZuckZapGo.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/guilhermejansen/use-zuckzapgo/main/qrcode.svg" alt="Assine Agora ZuckZapGo Private" width="120" height="120">
 </p>
 
-👉 [Seja um afiliado agora via Hotmart](https://app-vlc.hotmart.com/affiliate-recruiting/view/3115Z101068243)
+| Plano | Instalações | Recursos | Link rápido |
+| :-- | :--: | :-- | :-- |
+| **Standard Mensal** | 1 IP | API completa, sem limite de instâncias | [Assinar Standard Mensal](https://go.hotmart.com/S101068222H?off=24s9oau4) |
+| **Standard Anual** | 1 IP | API completa, sem limite de instâncias | [Assinar Standard Anual](https://go.hotmart.com/S101068222H?off=ml91nraz) |
+| **Premium Mensal** | até 2 instalações | + Botões interativos, carousels e recursos Enterprise | [Assinar Premium Mensal](https://go.hotmart.com/S101068222H?off=pez6mwnh) |
+| **Premium Anual** | até 2 instalações | + Botões interativos, carousels e recursos Enterprise | [Assinar Premium Anual](https://go.hotmart.com/S101068222H?off=p1q64goj) |
+
+> 🔑 **Licenciamento**
+> • Planos *Standard*: sem limite de instâncias; 1 licença por IP público.
+> • Planos *Premium*: até 2 instalações simultâneas + botões interativos, carousels.
+
+👉 [Torne-se um afiliado e venda a plataforma](https://app-vlc.hotmart.com/affiliate-recruiting/view/3115Z101068243)
 
 ---
 
@@ -82,11 +91,11 @@ services:
       - ZUCKZAPGO_ADMIN_TOKEN=H4Zbhw72PBKdTIgS
       # ZUCKZAPGO_ADDRESS: Define o endereço base para a API ZuckZapGo
       # Esta URL será incluída em TODOS os eventos (webhook + RabbitMQ)
-      # tanto globais quanto individuais, permitindo que sistemas externos 
+      # tanto globais quanto individuais, permitindo que sistemas externos
       # saibam exatamente de onde o evento está vindo
       - ZUCKZAPGO_ADDRESS=https://api.zuckzapgo.app
       - ZUCKZAPGO_PORT=8080
-
+      # IP público utilizado em integrações externas (opcional)
       - SERVER_IP=
       - LICENSE_KEY=
       - INSTANCE_ID=
@@ -95,7 +104,7 @@ services:
       # 📈 Controle geral de logs da aplicação (resolve logs DEBUG)
       # Valores: debug, info, warn, error (em minúsculo)
       - ZUCKZAPGO_LOG_LEVEL=info
-      
+
       # 🐛 Debug específico do WhatsApp (biblioteca whatsmeow)
       # Valores: info, debug ou vazio (em minúsculo)
       - ZUCKZAPGO_DEBUG=info
@@ -136,11 +145,11 @@ services:
       # ========================================
       #
       # waPlatform:
-      # ANDROID, IOS, WINDOWS_PHONE, BLACKBERRY, BLACKBERRYX, S40, S60, 
-      # PYTHON_CLIENT, TIZEN, ENTERPRISE, SMB_ANDROID, KAIOS, SMB_IOS, 
-      # WINDOWS, WEB, PORTAL, GREEN_ANDROID, GREEN_IPHONE, BLUE_ANDROID, 
-      # BLUE_IPHONE, FBLITE_ANDROID, MLITE_ANDROID, IGLITE_ANDROID, PAGE, 
-      # MACOS, OCULUS_MSG, OCULUS_CALL, MILAN, CAPI, WEAROS, ARDEVICE, 
+      # ANDROID, IOS, WINDOWS_PHONE, BLACKBERRY, BLACKBERRYX, S40, S60,
+      # PYTHON_CLIENT, TIZEN, ENTERPRISE, SMB_ANDROID, KAIOS, SMB_IOS,
+      # WINDOWS, WEB, PORTAL, GREEN_ANDROID, GREEN_IPHONE, BLUE_ANDROID,
+      # BLUE_IPHONE, FBLITE_ANDROID, MLITE_ANDROID, IGLITE_ANDROID, PAGE,
+      # MACOS, OCULUS_MSG, OCULUS_CALL, MILAN, CAPI, WEAROS, ARDEVICE,
       # VRDEVICE, BLUE_WEB, IPAD, TEST, SMART_GLASSES, BLUE_VR
       #
       # waReleaseChannel:
@@ -150,15 +159,15 @@ services:
       # WEB_BROWSER, APP_STORE, WIN_STORE, DARWIN, WIN32, WIN_HYBRID
       #
       # waConnectType:
-      # CELLULAR_UNKNOWN, WIFI_UNKNOWN, CELLULAR_EDGE, CELLULAR_IDEN, 
-      # CELLULAR_UMTS, CELLULAR_EVDO, CELLULAR_GPRS, CELLULAR_HSDPA, 
-      # CELLULAR_HSUPA, CELLULAR_HSPA, CELLULAR_CDMA, CELLULAR_1XRTT, 
+      # CELLULAR_UNKNOWN, WIFI_UNKNOWN, CELLULAR_EDGE, CELLULAR_IDEN,
+      # CELLULAR_UMTS, CELLULAR_EVDO, CELLULAR_GPRS, CELLULAR_HSDPA,
+      # CELLULAR_HSUPA, CELLULAR_HSPA, CELLULAR_CDMA, CELLULAR_1XRTT,
       # CELLULAR_EHRPD, CELLULAR_LTE, CELLULAR_HSPAP
       #
       # waPlatformType:
-      # UNKNOWN, CHROME, FIREFOX, IE, OPERA, SAFARI, EDGE, DESKTOP, IPAD, 
-      # ANDROID_TABLET, OHANA, ALOHA, CATALINA, TCL_TV, IOS_PHONE, 
-      # IOS_CATALYST, ANDROID_PHONE, ANDROID_AMBIGUOUS, WEAR_OS, AR_WRIST, 
+      # UNKNOWN, CHROME, FIREFOX, IE, OPERA, SAFARI, EDGE, DESKTOP, IPAD,
+      # ANDROID_TABLET, OHANA, ALOHA, CATALINA, TCL_TV, IOS_PHONE,
+      # IOS_CATALYST, ANDROID_PHONE, ANDROID_AMBIGUOUS, WEAR_OS, AR_WRIST,
       # AR_DEVICE, UWP, VR, CLOUD_API, SMARTGLASSES
 
       # Este arquivo mostra como configurar as opções avançadas do WhatsApp
@@ -173,47 +182,48 @@ services:
       # Aplicam-se a TODOS os usuários se não configuradas individualmente
 
       # Versão do WhatsApp Web (formato: primary.secondary.tertiary)
-      - WA_VERSION=2.3000.1026436087
+      # - WA_VERSION=2.3000.1027949008
 
       # Plataforma do dispositivo
       # Opções: WEB, ANDROID, IOS, WINDOWS, MACOS, IPAD, etc.
-      - WA_PLATFORM=WEB
+      # - WA_PLATFORM=WEB
 
       # Canal de release
       # Opções: RELEASE, BETA, ALPHA, DEBUG
-      - WA_RELEASE_CHANNEL=RELEASE
+      # - WA_RELEASE_CHANNEL=RELEASE
 
       # Sub-plataforma para Web
       # Opções: WEB_BROWSER, APP_STORE, WIN_STORE, DARWIN, WIN32, WIN_HYBRID
-      - WA_WEB_SUB_PLATFORM=WEB_BROWSER
+      # - WA_WEB_SUB_PLATFORM=WEB_BROWSER
 
       # Sistema operacional
-      - WA_OS_NAME=Mac OS X
-      - WA_OS_VERSION=10.15.7
+      # - WA_OS_NAME=Mac OS X
+      # - WA_OS_VERSION=10.15.7
 
       # Informações do dispositivo
-      - WA_DEVICE_NAME=MacBook Pro
-      - WA_MANUFACTURER=Apple
-      - WA_DEVICE_BOARD=Mac
+      # - WA_DEVICE_NAME=MacBook Pro
+      # - WA_MANUFACTURER=Apple
+      # - WA_DEVICE_BOARD=Mac
 
       # Configurações de localização
-      - WA_LOCALE_LANGUAGE=en
-      - WA_LOCALE_COUNTRY=US
+      # - WA_LOCALE_LANGUAGE=en
+      # - WA_LOCALE_COUNTRY=US
 
       # Códigos de rede móvel
-      - WA_MCC=000
-      - WA_MNC=000
+      # - WA_MCC=000
+      # - WA_MNC=000
 
       # Tipo de conexão
       # Opções: WIFI_UNKNOWN, CELLULAR_UNKNOWN, CELLULAR_LTE, etc.
-      - WA_CONNECT_TYPE=WIFI_UNKNOWN
+      # - WA_CONNECT_TYPE=WIFI_UNKNOWN
 
       # Tipo de plataforma para DeviceProps
       # Opções: DESKTOP, CHROME, FIREFOX, SAFARI, EDGE, IPAD, etc.
-      - WA_PLATFORM_TYPE=DESKTOP
+      # - WA_PLATFORM_TYPE=DESKTOP
 
       # =================== SESSION & TIMEZONE ===================
       - TZ=America/Sao_Paulo
+      - SESSION_DEVICE_NAME=ZuckZapGo
 
       # =================== WEBHOOK INDIVIDUAL POR INSTANICA CONFIGURATIONS ===================
       # "json" or "form" for the default
@@ -253,7 +263,7 @@ services:
       # Global default message for call rejection (default: 'Sorry, I cannot take calls at the moment.')
       - GLOBAL_CALL_REJECT_MESSAGE=Sorry, I cannot take calls at the moment.
       # Global default call rejection type: 'busy', 'decline', or 'unavailable' (default: 'busy')
-      - GLOBAL_CALL_REJECT_TYPE=busy  
+      - GLOBAL_CALL_REJECT_TYPE=busy
 
       # =================== GLOBAL S3 CONFIGURATION ===================
       # Enable/disable global S3 for media processing
@@ -281,6 +291,48 @@ services:
       # Set to false for legacy buckets or other S3-compatible providers that support ACLs
       - GLOBAL_S3_DISABLE_ACL=true
 
+      # =================== GLOBAL SQS CONFIGURATION ===================
+      - GLOBAL_SQS_ENABLED=false
+      - GLOBAL_SQS_REGION=us-east-1
+      - GLOBAL_SQS_QUEUE_URL=
+      - GLOBAL_SQS_PROFILE=
+      - GLOBAL_SQS_ACCESS_KEY=
+      - GLOBAL_SQS_SECRET_KEY=
+      - GLOBAL_SQS_SESSION_TOKEN=
+      - GLOBAL_SQS_ENDPOINT=
+      - GLOBAL_SQS_FIFO=false
+      - GLOBAL_SQS_MESSAGE_GROUP=zuckzapgo-global
+      - GLOBAL_SQS_DELAY_SECONDS=0
+      - GLOBAL_SQS_EVENTS=All
+      - GLOBAL_SQS_TIMEOUT=5s
+      - GLOBAL_SQS_RETRY_DELAY=750ms
+      - GLOBAL_SQS_MAX_RETRIES=3
+
+      # =================== GLOBAL REDIS STREAM CONFIGURATION ===================
+      - GLOBAL_REDIS_ENABLED=false
+      - GLOBAL_REDIS_ADDRESS=redis_streams:6379
+      - GLOBAL_REDIS_USERNAME=
+      - GLOBAL_REDIS_PASSWORD=
+      - GLOBAL_REDIS_TLS=false
+      - GLOBAL_REDIS_STREAM=zuckzapgo.events
+      - GLOBAL_REDIS_EVENTS=All
+      - GLOBAL_REDIS_MAXLEN=100000
+      - GLOBAL_REDIS_TRIM_APPROX=true
+      - GLOBAL_REDIS_TIMEOUT=2s
+      - GLOBAL_REDIS_RETRY_DELAY=500ms
+      - GLOBAL_REDIS_MAX_RETRIES=3
+
+      # =================== GLOBAL WEBSOCKET CONFIGURATION ===================
+      - GLOBAL_WEBSOCKET_ENABLED=false
+      - GLOBAL_WEBSOCKET_ENDPOINTS=
+      - GLOBAL_WEBSOCKET_EVENTS=All
+      - GLOBAL_WEBSOCKET_ENABLE_COMPRESSION=true
+      - GLOBAL_WEBSOCKET_HEADERS=
+      - GLOBAL_WEBSOCKET_TIMEOUT=10s
+      - GLOBAL_WEBSOCKET_WRITE_TIMEOUT=5s
+      - GLOBAL_WEBSOCKET_RETRY_DELAY=2s
+      - GLOBAL_WEBSOCKET_MAX_RETRIES=5
+
       # =================== GLOBAL WEBHOOK CONFIGURATION ===================
       # Enable/disable global webhook for all users
       - GLOBAL_WEBHOOK_ENABLED=false
@@ -303,7 +355,7 @@ services:
 
       # =================== GLOBAL RABBITMQ BASIC CONFIGURATION ===================
       # Enable/disable global RabbitMQ for all users
-      - GLOBAL_RABBITMQ_ENABLED=true
+      - GLOBAL_RABBITMQ_ENABLED=false
       # RabbitMQ connection URL (production cluster)
       - GLOBAL_RABBITMQ_URL=amqp://zuckzapgo:zuckzapgo@rabbitmq_zuckzapgo:5672/zuckzapgo
       # Event types to publish (comma-separated or "All")
@@ -312,18 +364,17 @@ services:
       - GLOBAL_RABBITMQ_EXCHANGE=zuckzapgo.global.prod
       - GLOBAL_RABBITMQ_EXCHANGE_TYPE=topic
       # Queue name for global events
-      # ===== OPÇÃO 1: FILA ÚNICA (ATUAL) =====
+      # ===== OPÇÃO 1: FILA ÚNICA (EXEMPLO) =====
       # GLOBAL_RABBITMQ_QUEUE=zuckzapgo.events
       # GLOBAL_RABBITMQ_ROUTING_KEY=events.#
-      # ===== OPÇÃO 2: FILAS POR EVENTO (NOVO) =====
-      # Exemplo alternativo (filas por evento) — comente as duas linhas abaixo se não for usar
-      # - GLOBAL_RABBITMQ_QUEUE=zuckzapgo_{event_type}_events
-      # - GLOBAL_RABBITMQ_ROUTING_KEY=events.{event_type}.#
-      # Exemplo de fila única dedicada
-      # - GLOBAL_RABBITMQ_QUEUE=zuckzapgo.events.prod
+      # (O curinga `#` entrega TODOS os eventos publicados nesse exchange; use apenas quando broadcast total for desejado.)
+      # ===== OPÇÃO 2: FILAS POR EVENTO (RECOMENDADO) =====
+      # O placeholder `{event_type}` PRECISA aparecer tanto no nome da fila quanto na routing key para evitar broadcast.
+      # Inclua `{user_id}` quando for necessário segregar por instância.
+      - GLOBAL_RABBITMQ_QUEUE=zuckzapgo_{user_id}_{event_type}_events
       - GLOBAL_RABBITMQ_QUEUE_TYPE=classic
       # Routing key pattern for message routing (padrão)
-      - GLOBAL_RABBITMQ_ROUTING_KEY=events.#
+      - GLOBAL_RABBITMQ_ROUTING_KEY=events.{user_id}.{event_type}
       # Make exchange and queue durable (survive broker restart)
       - GLOBAL_RABBITMQ_DURABLE=true
       # Auto-delete exchange/queue when not in use
@@ -385,6 +436,74 @@ services:
       # Enable confirmations for production reliability
       - GLOBAL_RABBITMQ_ENABLE_CONFIRMATION=true
 
+      # =================== TRACING CONFIGURATION (OpenTelemetry + Jaeger) ===================
+      # Enable/disable distributed tracing
+      - TRACING_ENABLED=false
+      # Jaeger endpoint for OTLP HTTP traces
+      - JAEGER_ENDPOINT=http://localhost:14268/api/traces
+      # Sampling ratio (0.0 to 1.0) - 0.1 = 10% of requests
+      - JAEGER_SAMPLING_RATIO=0.1
+      # Service identification
+      - TRACING_SERVICE_NAME=zuckzapgo
+      - TRACING_SERVICE_VERSION=v.1.2.5
+      # Environment (development, staging, production)
+      - TRACING_ENVIRONMENT=development
+
+      # =================== MONITORING CONFIGURATION (Sentry) ===================
+      # Enable/disable error monitoring
+      - SENTRY_ENABLED=false
+      # Sentry DSN (get from Sentry project settings)
+      - SENTRY_DSN=
+      # Environment for error grouping
+      - SENTRY_ENVIRONMENT=development
+      # Error sampling rate (0.0 to 1.0) - 1.0 = 100% of errors
+      - SENTRY_SAMPLE_RATE=1.0
+      # Performance monitoring sample rate
+      - SENTRY_TRACES_SAMPLE_RATE=0.1
+      # Profiling sample rate (requires traces)
+      - SENTRY_PROFILES_SAMPLE_RATE=0.1
+
+      # =================== GLOBAL EVENT PIPELINE ===================
+      # Persistent buffer configuration
+      #  - GLOBAL_EVENT_BUFFER_PATH: path to the SQLite WAL file for the persistent buffer
+      #  - GLOBAL_EVENT_BUFFER_VISIBILITY_TIMEOUT: lease duration for a dequeued event (e.g. "45s")
+      #  - GLOBAL_EVENT_BUFFER_RETRY_BASE: base backoff for retries (e.g. "5s")
+      #  - GLOBAL_EVENT_BUFFER_RETRY_MAX: maximum backoff for retries (e.g. "2m")
+      #  - GLOBAL_EVENT_BUFFER_MAX_ATTEMPTS: how many times an event can retry before being dropped
+      #  - GLOBAL_EVENT_BUFFER_ARCHIVE_RETENTION: keep delivered events in the archive for this duration (e.g. "24h")
+      #  - GLOBAL_EVENT_BUFFER_ARCHIVE_MAX_ROWS: cap the archive table length (0 disables)
+      #  - GLOBAL_EVENT_BUFFER_ARCHIVE_PRUNE_EVERY: prune frequency for archive rows
+      #  - GLOBAL_EVENT_BUFFER_WAL_CHECKPOINT: WAL checkpoint interval (number of operations)
+      - GLOBAL_EVENT_BUFFER_PATH=/app/buffer/global-events.db
+      - GLOBAL_EVENT_BUFFER_VISIBILITY_TIMEOUT=45s
+      - GLOBAL_EVENT_BUFFER_RETRY_BASE=5s
+      - GLOBAL_EVENT_BUFFER_RETRY_MAX=2m
+      - GLOBAL_EVENT_BUFFER_MAX_ATTEMPTS=12
+      - GLOBAL_EVENT_BUFFER_ARCHIVE_RETENTION=0
+      - GLOBAL_EVENT_BUFFER_ARCHIVE_MAX_ROWS=0
+      - GLOBAL_EVENT_BUFFER_ARCHIVE_PRUNE_EVERY=1000
+      - GLOBAL_EVENT_BUFFER_WAL_CHECKPOINT=5000
+
+      # Deduplication cache for global dispatcher
+      #  - GLOBAL_EVENT_DEDUP_WINDOW: how long an event key stays in the dedup cache
+      #  - GLOBAL_EVENT_DEDUP_MAX_KEYS: max entries stored in the dedup cache
+      - GLOBAL_EVENT_DEDUP_WINDOW=2m
+      - GLOBAL_EVENT_DEDUP_MAX_KEYS=50000
+
+      # Dispatcher batching and circuit breaker
+      #  - GLOBAL_EVENT_BATCH_SIZE: max envelopes grouped before dispatch
+      #  - GLOBAL_EVENT_BATCH_TIMEOUT: flush interval for partial batches
+      #  - GLOBAL_EVENT_CIRCUIT_MAX_FAILURES: open the circuit after consecutive failures
+      #  - GLOBAL_EVENT_CIRCUIT_RESET: time before a half-open probe is allowed
+      #  - GLOBAL_EVENT_CIRCUIT_COOLDOWN: sleep between circuit breaker checks
+      - GLOBAL_EVENT_BATCH_SIZE=5
+      - GLOBAL_EVENT_BATCH_TIMEOUT=25ms
+      - GLOBAL_EVENT_CIRCUIT_MAX_FAILURES=5
+      - GLOBAL_EVENT_CIRCUIT_RESET=30s
+      - GLOBAL_EVENT_CIRCUIT_COOLDOWN=1s
+
+      # Global skip cache TTL (shared between global and individual dispatch)
+      - GLOBAL_SKIP_CACHE_TTL=30s
     deploy:
       mode: replicated
       replicas: 1
@@ -394,8 +513,8 @@ services:
         constraints: [node.role == manager]
       resources:
         limits:
-          cpus: "2"      # Increased for RabbitMQ Global performance
-          memory: 2GB    # Increased for high-throughput message processing
+          cpus: "2" # Increased for RabbitMQ Global performance
+          memory: 2GB # Increased for high-throughput message processing
         reservations:
           cpus: "1"
           memory: 1GB
@@ -423,7 +542,7 @@ services:
       - POSTGRES_DB=zuckzapgo
     volumes:
       - postgres_data_zuckzapgo:/var/lib/postgresql/data
-    networks: 
+    networks:
       - network_public
     deploy:
       mode: replicated
@@ -437,13 +556,17 @@ services:
         max_attempts: 3
       resources:
         limits:
-          cpus: '1'
+          cpus: "1"
           memory: 1GB
         reservations:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512MB
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-zuckzapgo} -d ${POSTGRES_DB:-zuckzapgo}"]
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U ${POSTGRES_USER:-zuckzapgo} -d ${POSTGRES_DB:-zuckzapgo}",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -482,61 +605,161 @@ services:
   #         - node.role == manager
 
   # =================== RABBITMQ (MENSAGERIA) ===================
-  rabbitmq_zuckzapgo:
-    image: rabbitmq:4-management
-    environment:
-      - RABBITMQ_DEFAULT_USER=zuckzapgo
-      - RABBITMQ_DEFAULT_PASS=zuckzapgo
-      - RABBITMQ_DEFAULT_VHOST=zuckzapgo
-    volumes:
-      - rabbitmq_data_zuckzapgo:/var/lib/rabbitmq
-    networks:
-      - network_public
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints: [node.role == manager]
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-      resources:
-        limits:
-          cpus: '1'
-          memory: 1GB
-        reservations:
-          cpus: '0.5'
-          memory: 512MB
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.rabbitmq_zuckzapgo.rule=Host(`rabbitmq.zuckzapgo.app`)
-        - traefik.http.routers.rabbitmq_zuckzapgo.entrypoints=websecure
-        - traefik.http.routers.rabbitmq_zuckzapgo.tls.certresolver=letsencryptresolver
-        - traefik.http.routers.rabbitmq_zuckzapgo.service=rabbitmq_zuckzapgo
-        - traefik.http.services.rabbitmq_zuckzapgo.loadbalancer.server.port=15672
-    healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
+  # rabbitmq_zuckzapgo:
+  #   image: rabbitmq:4-management
+  #   environment:
+  #     - RABBITMQ_DEFAULT_USER=zuckzapgo
+  #     - RABBITMQ_DEFAULT_PASS=zuckzapgo
+  #     - RABBITMQ_DEFAULT_VHOST=zuckzapgo
+  #   volumes:
+  #     - rabbitmq_data_zuckzapgo:/var/lib/rabbitmq
+  #   networks:
+  #     - network_public
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints: [node.role == manager]
+  #     restart_policy:
+  #       condition: on-failure
+  #       delay: 5s
+  #       max_attempts: 3
+  #     resources:
+  #       limits:
+  #         cpus: "1"
+  #         memory: 1GB
+  #       reservations:
+  #         cpus: "0.5"
+  #         memory: 512MB
+  #     labels:
+  #       - traefik.enable=true
+  #       - traefik.http.routers.rabbitmq_zuckzapgo.rule=Host(`rabbitmq.zuckzapgo.app`)
+  #       - traefik.http.routers.rabbitmq_zuckzapgo.entrypoints=websecure
+  #       - traefik.http.routers.rabbitmq_zuckzapgo.tls.certresolver=letsencryptresolver
+  #       - traefik.http.routers.rabbitmq_zuckzapgo.service=rabbitmq_zuckzapgo
+  #       - traefik.http.services.rabbitmq_zuckzapgo.loadbalancer.server.port=15672
+  #   healthcheck:
+  #     test: ["CMD", "rabbitmq-diagnostics", "ping"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 60s
+
+  # =================== REDIS STREAMS ===================
+  # redis_streams_zuckzapgo:
+  #   image: redis:7
+  #   networks:
+  #     - network_public
+  #   ports:
+  #     - target: 6379
+  #       published: 6379
+  #       protocol: tcp
+  #       mode: ingress
+  #   volumes:
+  #     - redis_streams_data_zuckzapgo:/data
+  #   deploy:
+  #     mode: replicated
+  #     replicas: 1
+  #     placement:
+  #       constraints: [node.role == manager]
+  #     restart_policy:
+  #       condition: on-failure
+  #       delay: 5s
+  #       max_attempts: 3
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "PING"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 15s
+
+  # =================== JAEGER TRACING (OBSERVABILITY) ===================
+  # jaeger_zuckzapgo:
+  #   image: jaegertracing/all-in-one:latest
+  #   deploy:
+  #     replicas: 1
+  #     placement:
+  #       constraints:
+  #         - node.role == manager
+  #     restart_policy:
+  #       condition: on-failure
+  #       delay: 5s
+  #       max_attempts: 3
+  #     resources:
+  #       limits:
+  #         cpus: "1"
+  #         memory: 1G
+  #       reservations:
+  #         cpus: "0.25"
+  #         memory: 256M
+  #   environment:
+  # Enable OTLP collector (required for OpenTelemetry)
+  # - COLLECTOR_OTLP_ENABLED=true
+  # Storage configuration for production
+  # For development: use memory
+  # For production: configure external storage (Elasticsearch, Cassandra, etc)
+  # - SPAN_STORAGE_TYPE=memory
+  # - MEMORY_MAX_TRACES=50000
+  # Sampling configuration
+  #   - SAMPLING_STRATEGIES_FILE=/etc/jaeger/sampling_strategies.json
+  # ports:
+  # Jaeger UI - Web interface to view traces
+  # - target: 16686
+  #   published: 16686
+  #   protocol: tcp
+  #   mode: ingress
+  # OTLP HTTP receiver - used by ZuckZapGo to send traces
+  # - target: 4318
+  #   published: 4318
+  #   protocol: tcp
+  #   mode: ingress
+  # OTLP gRPC receiver (optional)
+  # - target: 4317
+  #   published: 4317
+  #   protocol: tcp
+  #   mode: ingress
+  # Jaeger Collector HTTP (legacy - for compatibility)
+  # - target: 14268
+  #   published: 14268
+  #   protocol: tcp
+  #   mode: ingress
+  # Admin port for health checks
+  #   - target: 14269
+  #     published: 14269
+  #     protocol: tcp
+  #     mode: host
+  # networks:
+  #   - network_public
+  # healthcheck:
+  #   test: ["CMD", "wget", "--spider", "-q", "http://localhost:14269/"]
+  #   interval: 30s
+  #   timeout: 10s
+  #   retries: 3
+  #   start_period: 20s
+  # volumes:
+  #   - jaeger_data_zuckzapgo:/tmp/jaeger
 
 volumes:
   postgres_data_zuckzapgo:
     name: postgres_data_zuckzapgo
     external: true
-  rabbitmq_data_zuckzapgo:
-    name: rabbitmq_data_zuckzapgo
-    external: true
+  # rabbitmq_data_zuckzapgo:
+  #   name: rabbitmq_data_zuckzapgo
+  #   external: true
+  # redis_streams_data_zuckzapgo:
+  #   name: redis_streams_data
   # mysql_data_zuckzapgo:  # Descomente para MySQL
   #   name: mysql_data_zuckzapgo
+  #   external: true
+  # jaeger_data_zuckzapgo:
+  #   name: jaeger_data_zuckzapgo
   #   external: true
 
 networks:
   network_public:
     name: network_public
     external: true
+
 ```
 
 ## 🔧 Integrações
@@ -681,7 +904,7 @@ Este é um projeto privado/comercial. Para contribuições, entre em contato atr
 </p>
 
 <p align="center">
-  <a href="https://setupautomatizado.com.br">Website</a> • 
-  <a href="mailto:contato@setupautomatizado.com.br">Email</a> • 
+  <a href="https://setupautomatizado.com.br">Website</a> •
+  <a href="mailto:contato@setupautomatizado.com.br">Email</a> •
   <a href="https://github.com/guilhermejansen">GitHub</a>
 </p>

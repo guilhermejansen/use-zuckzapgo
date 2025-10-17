@@ -1,0 +1,53 @@
+{
+  "phone": "5511999999999",
+  "message": "Confira nossos destaques do mês:",
+  "carousel": [
+    {
+      "text": "Plano Premium com botões interativos",
+      "media_url": "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80",
+      "media_type": "image",
+      "buttons": [
+        {
+          "id": "premium_details",
+          "label": "Ver detalhes",
+          "type": "url",
+          "url": "https://app.setupautomatizado.com.br/#premium"
+        },
+        {
+          "id": "chat_support",
+          "label": "Falar com time",
+          "type": "reply"
+        }
+      ]
+    },
+    {
+      "text": "Tour completo pelo painel ZuckZapGo",
+      "media_url": "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4",
+      "media_type": "video",
+      "caption": "Veja como é simples operar",
+      "buttons": [
+        {
+          "id": "watch_now",
+          "label": "Assistir agora",
+          "type": "url",
+          "url": "https://www.youtube.com/watch?v=I557BU3_3zE"
+        }
+      ]
+    },
+    {
+      "text": "Guia PDF com integrações e melhores práticas",
+      "media_url": "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+      "media_type": "document",
+      "filename": "guia-integracoes.pdf",
+      "caption": "Integrações e flows avançados",
+      "buttons": [
+        {
+          "id": "download_pdf",
+          "label": "Baixar guia",
+          "type": "url",
+          "url": "https://www.zuckzapgo.com.br/docs"
+        }
+      ]
+    }
+  ]
+}

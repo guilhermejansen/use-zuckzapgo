@@ -1,0 +1,88 @@
+name: "Bug Report (EN)"
+description: "Report an unexpected behaviour or regression in ZuckZapGo"
+labels: ["bug", "triage-needed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to let us know about a bug!
+        Please fill out the sections below so we can reproduce and resolve the issue quickly.
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Initial checks
+      options:
+        - label: I confirmed the issue happens on the latest ZuckZapGo release.
+          required: true
+        - label: I searched the open issues to avoid duplicates.
+          required: true
+        - label: This is not a usage question or documentation doubt.
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Impact Severity
+      description: How critical is this bug for you right now?
+      options:
+        - Blocks production usage
+        - High impact, workaround exists
+        - Medium impact, affects specific flows
+        - Low impact / cosmetic
+    validations:
+      required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Bug summary
+      description: Give us a short, clear description of the problem.
+      placeholder: |
+        Example: Interactive list returns 500 when section titles contain emojis.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Tell us how to trigger the issue. Include curl commands, payloads, or automation steps.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+        Observed: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: What should have happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs / screenshots
+      description: Paste stack traces, log excerpts (sanitize secrets!), or screenshots that help us understand the issue.
+      render: shell
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment details
+      description: Provide context such as deployment type, versions and custom configurations.
+      placeholder: |
+        - ZuckZapGo version: v1.2.5
+        - Deployment: Docker / Swarm / bare metal
+        - External services enabled: RabbitMQ, Redis, Webhook, etc.
+        - License type: Standard / Premium / Enterprise
+        - Anything else relevant
+
+  - type: input
+    id: contact
+    attributes:
+      label: How can we reach you if we need more info?

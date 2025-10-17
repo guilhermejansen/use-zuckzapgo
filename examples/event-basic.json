@@ -1,0 +1,14 @@
+{
+  "phone": "5511999999999",
+  "name": "Onboarding ZuckZapGo",
+  "description": "Sessão ao vivo apresentando as novidades da versão 1.2.5.",
+  "start_time": 1760676000,
+  "end_time": 1760679600,
+  "is_schedule_call": true,
+  "extra_guests_allowed": true,
+  "location": {
+    "name": "Google Meet",
+    "degrees_longitude": -46.633309,
+    "degrees_latitude": -23.55052
+  }
+}

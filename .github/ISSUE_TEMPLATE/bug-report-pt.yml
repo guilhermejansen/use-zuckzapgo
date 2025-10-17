@@ -1,0 +1,88 @@
+name: "Relato de Bug (PT-BR)"
+description: "Informe um comportamento inesperado ou regressão no ZuckZapGo"
+labels: ["bug", "triage-needed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por nos avisar sobre o problema!
+        Preencha os campos abaixo para que possamos reproduzir e corrigir o bug o quanto antes.
+
+  - type: checkboxes
+    id: verificacoes_iniciais
+    attributes:
+      label: Verificações iniciais
+      options:
+        - label: Testei na última versão disponível do ZuckZapGo.
+          required: true
+        - label: Procurei nas issues abertas para evitar duplicidade.
+          required: true
+        - label: Não se trata de dúvida de uso ou documentação.
+
+  - type: dropdown
+    id: severidade
+    attributes:
+      label: Severidade do impacto
+      description: Qual o impacto atual desse bug para o seu uso?
+      options:
+        - Bloqueia produção
+        - Alto impacto, existe workaround
+        - Impacto médio em fluxos específicos
+        - Baixo impacto / visual
+    validations:
+      required: true
+
+  - type: textarea
+    id: resumo
+    attributes:
+      label: Resumo do bug
+      description: Descreva de forma objetiva o problema encontrado.
+      placeholder: |
+        Exemplo: Lista interativa retorna 500 ao usar emojis no título da seção.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproducao
+    attributes:
+      label: Passos para reproduzir
+      description: Conte o passo a passo (payloads, curl, automação) para reproduzirmos o problema.
+      placeholder: |
+        1. ...
+        2. ...
+        3. ...
+        Observado: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: esperado
+    attributes:
+      label: Comportamento esperado
+      description: O que deveria acontecer?
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / prints relevantes
+      description: Cole logs, stack traces (sem segredos!) ou imagens que ajudem na análise.
+      render: shell
+
+  - type: textarea
+    id: ambiente
+    attributes:
+      label: Ambiente e configurações
+      description: Dê contexto sobre o ambiente afetado.
+      placeholder: |
+        - Versão do ZuckZapGo: v1.2.5
+        - Deploy: Docker / Swarm / bare metal
+        - Serviços externos: RabbitMQ, Redis, Webhook, etc.
+        - Tipo de licença: Standard / Premium / Enterprise
+        - Outras observações
+
+  - type: input
+    id: contato
+    attributes:
+      label: Podemos entrar em contato? (opcional)
