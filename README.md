@@ -87,46 +87,39 @@ services:
     networks:
       - network_public
     environment:
-      # =================== ADMIN & AUTHENTICATION ===================
-      - ZUCKZAPGO_ADMIN_TOKEN=H4Zbhw72PBKdTIgS
-      # ZUCKZAPGO_ADDRESS: Define o endereço base para a API ZuckZapGo
-      # Esta URL será incluída em TODOS os eventos (webhook + RabbitMQ)
-      # tanto globais quanto individuais, permitindo que sistemas externos
-      # saibam exatamente de onde o evento está vindo
-      - ZUCKZAPGO_ADDRESS=https://api.zuckzapgo.app
-      - ZUCKZAPGO_PORT=8080
-      # IP público utilizado em integrações externas (opcional)
-      - SERVER_IP=
-      - LICENSE_KEY=
+      # =================== LICENCIAMENTO E IDENTIDADE ===================
+      # LICENSE_KEY: Chave de licença emitida pela ZuckZapGo; habilita ou restringe recursos como botões e flows.
+      - LICENSE_KEY=ZUCKZAPGO-BASIC-C231653DD4F34B20
+      # INSTANCE_ID: Identificador opcional desta instância; use para rastrear ambientes multi-tenant ou clusters.
       - INSTANCE_ID=
+      # SERVER_IP: Endereço IP público divulgado para integrações externas que exigem IP fixo; deixe vazio se usar DNS.
+      - SERVER_IP=
 
-      # =================== CONFIGURAÇÕES DE DEBUG ===================
-      # 📈 Controle geral de logs da aplicação (resolve logs DEBUG)
-      # Valores: debug, info, warn, error (em minúsculo)
+      # =================== ENDEREÇOS DA APLICAÇÃO ===================
+      # ZUCKZAPGO_ADDRESS: URL base publicada em todos os eventos (webhook, filas, sockets) indicando a origem da instância.
+      - ZUCKZAPGO_ADDRESS=https://go.setupautomatizado.com
+      # ZUCKZAPGO_PORT: Porta HTTP exposta pelo backend; precisa coincidir com o mapeamento de portas do container.
+      - ZUCKZAPGO_PORT=8080
+
+      # =================== OBSERVABILIDADE DE LOGS ===================
+      # ZUCKZAPGO_LOG_LEVEL: Nível mínimo de log global (debug, info, warn, error) respeitado por todo o serviço.
       - ZUCKZAPGO_LOG_LEVEL=info
-
-      # 🐛 Debug específico do WhatsApp (biblioteca whatsmeow)
-      # Valores: info, debug ou vazio (em minúsculo)
+      # ZUCKZAPGO_DEBUG: Nível de log dedicado ao cliente WhatsMeow; vazio usa o padrão info.
       - ZUCKZAPGO_DEBUG=info
+      # LOG_TYPE: Destino/formato do logger estruturado (ex.: console, json).
       - LOG_TYPE=console
+      # LOG_COLOR: Quando true, habilita códigos ANSI para colorir logs no console.
       - LOG_COLOR=true
 
-      # =================== DATABASE CONFIGURATION ===================
-      # Option 1: Individual database variables (current method)
-      # - DB_TYPE=postgres
-      # - DB_USER=zuckzapgo
-      # - DB_PASSWORD=senha-super-segura-aqui
-      # - DB_NAME=zuckzapgo
-      # - DB_HOST=db
-      # - DB_PORT=5432
-      # - DB_SSLMODE=disable
-      # - DB_SCHEMA=public
+      # =================== AUTENTICAÇÃO INTERNA ===================
+      # ZUCKZAPGO_ADMIN_TOKEN: Token estático exigido em endpoints administrativos protegidos da API.
+      - ZUCKZAPGO_ADMIN_TOKEN=H4Zbhw72PBKdTIgS
 
-      # Option 2: Single database connection string (production method)
-      # Uncomment the line below and comment out the individual variables above
-      - DATABASE_URL=postgres://zuckzapgo:zuckzapgo@postgres_zuckzapgo:5432/zuckzapgo?sslmode=disable&search_path=public
-      # For managed databases: DATABASE_URL=postgres://user:pass@managed-db.example.com:5432/zuckzapgo?sslmode=require
-      # For MySQL: DATABASE_URL=mysql://zuckzapgo:zuckzapgo_production_password@zuckzapgo_mysql:3306/zuckzapgo?charset=utf8mb4&parseTime=True&loc=Local
+      # =================== IDENTIDADE DA SESSÃO ===================
+      # SESSION_DEVICE_NAME: Nome apresentado ao WhatsApp para identificar o dispositivo da sessão global.
+      - SESSION_DEVICE_NAME=zuckzapgo
+      # TZ: Timezone padrão utilizado por logs, agendadores e conversões de horário.
+      - TZ=America/Sao_Paulo
 
       # ========== CONFIGURAÇÕES PADRÃO DE DISPOSITIVO WHATSAPP ==========
       # ========================================
@@ -182,328 +175,386 @@ services:
       # Aplicam-se a TODOS os usuários se não configuradas individualmente
 
       # Versão do WhatsApp Web (formato: primary.secondary.tertiary)
-      # - WA_VERSION=2.3000.1027949008
+      # WA_VERSION=2.3000.1028259376
 
       # Plataforma do dispositivo
       # Opções: WEB, ANDROID, IOS, WINDOWS, MACOS, IPAD, etc.
-      # - WA_PLATFORM=WEB
+      # WA_PLATFORM=WEB
 
       # Canal de release
       # Opções: RELEASE, BETA, ALPHA, DEBUG
-      # - WA_RELEASE_CHANNEL=RELEASE
+      # WA_RELEASE_CHANNEL=RELEASE
 
       # Sub-plataforma para Web
       # Opções: WEB_BROWSER, APP_STORE, WIN_STORE, DARWIN, WIN32, WIN_HYBRID
-      # - WA_WEB_SUB_PLATFORM=WEB_BROWSER
+      # WA_WEB_SUB_PLATFORM=WEB_BROWSER
 
       # Sistema operacional
-      # - WA_OS_NAME=Mac OS X
-      # - WA_OS_VERSION=10.15.7
+      # WA_OS_NAME=Mac OS
+      # WA_OS_VERSION=10.15.7
 
       # Informações do dispositivo
-      # - WA_DEVICE_NAME=MacBook Pro
-      # - WA_MANUFACTURER=Apple
-      # - WA_DEVICE_BOARD=Mac
+      # WA_DEVICE_NAME=SAFARI
+      # WA_MANUFACTURER=Apple
+      # WA_DEVICE_BOARD=
 
       # Configurações de localização
-      # - WA_LOCALE_LANGUAGE=en
-      # - WA_LOCALE_COUNTRY=US
+      # WA_LOCALE_LANGUAGE=en
+      # WA_LOCALE_COUNTRY=US
 
       # Códigos de rede móvel
-      # - WA_MCC=000
-      # - WA_MNC=000
+      # WA_MCC=000
+      # WA_MNC=000
 
       # Tipo de conexão
       # Opções: WIFI_UNKNOWN, CELLULAR_UNKNOWN, CELLULAR_LTE, etc.
-      # - WA_CONNECT_TYPE=WIFI_UNKNOWN
+      # WA_CONNECT_TYPE=WIFI_UNKNOWN
 
       # Tipo de plataforma para DeviceProps
       # Opções: DESKTOP, CHROME, FIREFOX, SAFARI, EDGE, IPAD, etc.
-      # - WA_PLATFORM_TYPE=DESKTOP
+      # WA_PLATFORM_TYPE=SAFARI
 
-      # =================== SESSION & TIMEZONE ===================
-      - TZ=America/Sao_Paulo
-      - SESSION_DEVICE_NAME=ZuckZapGo
-
-      # =================== WEBHOOK INDIVIDUAL POR INSTANICA CONFIGURATIONS ===================
-      # "json" or "form" for the default
+      # =================== CONFIGURAÇÕES DE WEBHOOK INDIVIDUAL ===================
+      # WEBHOOK_FORMAT: Formato padrão do payload enviado para webhooks individuais (json ou form).
       - WEBHOOK_FORMAT=json
-
-      # Timeout principal da requisição HTTP
+      # WEBHOOK_TIMEOUT: Tempo máximo de espera por resposta do webhook individual antes de considerar timeout.
       - WEBHOOK_TIMEOUT=30s
-
-      # Número máximo de tentativas de retry
+      # WEBHOOK_MAX_RETRIES: Número de tentativas adicionais após uma falha no webhook individual.
       - WEBHOOK_MAX_RETRIES=3
-
-      # Delay inicial entre tentativas
+      # WEBHOOK_RETRY_DELAY: Intervalo inicial entre retentativas de webhook individual.
       - WEBHOOK_RETRY_DELAY=2s
-
-      # Delay máximo entre tentativas (cap do backoff exponencial)
+      # WEBHOOK_MAX_RETRY_DELAY: Limite superior para o backoff exponencial de webhook individual.
       - WEBHOOK_MAX_RETRY_DELAY=30s
-
-      # Fator de multiplicação para backoff exponencial
+      # WEBHOOK_BACKOFF_FACTOR: Fator multiplicador aplicado ao delay a cada nova tentativa.
       - WEBHOOK_BACKOFF_FACTOR=2.0
-
-      # Número máximo de requisições simultâneas
+      # WEBHOOK_MAX_CONCURRENCY: Quantidade máxima de entregas simultâneas de webhooks individuais.
       - WEBHOOK_MAX_CONCURRENCY=100
 
-      # =================== GLOBAL SKIP MEDIA DOWNLOAD ===================
-      # Enable/disable global skip media download for all users
+      # =================== BANCO DE DADOS ===================
+      # DATABASE_URL: String de conexão completa para o banco primário (Postgres/MySQL) usada pela aplicação.
+      - DATABASE_URL=postgres://zuckzapgo:zuckzapgo@localhost:5432/zuckzapgo?sslmode=disable&search_path=public
+      # DB_TYPE: Driver relacional preferido (postgres ou mysql) quando utilizar variáveis isoladas.
+      - DB_TYPE=postgres
+
+      # =================== FILTROS GLOBAIS DE EVENTOS ===================
+      # GLOBAL_SKIP_MEDIA_DOWNLOAD: Se true, desativa o download de mídias para todos os usuários.
       - GLOBAL_SKIP_MEDIA_DOWNLOAD=false
-      # Skip events from WhatsApp groups
-      - GLOBAL_SKIP_GROUPS=false
-      # Skip events from WhatsApp newsletters
-      - GLOBAL_SKIP_NEWSLETTERS=false
-      # Skip events from WhatsApp broadcasts and status updates
-      - GLOBAL_SKIP_BROADCASTS=false
-      # Skip user's own messages (sent messages)
-      - GLOBAL_SKIP_OWN_MESSAGES=false
-      # Skip call events (offers, accepts, terminates)
-      - GLOBAL_SKIP_CALLS=false
-      # Global default message for call rejection (default: 'Sorry, I cannot take calls at the moment.')
+      # GLOBAL_SKIP_GROUPS: Se true, ignora eventos originados em conversas de grupo.
+      - GLOBAL_SKIP_GROUPS=true
+      # GLOBAL_SKIP_NEWSLETTERS: Se true, descarta eventos vindos de newsletters.
+      - GLOBAL_SKIP_NEWSLETTERS=true
+      # GLOBAL_SKIP_BROADCASTS: Se true, não processa mensagens de listas de transmissão e status.
+      - GLOBAL_SKIP_BROADCASTS=true
+      # GLOBAL_SKIP_OWN_MESSAGES: Se true, ignora mensagens enviadas pelo próprio usuário.
+      - GLOBAL_SKIP_OWN_MESSAGES=true
+      # GLOBAL_SKIP_CALLS: Se true, bloqueia o processamento de eventos de chamadas.
+      - GLOBAL_SKIP_CALLS=true
+      # GLOBAL_CALL_REJECT_MESSAGE: Mensagem fixa enviada ao rejeitar automaticamente chamadas recebidas.
       - GLOBAL_CALL_REJECT_MESSAGE=Sorry, I cannot take calls at the moment.
-      # Global default call rejection type: 'busy', 'decline', or 'unavailable' (default: 'busy')
+      # GLOBAL_CALL_REJECT_TYPE: Tipo de rejeição aplicado (busy, decline ou unavailable).
       - GLOBAL_CALL_REJECT_TYPE=busy
 
-      # =================== GLOBAL S3 CONFIGURATION ===================
-      # Enable/disable global S3 for media processing
-      - GLOBAL_S3_ENABLED=false
-      # S3 endpoint (leave empty for AWS S3)
-      - GLOBAL_S3_ENDPOINT=https://s3.example.com
-      # S3 region
+      # =================== COMPORTAMENTO DE API ===================
+      # ECHO_API_MESSAGES_ENABLED: Quando true, gera eventos de confirmação para mensagens disparadas via API (echo).
+      - ECHO_API_MESSAGES_ENABLED=false
+
+      # =================== ARMAZENAMENTO GLOBAL S3 ===================
+      # GLOBAL_S3_ENABLED: Controla se mídias globais serão persistidas em um bucket S3.
+      - GLOBAL_S3_ENABLED=true
+      # GLOBAL_S3_ENDPOINT: Endpoint HTTP(S) do provedor S3; deixe vazio para AWS padrão.
+      - GLOBAL_S3_ENDPOINT=https://s3.setupautomatizado.com.br
+      # GLOBAL_S3_REGION: Região S3 utilizada na autenticação e geração de URLs.
       - GLOBAL_S3_REGION=us-east-1
-      # S3 bucket name for global media
-      - GLOBAL_S3_BUCKET=
-      # S3 access key
+      # GLOBAL_S3_BUCKET: Nome do bucket onde as mídias globais serão guardadas.
+      - GLOBAL_S3_BUCKET=zuckzapgo
+      # GLOBAL_S3_ACCESS_KEY: Access key do provedor S3 (deixe vazio para perfis IAM).
       - GLOBAL_S3_ACCESS_KEY=
-      # S3 secret key
+      # GLOBAL_S3_SECRET_KEY: Secret key do provedor S3 (deixe vazio para perfis IAM).
       - GLOBAL_S3_SECRET_KEY=
-      # Use path-style URLs (true for MinIO/compatible)
+      # GLOBAL_S3_PATH_STYLE: Quando true, utiliza path-style URLs (compatível com MinIO/outros provedores).
       - GLOBAL_S3_PATH_STYLE=true
-      # Custom public URL for S3 objects (obrigatório)
-      - GLOBAL_S3_PUBLIC_URL=https://s3.example.com
-      # Media delivery method: base64, url, or both
+      # GLOBAL_S3_PUBLIC_URL: URL pública usada para montar links acessíveis externamente.
+      - GLOBAL_S3_PUBLIC_URL=https://s3.setupautomatizado.com.br
+      # GLOBAL_S3_MEDIA_DELIVERY: Modo de entrega das mídias nos eventos (base64, url ou both).
       - GLOBAL_S3_MEDIA_DELIVERY=url
-      # Retention days for media (0 = no expiration)
-      - GLOBAL_S3_RETENTION_DAYS=0
-      # S3 ACL Configuration
-      # Set to true for AWS S3 buckets with "Bucket owner enforced" Object Ownership
-      # Set to false for legacy buckets or other S3-compatible providers that support ACLs
+      # GLOBAL_S3_RETENTION_DAYS: Quantidade de dias antes de expirar objetos armazenados (0 desativa expiração).
+      - GLOBAL_S3_RETENTION_DAYS=1
+      # GLOBAL_S3_DISABLE_ACL: Define se ACLs individuais serão suprimidos; true para buckets com Bucket Owner Enforced.
       - GLOBAL_S3_DISABLE_ACL=true
 
-      # =================== GLOBAL SQS CONFIGURATION ===================
+      # =================== DISTRIBUIÇÃO GLOBAL SQS ===================
+      # GLOBAL_SQS_ENABLED: Ativa o fan-out de eventos para uma fila Amazon SQS.
       - GLOBAL_SQS_ENABLED=false
+      # GLOBAL_SQS_REGION: Região AWS onde a fila SQS está provisionada.
       - GLOBAL_SQS_REGION=us-east-1
+      # GLOBAL_SQS_QUEUE_URL: URL completa da fila SQS alvo.
       - GLOBAL_SQS_QUEUE_URL=
+      # GLOBAL_SQS_PROFILE: Perfil AWS CLI usado localmente (opcional).
       - GLOBAL_SQS_PROFILE=
+      # GLOBAL_SQS_ACCESS_KEY: Access key AWS dedicada ao uso da fila.
       - GLOBAL_SQS_ACCESS_KEY=
+      # GLOBAL_SQS_SECRET_KEY: Secret key AWS correspondente.
       - GLOBAL_SQS_SECRET_KEY=
+      # GLOBAL_SQS_SESSION_TOKEN: Token temporário (STS) quando utilizado.
       - GLOBAL_SQS_SESSION_TOKEN=
+      # GLOBAL_SQS_ENDPOINT: Endpoint customizado para LocalStack ou provedores compatíveis.
       - GLOBAL_SQS_ENDPOINT=
+      # GLOBAL_SQS_FIFO: Indica se a fila utiliza modo FIFO.
       - GLOBAL_SQS_FIFO=false
+      # GLOBAL_SQS_MESSAGE_GROUP: Identificador do grupo de mensagens FIFO.
       - GLOBAL_SQS_MESSAGE_GROUP=zuckzapgo-global
+      # GLOBAL_SQS_DELAY_SECONDS: Delay padrão aplicado a cada mensagem publicada.
       - GLOBAL_SQS_DELAY_SECONDS=0
+      # GLOBAL_SQS_EVENTS: Eventos encaminhados para a fila (lista ou 'All').
       - GLOBAL_SQS_EVENTS=All
+      # GLOBAL_SQS_TIMEOUT: Timeout das operações de publicação na fila.
       - GLOBAL_SQS_TIMEOUT=5s
+      # GLOBAL_SQS_RETRY_DELAY: Intervalo entre retentativas em caso de falha.
       - GLOBAL_SQS_RETRY_DELAY=750ms
+      # GLOBAL_SQS_MAX_RETRIES: Quantidade máxima de tentativas antes de desistir.
       - GLOBAL_SQS_MAX_RETRIES=3
 
-      # =================== GLOBAL REDIS STREAM CONFIGURATION ===================
+      # =================== STREAMS REDIS GLOBAL ===================
+      # GLOBAL_REDIS_ENABLED: Ativa distribuição de eventos em Redis Streams globais.
       - GLOBAL_REDIS_ENABLED=false
-      - GLOBAL_REDIS_ADDRESS=redis_streams:6379
+      # GLOBAL_REDIS_ADDRESS: Endereço host:porta do servidor Redis alvo.
+      - GLOBAL_REDIS_ADDRESS=localhost:6379
+      # GLOBAL_REDIS_USERNAME: Usuário opcional para autenticação Redis ACL.
       - GLOBAL_REDIS_USERNAME=
+      # GLOBAL_REDIS_PASSWORD: Senha associada ao usuário Redis.
       - GLOBAL_REDIS_PASSWORD=
+      # GLOBAL_REDIS_TLS: Quando true, estabelece a conexão Redis via TLS.
       - GLOBAL_REDIS_TLS=false
+      # GLOBAL_REDIS_STREAM: Nome do stream onde os eventos serão escritos.
       - GLOBAL_REDIS_STREAM=zuckzapgo.events
+      # GLOBAL_REDIS_EVENTS: Eventos elegíveis para publicação em Redis.
       - GLOBAL_REDIS_EVENTS=All
+      # GLOBAL_REDIS_MAXLEN: Comprimento máximo do stream antes de truncar mensagens antigas.
       - GLOBAL_REDIS_MAXLEN=100000
+      # GLOBAL_REDIS_TRIM_APPROX: Se true, a poda do stream é aproximada (mais rápida).
       - GLOBAL_REDIS_TRIM_APPROX=true
+      # GLOBAL_REDIS_TIMEOUT: Timeout de operações com Redis.
       - GLOBAL_REDIS_TIMEOUT=2s
+      # GLOBAL_REDIS_RETRY_DELAY: Delay entre retentativas ao falhar.
       - GLOBAL_REDIS_RETRY_DELAY=500ms
+      # GLOBAL_REDIS_MAX_RETRIES: Quantidade máxima de tentativas antes de abortar.
       - GLOBAL_REDIS_MAX_RETRIES=3
 
-      # =================== GLOBAL WEBSOCKET CONFIGURATION ===================
+      # =================== ENTREGAS VIA WEBSOCKET ===================
+      # GLOBAL_WEBSOCKET_ENABLED: Habilita broadcast global de eventos via WebSocket.
       - GLOBAL_WEBSOCKET_ENABLED=false
+      # GLOBAL_WEBSOCKET_ENDPOINTS: Lista de endpoints ws:// ou wss:// separados por vírgula.
       - GLOBAL_WEBSOCKET_ENDPOINTS=
+      # GLOBAL_WEBSOCKET_EVENTS: Eventos encaminhados por WebSocket (lista ou 'All').
       - GLOBAL_WEBSOCKET_EVENTS=All
+      # GLOBAL_WEBSOCKET_ENABLE_COMPRESSION: Quando true, ativa compressão no transporte WebSocket.
       - GLOBAL_WEBSOCKET_ENABLE_COMPRESSION=true
+      # GLOBAL_WEBSOCKET_HEADERS: Cabeçalhos adicionais enviados na conexão WebSocket.
       - GLOBAL_WEBSOCKET_HEADERS=
+      # GLOBAL_WEBSOCKET_TIMEOUT: Tempo limite para estabelecer a conexão.
       - GLOBAL_WEBSOCKET_TIMEOUT=10s
+      # GLOBAL_WEBSOCKET_WRITE_TIMEOUT: Timeout aplicado durante o envio de mensagens.
       - GLOBAL_WEBSOCKET_WRITE_TIMEOUT=5s
+      # GLOBAL_WEBSOCKET_RETRY_DELAY: Delay inicial para novas tentativas de conexão.
       - GLOBAL_WEBSOCKET_RETRY_DELAY=2s
+      # GLOBAL_WEBSOCKET_MAX_RETRIES: Número máximo de tentativas de reconexão.
       - GLOBAL_WEBSOCKET_MAX_RETRIES=5
 
-      # =================== GLOBAL WEBHOOK CONFIGURATION ===================
-      # Enable/disable global webhook for all users
+      # =================== WEBHOOK GLOBAL ===================
+      # GLOBAL_WEBHOOK_ENABLED: Ativa entrega de eventos para um endpoint global.
       - GLOBAL_WEBHOOK_ENABLED=false
-      # URL endpoint to receive all global events
-      - GLOBAL_WEBHOOK_URL=https://hook.prod.setupautomatizado.com/webhook/global-events
-      # Event types to capture (comma-separated or "All")
+      # GLOBAL_WEBHOOK_URL: Endpoint HTTP que receberá todos os eventos globais.
+      - GLOBAL_WEBHOOK_URL=https://hook.prod.setupautomatizado.com.br/webhook/debug-zuckzapgo
+      # GLOBAL_WEBHOOK_EVENTS: Eventos filtrados e enviados ao webhook global.
       - GLOBAL_WEBHOOK_EVENTS=All
-      # HTTP request timeout for webhook calls
+      # GLOBAL_WEBHOOK_TIMEOUT: Tempo máximo para resposta do webhook global.
       - GLOBAL_WEBHOOK_TIMEOUT=30s
-      # Number of retry attempts for failed webhook calls
+      # GLOBAL_WEBHOOK_RETRY_COUNT: Total de retentativas em caso de falha.
       - GLOBAL_WEBHOOK_RETRY_COUNT=3
-      # Initial delay between retries
+      # GLOBAL_WEBHOOK_RETRY_DELAY: Delay inicial entre retentativas.
       - GLOBAL_WEBHOOK_RETRY_DELAY=2s
-      # Maximum delay between retries (exponential backoff cap)
+      # GLOBAL_WEBHOOK_MAX_RETRY_DELAY: Teto do backoff exponencial nas retentativas.
       - GLOBAL_WEBHOOK_MAX_RETRY_DELAY=30s
-      # Exponential backoff multiplier for retry delays
+      # GLOBAL_WEBHOOK_BACKOFF_FACTOR: Multiplicador aplicado ao delay a cada tentativa.
       - GLOBAL_WEBHOOK_BACKOFF_FACTOR=2.0
-      # Maximum concurrent webhook requests (production ready)
-      - GLOBAL_WEBHOOK_CONCURRENCY=100
+      # GLOBAL_WEBHOOK_CONCURRENCY: Quantidade máxima de envios simultâneos ao webhook global.
+      - GLOBAL_WEBHOOK_CONCURRENCY=50
 
-      # =================== GLOBAL RABBITMQ BASIC CONFIGURATION ===================
-      # Enable/disable global RabbitMQ for all users
+      # =================== RABBITMQ GLOBAL - HABILITAÇÃO ===================
+      # GLOBAL_RABBITMQ_ENABLED: Habilita fan-out global de eventos através do RabbitMQ.
       - GLOBAL_RABBITMQ_ENABLED=false
-      # RabbitMQ connection URL (production cluster)
-      - GLOBAL_RABBITMQ_URL=amqp://zuckzapgo:zuckzapgo@rabbitmq_zuckzapgo:5672/zuckzapgo
-      # Event types to publish (comma-separated or "All")
-      - GLOBAL_RABBITMQ_EVENTS=All
-      # Exchange name for global events
-      - GLOBAL_RABBITMQ_EXCHANGE=zuckzapgo.global.prod
+      # GLOBAL_RABBITMQ_URL: URL AMQP com usuário, senha e vhost do cluster RabbitMQ.
+      - GLOBAL_RABBITMQ_URL=amqp://zuckzapgo:zuckzapgo@localhost:5672/zuckzapgo
+      # GLOBAL_RABBITMQ_EVENTS: Eventos roteados para o exchange global.
+      - GLOBAL_RABBITMQ_EVENTS=Message
+      # GLOBAL_RABBITMQ_EXCHANGE: Exchange destino para publicação dos eventos globais.
+      - GLOBAL_RABBITMQ_EXCHANGE=zuckzapgo.global
+      # GLOBAL_RABBITMQ_EXCHANGE_TYPE: Tipo de exchange (topic, fanout, direct, etc).
       - GLOBAL_RABBITMQ_EXCHANGE_TYPE=topic
-      # Queue name for global events
-      # ===== OPÇÃO 1: FILA ÚNICA (EXEMPLO) =====
-      # GLOBAL_RABBITMQ_QUEUE=zuckzapgo.events
-      # GLOBAL_RABBITMQ_ROUTING_KEY=events.#
-      # (O curinga `#` entrega TODOS os eventos publicados nesse exchange; use apenas quando broadcast total for desejado.)
-      # ===== OPÇÃO 2: FILAS POR EVENTO (RECOMENDADO) =====
-      # O placeholder `{event_type}` PRECISA aparecer tanto no nome da fila quanto na routing key para evitar broadcast.
-      # Inclua `{user_id}` quando for necessário segregar por instância.
+      # GLOBAL_RABBITMQ_QUEUE: Template de nome das filas globais (aceita placeholders).
       - GLOBAL_RABBITMQ_QUEUE=zuckzapgo_{user_id}_{event_type}_events
-      - GLOBAL_RABBITMQ_QUEUE_TYPE=classic
-      # Routing key pattern for message routing (padrão)
+      # GLOBAL_RABBITMQ_ROUTING_KEY: Template de routing key usada nos bindings.
       - GLOBAL_RABBITMQ_ROUTING_KEY=events.{user_id}.{event_type}
-      # Make exchange and queue durable (survive broker restart)
+      # GLOBAL_RABBITMQ_QUEUE_TYPE: Tipo da fila declarada (classic, quorum, stream).
+      - GLOBAL_RABBITMQ_QUEUE_TYPE=classic
+      # GLOBAL_RABBITMQ_DURABLE: Define se filas/exchanges sobrevivem a reinícios do broker.
       - GLOBAL_RABBITMQ_DURABLE=true
-      # Auto-delete exchange/queue when not in use
+      # GLOBAL_RABBITMQ_AUTO_DELETE: Remove filas/exchanges automaticamente quando não houver consumidores.
       - GLOBAL_RABBITMQ_AUTO_DELETE=false
-      # Message delivery mode (2=persistent for production)
-      - GLOBAL_RABBITMQ_DELIVERY_MODE=2
-      # Exclusive queue for production stability
+      # GLOBAL_RABBITMQ_EXCLUSIVE: Se true, fila exclusiva para a conexão (não compartilhada).
       - GLOBAL_RABBITMQ_EXCLUSIVE=false
-      # No wait for queue creation
+      # GLOBAL_RABBITMQ_NO_WAIT: Evita aguardar confirmações nas declarações AMQP.
       - GLOBAL_RABBITMQ_NO_WAIT=false
+      # GLOBAL_RABBITMQ_DELIVERY_MODE: Modo de entrega: 1 não persistente, 2 persistente.
+      - GLOBAL_RABBITMQ_DELIVERY_MODE=2
 
-      # =================== GLOBAL RABBITMQ PERFORMANCE TUNING (PRODUCTION) ===================
-      # High-performance connection pool for production load
+      # =================== RABBITMQ GLOBAL - PERFORMANCE E RESILIÊNCIA ===================
+      # GLOBAL_RABBITMQ_CONNECTION_POOL_SIZE: Quantidade de conexões paralelas utilizadas para publicar eventos.
       - GLOBAL_RABBITMQ_CONNECTION_POOL_SIZE=50
-      # High worker count for concurrent message processing
+      # GLOBAL_RABBITMQ_WORKER_COUNT: Número de workers dedicados ao processamento global.
       - GLOBAL_RABBITMQ_WORKER_COUNT=100
-      # Large buffer for high-volume message handling
+      # GLOBAL_RABBITMQ_QUEUE_BUFFER_SIZE: Buffer interno de mensagens aguardando publicação.
       - GLOBAL_RABBITMQ_QUEUE_BUFFER_SIZE=100000
-      # Enable message batching for maximum throughput
+      # GLOBAL_RABBITMQ_ENABLE_BATCHING: Quando true, agrupa mensagens em lotes para ganho de throughput.
       - GLOBAL_RABBITMQ_ENABLE_BATCHING=true
-      # Large batch size for production efficiency
+      # GLOBAL_RABBITMQ_BATCH_SIZE: Quantidade máxima de mensagens em cada lote.
       - GLOBAL_RABBITMQ_BATCH_SIZE=1000
-      # Fast batch timeout for low latency
+      # GLOBAL_RABBITMQ_BATCH_TIMEOUT_MS: Tempo máximo (ms) aguardando completar um lote.
       - GLOBAL_RABBITMQ_BATCH_TIMEOUT_MS=100
-
-      # =================== GLOBAL RABBITMQ RELIABILITY & RESILIENCE ===================
-      # Circuit breaker: failures before opening circuit (production settings)
+      # GLOBAL_RABBITMQ_CIRCUIT_BREAKER_THRESHOLD: Falhas consecutivas necessárias para abrir o circuito.
       - GLOBAL_RABBITMQ_CIRCUIT_BREAKER_THRESHOLD=20
-      # Circuit breaker: longer timeout for production stability
+      # GLOBAL_RABBITMQ_CIRCUIT_BREAKER_TIMEOUT_S: Tempo de espera antes de testar reabertura do circuito.
       - GLOBAL_RABBITMQ_CIRCUIT_BREAKER_TIMEOUT_S=60
-      # Extended timeout for individual publish operations
-      - GLOBAL_RABBITMQ_PUBLISH_TIMEOUT_MS=10000
-      # More retry attempts for production reliability
+      # GLOBAL_RABBITMQ_PUBLISH_TIMEOUT_MS: Timeout por operação de publicação.
+      - GLOBAL_RABBITMQ_PUBLISH_TIMEOUT_MS=5000
+      # GLOBAL_RABBITMQ_MAX_RETRIES: Número máximo de retentativas por mensagem.
       - GLOBAL_RABBITMQ_MAX_RETRIES=5
-      # Shorter delay between retries for faster recovery
+      # GLOBAL_RABBITMQ_RETRY_DELAY_MS: Delay (ms) entre retentativas.
       - GLOBAL_RABBITMQ_RETRY_DELAY_MS=500
+      # GLOBAL_RABBITMQ_METRICS_INTERVAL_S: Intervalo (s) de coleta e emissão de métricas do transporte.
+      - GLOBAL_RABBITMQ_METRICS_INTERVAL_S=10
 
-      # =================== GLOBAL RABBITMQ MONITORING & LOGGING ===================
-      # Frequent metrics collection for production monitoring
-      - GLOBAL_RABBITMQ_METRICS_INTERVAL_S=5
-      # Enable detailed logging for production troubleshooting
-      - GLOBAL_RABBITMQ_ENABLE_DETAILED_LOGS=true
-      # Enable metrics logging for production monitoring
+      # =================== RABBITMQ GLOBAL - OBSERVABILIDADE ===================
+      # GLOBAL_RABBITMQ_ENABLE_DETAILED_LOGS: Quando true, habilita logs detalhados do transporte RabbitMQ.
+      - GLOBAL_RABBITMQ_ENABLE_DETAILED_LOGS=false
+      # GLOBAL_RABBITMQ_ENABLE_METRICS_LOG: Quando true, registra métricas periódicas no log.
       - GLOBAL_RABBITMQ_ENABLE_METRICS_LOG=true
-
-      # =================== GLOBAL RABBITMQ QOS & MESSAGE SETTINGS ===================
-      # High QoS prefetch for optimal message distribution
-      - GLOBAL_RABBITMQ_QOS_PREFETCH_COUNT=200
-      # Mandatory delivery for production reliability
+      # GLOBAL_RABBITMQ_QOS_PREFETCH_COUNT: Quantidade de mensagens pré-buscadas por consumidor.
+      - GLOBAL_RABBITMQ_QOS_PREFETCH_COUNT=100
+      # GLOBAL_RABBITMQ_MANDATORY: Se true, exige roteamento obrigatório (mensagens não roteadas retornam).
       - GLOBAL_RABBITMQ_MANDATORY=false
-      # No immediate flag for production stability
+      # GLOBAL_RABBITMQ_IMMEDIATE: Flag obsoleta do AMQP; mantenha false salvo compatibilidade legada.
       - GLOBAL_RABBITMQ_IMMEDIATE=false
-
-      # =================== GLOBAL RABBITMQ ADVANCED FEATURES (PRODUCTION) ===================
-      # Enable compression for bandwidth optimization in production
-      - GLOBAL_RABBITMQ_ENABLE_COMPRESSION=true
-      # Enable persistence for production data durability
+      # GLOBAL_RABBITMQ_ENABLE_COMPRESSION: Comprime payloads antes de publicar para reduzir banda.
+      - GLOBAL_RABBITMQ_ENABLE_COMPRESSION=false
+      # GLOBAL_RABBITMQ_ENABLE_PERSISTENCE: Garante persistência em disco das mensagens publicadas.
       - GLOBAL_RABBITMQ_ENABLE_PERSISTENCE=true
-      # Enable confirmations for production reliability
+      # GLOBAL_RABBITMQ_ENABLE_CONFIRMATION: Habilita publisher confirms para garantir recebimento pelo broker.
       - GLOBAL_RABBITMQ_ENABLE_CONFIRMATION=true
 
-      # =================== TRACING CONFIGURATION (OpenTelemetry + Jaeger) ===================
-      # Enable/disable distributed tracing
+      # =================== RABBITMQ POR INSTÂNCIA ===================
+      # RABBITMQ_CONNECTION_POOL_SIZE: Tamanho do pool de conexões dedicado a cada instância de cliente.
+      - RABBITMQ_CONNECTION_POOL_SIZE=50
+      # RABBITMQ_WORKER_COUNT: Total de workers concorrentes por instância.
+      - RABBITMQ_WORKER_COUNT=100
+      # RABBITMQ_QUEUE_BUFFER_SIZE: Buffer interno de mensagens por instância.
+      - RABBITMQ_QUEUE_BUFFER_SIZE=100000
+      # RABBITMQ_BATCH_SIZE: Quantidade de mensagens por lote em instâncias individuais.
+      - RABBITMQ_BATCH_SIZE=1000
+      # RABBITMQ_BATCH_TIMEOUT_MS: Timeout (ms) para completar lote individual.
+      - RABBITMQ_BATCH_TIMEOUT_MS=100
+      # RABBITMQ_PUBLISH_TIMEOUT_MS: Timeout de publicação por instância.
+      - RABBITMQ_PUBLISH_TIMEOUT_MS=5000
+      # RABBITMQ_MAX_RETRIES: Retentativas locais por mensagem.
+      - RABBITMQ_MAX_RETRIES=5
+      # RABBITMQ_RETRY_DELAY_MS: Delay (ms) entre retentativas locais.
+      - RABBITMQ_RETRY_DELAY_MS=500
+
+      # =================== TRACING DISTRIBUÍDO ===================
+      # TRACING_ENABLED: Ativa a instrumentação OpenTelemetry na aplicação.
       - TRACING_ENABLED=false
-      # Jaeger endpoint for OTLP HTTP traces
+      # JAEGER_ENDPOINT: Endpoint OTLP HTTP utilizado para enviar spans ao Jaeger.
       - JAEGER_ENDPOINT=http://localhost:14268/api/traces
-      # Sampling ratio (0.0 to 1.0) - 0.1 = 10% of requests
+      # JAEGER_SAMPLING_RATIO: Percentual de requisições amostradas (0.0 a 1.0).
       - JAEGER_SAMPLING_RATIO=0.1
-      # Service identification
+      # TRACING_SERVICE_NAME: Nome lógico do serviço reportado ao tracer.
       - TRACING_SERVICE_NAME=zuckzapgo
+      # TRACING_SERVICE_VERSION: Versão reportada nas tags de tracing.
       - TRACING_SERVICE_VERSION=v.1.2.5
-      # Environment (development, staging, production)
+      # TRACING_ENVIRONMENT: Identificador do ambiente (development, staging, production).
       - TRACING_ENVIRONMENT=development
 
-      # =================== MONITORING CONFIGURATION (Sentry) ===================
-      # Enable/disable error monitoring
+      # =================== MONITORAMENTO DE ERROS (SENTRY) ===================
+      # SENTRY_ENABLED: Liga/desliga a captura de exceções pela SDK do Sentry.
       - SENTRY_ENABLED=false
-      # Sentry DSN (get from Sentry project settings)
+      # SENTRY_DSN: DSN fornecido pelo projeto Sentry para autenticação.
       - SENTRY_DSN=
-      # Environment for error grouping
+      # SENTRY_ENVIRONMENT: Ambiente lógico usado para agrupar eventos no Sentry.
       - SENTRY_ENVIRONMENT=development
-      # Error sampling rate (0.0 to 1.0) - 1.0 = 100% of errors
+      # SENTRY_SAMPLE_RATE: Percentual de erros capturados (0.0 a 1.0).
       - SENTRY_SAMPLE_RATE=1.0
-      # Performance monitoring sample rate
+      # SENTRY_TRACES_SAMPLE_RATE: Percentual de transações de performance coletadas.
       - SENTRY_TRACES_SAMPLE_RATE=0.1
-      # Profiling sample rate (requires traces)
+      # SENTRY_PROFILES_SAMPLE_RATE: Percentual de perfis de CPU/memória coletados.
       - SENTRY_PROFILES_SAMPLE_RATE=0.1
 
-      # =================== GLOBAL EVENT PIPELINE ===================
-      # Persistent buffer configuration
-      #  - GLOBAL_EVENT_BUFFER_PATH: path to the SQLite WAL file for the persistent buffer
-      #  - GLOBAL_EVENT_BUFFER_VISIBILITY_TIMEOUT: lease duration for a dequeued event (e.g. "45s")
-      #  - GLOBAL_EVENT_BUFFER_RETRY_BASE: base backoff for retries (e.g. "5s")
-      #  - GLOBAL_EVENT_BUFFER_RETRY_MAX: maximum backoff for retries (e.g. "2m")
-      #  - GLOBAL_EVENT_BUFFER_MAX_ATTEMPTS: how many times an event can retry before being dropped
-      #  - GLOBAL_EVENT_BUFFER_ARCHIVE_RETENTION: keep delivered events in the archive for this duration (e.g. "24h")
-      #  - GLOBAL_EVENT_BUFFER_ARCHIVE_MAX_ROWS: cap the archive table length (0 disables)
-      #  - GLOBAL_EVENT_BUFFER_ARCHIVE_PRUNE_EVERY: prune frequency for archive rows
-      #  - GLOBAL_EVENT_BUFFER_WAL_CHECKPOINT: WAL checkpoint interval (number of operations)
-      - GLOBAL_EVENT_BUFFER_PATH=/app/buffer/global-events.db
+      # =================== MÉTRICAS PROMETHEUS ===================
+      # PROMETHEUS_ENABLED: Ativa a exportação de métricas para Prometheus.
+      - PROMETHEUS_ENABLED=false
+      # PROMETHEUS_METRICS_PATH: Path HTTP exposto com as métricas.
+      - PROMETHEUS_METRICS_PATH=/metrics
+      # METRICS_COLLECTION_INTERVAL: Frequência de coleta interna de métricas.
+      - METRICS_COLLECTION_INTERVAL=30s
+      # BUFFER_METRICS_ENABLED: Quando true, inclui métricas específicas do buffer.
+      - BUFFER_METRICS_ENABLED=true
+      # TRANSPORT_METRICS_ENABLED: Quando true, inclui métricas das integrações (RabbitMQ, SQS, etc.).
+      - TRANSPORT_METRICS_ENABLED=true
+
+      # =================== PIPELINE GLOBAL DE EVENTOS ===================
+      # GLOBAL_EVENT_BUFFER_USE_DATABASE: Se true, usa banco relacional como buffer persistente de eventos.
+      - GLOBAL_EVENT_BUFFER_USE_DATABASE=true
+      # GLOBAL_EVENT_BUFFER_VISIBILITY_TIMEOUT: Tempo de leasing antes de devolver o evento para a fila.
       - GLOBAL_EVENT_BUFFER_VISIBILITY_TIMEOUT=45s
+      # GLOBAL_EVENT_BUFFER_RETRY_BASE: Delay base para cálculo de backoff exponencial.
       - GLOBAL_EVENT_BUFFER_RETRY_BASE=5s
+      # GLOBAL_EVENT_BUFFER_RETRY_MAX: Limite máximo de delay entre tentativas.
       - GLOBAL_EVENT_BUFFER_RETRY_MAX=2m
+      # GLOBAL_EVENT_BUFFER_MAX_ATTEMPTS: Número máximo de tentativas de entrega por evento.
       - GLOBAL_EVENT_BUFFER_MAX_ATTEMPTS=12
-      - GLOBAL_EVENT_BUFFER_ARCHIVE_RETENTION=0
-      - GLOBAL_EVENT_BUFFER_ARCHIVE_MAX_ROWS=0
-      - GLOBAL_EVENT_BUFFER_ARCHIVE_PRUNE_EVERY=1000
-      - GLOBAL_EVENT_BUFFER_WAL_CHECKPOINT=5000
-
-      # Deduplication cache for global dispatcher
-      #  - GLOBAL_EVENT_DEDUP_WINDOW: how long an event key stays in the dedup cache
-      #  - GLOBAL_EVENT_DEDUP_MAX_KEYS: max entries stored in the dedup cache
+      # GLOBAL_EVENT_BUFFER_ARCHIVE_SUCCESS: Quando true, arquiva entregas bem-sucedidas além das falhas.
+      - GLOBAL_EVENT_BUFFER_ARCHIVE_SUCCESS=false
+      # GLOBAL_EVENT_DEDUP_WINDOW: Janela de tempo utilizada para deduplicar eventos idênticos.
       - GLOBAL_EVENT_DEDUP_WINDOW=2m
+      # GLOBAL_EVENT_DEDUP_MAX_KEYS: Quantidade máxima de chaves armazenadas no cache de deduplicação.
       - GLOBAL_EVENT_DEDUP_MAX_KEYS=50000
-
-      # Dispatcher batching and circuit breaker
-      #  - GLOBAL_EVENT_BATCH_SIZE: max envelopes grouped before dispatch
-      #  - GLOBAL_EVENT_BATCH_TIMEOUT: flush interval for partial batches
-      #  - GLOBAL_EVENT_CIRCUIT_MAX_FAILURES: open the circuit after consecutive failures
-      #  - GLOBAL_EVENT_CIRCUIT_RESET: time before a half-open probe is allowed
-      #  - GLOBAL_EVENT_CIRCUIT_COOLDOWN: sleep between circuit breaker checks
-      - GLOBAL_EVENT_BATCH_SIZE=5
+      # GLOBAL_EVENT_BATCH_SIZE: Quantidade de eventos agrupados por envio.
+      - GLOBAL_EVENT_BATCH_SIZE=1
+      # GLOBAL_EVENT_BATCH_TIMEOUT: Tempo máximo aguardando completar um lote.
       - GLOBAL_EVENT_BATCH_TIMEOUT=25ms
+      # GLOBAL_EVENT_CIRCUIT_MAX_FAILURES: Falhas consecutivas que disparam o circuito de proteção.
       - GLOBAL_EVENT_CIRCUIT_MAX_FAILURES=5
+      # GLOBAL_EVENT_CIRCUIT_RESET: Intervalo antes de testar reabertura do circuito.
       - GLOBAL_EVENT_CIRCUIT_RESET=30s
+      # GLOBAL_EVENT_CIRCUIT_COOLDOWN: Espera entre verificações enquanto o circuito está aberto.
       - GLOBAL_EVENT_CIRCUIT_COOLDOWN=1s
-
-      # Global skip cache TTL (shared between global and individual dispatch)
+      # GLOBAL_SKIP_CACHE_TTL: TTL do cache que evita reprocessar eventos filtrados.
       - GLOBAL_SKIP_CACHE_TTL=30s
+      # GLOBAL_EVENT_BUFFER_RETENTION_DAYS: Quantidade de dias mantendo registros ativos no buffer.
+      - GLOBAL_EVENT_BUFFER_RETENTION_DAYS=7
+      # GLOBAL_EVENT_BUFFER_ARCHIVE_RETENTION_DAYS: Dias de retenção dos registros arquivados.
+      - GLOBAL_EVENT_BUFFER_ARCHIVE_RETENTION_DAYS=30
+      # GLOBAL_EVENT_BUFFER_PRUNE_INTERVAL: Intervalo entre execuções de limpeza do buffer.
+      - GLOBAL_EVENT_BUFFER_PRUNE_INTERVAL=1h
+      # GLOBAL_EVENT_BUFFER_PRUNE_BATCH_SIZE: Número de registros processados por lote na limpeza.
+      - GLOBAL_EVENT_BUFFER_PRUNE_BATCH_SIZE=1000
+      # GLOBAL_EVENT_BUFFER_AUTO_PARTITION: Habilita criação automática de partições no banco do buffer.
+      - GLOBAL_EVENT_BUFFER_AUTO_PARTITION=false
+      # GLOBAL_EVENT_BUFFER_PARTITION_RETENTION_MONTHS: Meses mantidos por partição histórica do buffer.
+      - GLOBAL_EVENT_BUFFER_PARTITION_RETENTION_MONTHS=6
+
+      # =================== CONTROLE DE ENCERRAMENTO ===================
+      # SHUTDOWN_GRACE_PERIOD: Tempo máximo aguardado para finalizar workers antes de encerrar o processo.
+      - SHUTDOWN_GRACE_PERIOD=30s
     deploy:
       mode: replicated
       replicas: 1
