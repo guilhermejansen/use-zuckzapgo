@@ -657,7 +657,6 @@ curl -X POST "https://api.example.com/chat/send/text" \
 - 📧 **Email**: contato@setupautomatizado.com.br
 - 🐛 **Issues**: [GitHub Issues](https://github.com/guilhermejansen/use-zuckzapgo/issues)
 - 📚 **Documentação**: [README](https://github.com/guilhermejansen/use-zuckzapgo/blob/main/README.md)
-- 🚀 **Roadmap**: Em breve - v1.3.0 com WebSocket bidirecional e GraphQL
 
 ---
 
