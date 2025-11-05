@@ -870,6 +870,558 @@ networks:
 
 ```
 
+```yaml
+
+services:
+  manager-zuckzapgo:
+    image: setupautomatizado/manager-zuckzapgo:latest
+    networks:
+      - network_public
+    environment:
+      # Node.js
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
+
+      # Database
+      DATABASE_URL: postgresql://zuckzapgo:zuckzapgo@postgres_manager_zuckzapgo:5432/manager_zuckzapgo?schema=public
+
+      # Redis
+      REDIS_URL: redis://redis_manager_zuckzapgo:6379
+
+      # API Configuration
+      NEXT_PUBLIC_API_URL: https://api.seudominiodaapi.com
+      NEXT_PUBLIC_API_TIMEOUT: 30000
+      NEXT_PUBLIC_API_RETRY_ATTEMPTS: 3
+
+      # Logging
+      NEXT_PUBLIC_LOG_LEVEL: debug
+      NEXT_PUBLIC_ENABLE_CONSOLE_LOGS: true
+      NEXT_PUBLIC_LOG_FORMAT: pretty
+
+      # Timezone
+      TZ: America/Sao_Paulo
+
+      # Worker Concurrency Settings
+      WORKER_CONCURRENCY: 50
+      CAMPAIGN_WORKER_CONCURRENCY: 5
+
+      # Rate Limiting
+      MESSAGE_RATE_LIMIT_MAX: 100000
+      MESSAGE_RATE_LIMIT_DURATION: 1000
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.manager-zuckzapgo.rule=Host(`app.seudominiodomanager.com`)
+        - traefik.http.routers.manager-zuckzapgo.entrypoints=websecure
+        - traefik.http.routers.manager-zuckzapgo.tls.certresolver=letsencryptresolver
+        - traefik.http.services.manager-zuckzapgo.loadbalancer.server.port=3000
+        - traefik.http.routers.manager-zuckzapgo.service=manager-zuckzapgo
+        - traefik.http.services.manager-zuckzapgo.loadbalancer.passHostHeader=true
+
+  manager-zuckzapgo-workers:
+    image: setupautomatizado/manager-zuckzapgo:latest
+    networks:
+      - network_public
+    command: ["node", "dist/workers/lib/queue/start-workers.js"]
+    environment:
+      # Node.js
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
+
+      # Database
+      DATABASE_URL: postgresql://zuckzapgo:zuckzapgo@postgres_manager_zuckzapgo:5432/manager_zuckzapgo?schema=public
+
+      # Redis
+      REDIS_URL: redis://redis_manager_zuckzapgo:6379
+
+      # API Configuration
+      NEXT_PUBLIC_API_URL: https://api.zuckzapgo.com
+      NEXT_PUBLIC_API_TIMEOUT: 30000
+      NEXT_PUBLIC_API_RETRY_ATTEMPTS: 3
+
+      # Logging
+      NEXT_PUBLIC_LOG_LEVEL: debug
+      NEXT_PUBLIC_ENABLE_CONSOLE_LOGS: true
+      NEXT_PUBLIC_LOG_FORMAT: pretty
+
+      # Timezone
+      TZ: America/Sao_Paulo
+
+      # Worker Concurrency Settings
+      WORKER_CONCURRENCY: 50
+      CAMPAIGN_WORKER_CONCURRENCY: 5
+
+      # Rate Limiting
+      MESSAGE_RATE_LIMIT_MAX: 100000
+      MESSAGE_RATE_LIMIT_DURATION: 1000
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep -v grep | grep -q 'start-workers' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      mode: replicated
+      replicas: 5
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+
+
+  # ----------------------------------------------------------------------------
+  # PostgreSQL Database
+  # ----------------------------------------------------------------------------
+  postgres_manager_zuckzapgo:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: zuckzapgo
+      POSTGRES_PASSWORD: zuckzapgo
+      POSTGRES_DB: manager_zuckzapgo
+    volumes:
+      - postgres_manager_zuckzapgo_data:/var/lib/postgresql
+    networks:
+      - network_public
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zuckzapgo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ----------------------------------------------------------------------------
+  # Redis Cache & Queue
+  # ----------------------------------------------------------------------------
+  redis_manager_zuckzapgo:
+    image: redis:7
+    restart: unless-stopped
+    command: >
+      redis-server
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --save 60 1000
+      --appendonly yes
+    volumes:
+      - redis_manager_zuckzapgo_data:/data
+    networks:
+      - network_public
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  postgres_manager_zuckzapgo_data:
+    external: true
+    name: postgres_manager_zuckzapgo_data
+  redis_manager_zuckzapgo_data:
+    external: true
+    name: redis_manager_zuckzapgo_data
+
+networks:
+  network_public:
+    name: network_public
+    external: true
+
+```
+
+## 🎯 Manager ZuckZapGo - Plataforma de Gerenciamento Enterprise
+
+**Manager ZuckZapGo** é uma plataforma completa de gerenciamento e automação para a API ZuckZapGo, desenvolvida com Next.js 16, oferecendo uma interface moderna e intuitiva para gerenciar suas instâncias WhatsApp, campanhas de mensagens em massa e monitoramento em tempo real.
+
+### 📸 Screenshots da Interface
+
+<p align="center">
+  <img src="./screenshot-dashboard-dark.png" alt="Dashboard Manager ZuckZapGo" width="800">
+  <br>
+  <em>Dashboard com métricas em tempo real e visão geral das instâncias</em>
+</p>
+
+<p align="center">
+  <img src="./screenshot-instancias-dark.png" alt="Gerenciamento de Instâncias" width="800">
+  <br>
+  <em>Gerenciamento completo de instâncias WhatsApp com QR Code e status</em>
+</p>
+
+<p align="center">
+  <img src="./screenshot-eventos-dark.png" alt="Monitoramento de Eventos" width="800">
+  <br>
+  <em>Visualização em tempo real de eventos e mensagens processadas</em>
+</p>
+
+### ✨ Características Principais
+
+#### 🎨 Interface Moderna
+- **Design System**: Construído com shadcn/ui e Tailwind CSS
+- **Dark Mode**: Tema escuro por padrão com suporte a personalização
+- **Responsivo**: Interface adaptável para desktop, tablet e mobile
+- **Real-time Updates**: Atualizações automáticas via WebSocket e Server-Sent Events
+
+#### 📊 Dashboard Completo
+- **Métricas em Tempo Real**: Instâncias ativas, mensagens enviadas/recebidas, taxa de sucesso
+- **Gráficos Interativos**: Visualização de dados com Recharts
+- **Status das Instâncias**: Monitoramento de saúde e conectividade
+- **Histórico de Eventos**: Linha do tempo detalhada de todas as ações
+
+#### 📱 Gerenciamento de Instâncias
+- **Conexão Rápida**: QR Code integrado para autenticação WhatsApp
+- **Multi-Instâncias**: Gerenciamento simultâneo de múltiplas contas
+- **Configurações Avançadas**: Webhooks, S3, RabbitMQ, Redis Streams por instância
+- **Monitoramento**: Status de conexão, última atividade, métricas individuais
+
+#### 🚀 Campanhas de Mensagens em Massa
+- **Envio Programado**: Agendamento de campanhas com data e hora específicas
+- **Importação CSV**: Upload de listas de contatos via arquivo CSV
+- **Templates**: Mensagens com variáveis dinâmicas personalizadas
+- **Rate Limiting**: Controle de velocidade de envio para evitar bloqueios
+- **Relatórios**: Métricas detalhadas de sucesso, falhas e entregas
+
+#### 📈 Análise e Relatórios
+- **Eventos em Tempo Real**: Visualização de mensagens recebidas e enviadas
+- **Filtros Avançados**: Pesquisa por tipo de evento, instância, período
+- **Exportação**: Dados exportáveis em CSV para análise externa
+- **Webhooks History**: Histórico completo de entregas de webhooks
+
+#### 🔐 Segurança e Controle
+- **Autenticação**: Sistema de login com JWT tokens
+- **Permissões**: Controle granular de acesso por usuário
+- **Auditoria**: Logs detalhados de todas as ações administrativas
+- **Rate Limiting**: Proteção contra abuso e uso excessivo
+
+### 🛠️ Stack Tecnológica
+
+```yaml
+Frontend:
+  - Next.js 16 (App Router)
+  - React 19
+  - TypeScript
+  - Tailwind CSS
+  - shadcn/ui
+  - Recharts
+  - TanStack Query
+  - Zustand
+
+Backend:
+  - Next.js API Routes
+  - Prisma ORM
+  - BullMQ (Workers)
+  - Redis (Cache & Queue)
+  - PostgreSQL 18
+
+Infraestrutura:
+  - Docker & Docker Swarm
+  - Redis 7
+  - PostgreSQL 18
+  - Traefik (Reverse Proxy)
+```
+
+### 📦 Deployment com Docker Swarm
+
+O Manager ZuckZapGo é deployado em um stack separado para melhor isolamento e escalabilidade. Você pode conectá-lo à sua API ZuckZapGo através de variáveis de ambiente.
+
+#### Pré-requisitos
+```bash
+# Criar volumes externos
+docker volume create postgres_manager_zuckzapgo_data
+docker volume create redis_manager_zuckzapgo_data
+
+# Garantir que a rede pública existe
+docker network create --driver overlay network_public
+```
+
+#### Deploy via Portainer
+
+1. Acesse o Portainer
+2. Navegue até **Stacks** > **Add Stack**
+3. Cole o conteúdo do arquivo `docker-compose-swarm-manager.yaml`
+4. Ajuste as variáveis de ambiente conforme necessário
+5. Clique em **Deploy the stack**
+
+#### Configuração das Variáveis de Ambiente
+
+```yaml
+# Conexão com a API ZuckZapGo
+NEXT_PUBLIC_API_URL: https://api.seudominiodaapi.com
+
+# Database
+DATABASE_URL: postgresql://zuckzapgo:zuckzapgo@postgres_manager_zuckzapgo:5432/manager_zuckzapgo?schema=public
+
+# Redis para cache e filas
+REDIS_URL: redis://redis_manager_zuckzapgo:6379
+
+# Configurações de Workers
+WORKER_CONCURRENCY: 50              # Workers simultâneos para processamento geral
+CAMPAIGN_WORKER_CONCURRENCY: 5      # Workers dedicados para campanhas
+
+# Rate Limiting
+MESSAGE_RATE_LIMIT_MAX: 100000      # Máximo de mensagens por período
+MESSAGE_RATE_LIMIT_DURATION: 1000   # Duração do período em ms
+
+# Logging
+NEXT_PUBLIC_LOG_LEVEL: info         # Níveis: debug, info, warn, error
+NEXT_PUBLIC_ENABLE_CONSOLE_LOGS: false
+NEXT_PUBLIC_LOG_FORMAT: json        # Formatos: pretty, json
+```
+
+### 🔧 Arquitetura de Workers
+
+O Manager utiliza um sistema de workers baseado em BullMQ para processamento assíncrono:
+
+#### Serviço Principal (manager-zuckzapgo)
+- **Réplicas**: 1
+- **Função**: Interface web e API endpoints
+- **Recursos**: 4GB RAM, 1 CPU
+- **Porta**: 3000
+
+#### Workers (manager-zuckzapgo-workers)
+- **Réplicas**: 5 (escalável)
+- **Função**: Processamento de campanhas, eventos e tarefas em background
+- **Recursos**: 1GB RAM por worker
+- **Command**: `node dist/workers/lib/queue/start-workers.js`
+
+### 📊 Funcionalidades Detalhadas
+
+#### Dashboard de Métricas
+```
+📈 Visão Geral
+├── Instâncias Conectadas
+├── Mensagens Enviadas (Hoje/Semana/Mês)
+├── Mensagens Recebidas (Hoje/Semana/Mês)
+├── Taxa de Sucesso
+├── Campanhas Ativas
+└── Eventos Recentes
+
+📊 Gráficos
+├── Mensagens por Hora
+├── Taxa de Sucesso/Falha
+├── Distribuição por Instância
+└── Performance dos Workers
+```
+
+#### Gerenciamento de Instâncias
+```
+📱 Funcionalidades
+├── Criar Nova Instância
+├── Conectar via QR Code
+├── Desconectar/Reconectar
+├── Configurar Webhooks
+├── Configurar S3
+├── Configurar RabbitMQ
+├── Configurar Redis Streams
+├── Visualizar Logs
+└── Exportar Configurações
+```
+
+#### Sistema de Campanhas
+```
+🚀 Workflow
+├── 1. Criar Campanha
+│   ├── Nome e Descrição
+│   ├── Selecionar Instância
+│   └── Definir Template
+├── 2. Importar Contatos
+│   ├── Upload CSV
+│   ├── Validação
+│   └── Preview
+├── 3. Configurar Envio
+│   ├── Agendamento
+│   ├── Rate Limiting
+│   ├── Horário de Envio
+│   └── Tentativas
+├── 4. Executar Campanha
+│   ├── Processamento em Fila
+│   ├── Monitoramento em Tempo Real
+│   └── Relatórios de Progresso
+└── 5. Análise de Resultados
+    ├── Taxa de Entrega
+    ├── Erros e Falhas
+    ├── Tempo de Execução
+    └── Exportar Relatório
+```
+
+### 🔗 Integração com a API ZuckZapGo
+
+O Manager se conecta à API ZuckZapGo através de REST API:
+
+```typescript
+// Exemplo de integração
+const apiClient = {
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  timeout: 30000,
+  retryAttempts: 3,
+}
+
+// Endpoints utilizados
+GET    /users              // Listar instâncias
+POST   /users              // Criar instância
+GET    /users/:id/qrcode   // Obter QR Code
+POST   /send/text          // Enviar mensagem
+GET    /users/:id/status   // Status da instância
+PUT    /users/:id/webhook  // Configurar webhook
+```
+
+### 🎯 Casos de Uso
+
+#### 1. Atendimento ao Cliente
+- Múltiplos atendentes com instâncias separadas
+- Dashboard centralizado para supervisão
+- Métricas de tempo de resposta e satisfação
+
+#### 2. Marketing e Vendas
+- Campanhas segmentadas por público
+- Acompanhamento de conversões
+- Relatórios de performance
+
+#### 3. Automação Empresarial
+- Notificações transacionais
+- Lembretes automáticos
+- Integrações com CRM/ERP
+
+#### 4. Suporte Técnico
+- Sistema de tickets integrado
+- Base de conhecimento
+- Histórico completo de interações
+
+### 🚀 Começando com o Manager
+
+#### 1. Deploy da Stack do Manager
+```bash
+# Deploy completo (manager + workers + postgres + redis)
+docker stack deploy -c docker-compose-swarm-manager.yaml manager-stack
+```
+
+#### 2. Acesse a Interface
+```
+URL: https://app.seudominiodomanager.com
+```
+
+#### 3. Primeira Configuração
+1. Crie sua primeira instância
+2. Conecte via QR Code
+3. Configure webhook (opcional)
+4. Teste enviando uma mensagem
+
+#### 4. Crie sua Primeira Campanha
+1. Acesse "Campanhas"
+2. Clique em "Nova Campanha"
+3. Faça upload do CSV com contatos
+4. Configure a mensagem e variáveis
+5. Agende e execute
+
+### 📋 Requisitos do Sistema
+
+```yaml
+Mínimo:
+  - CPU: 2 cores
+  - RAM: 6GB (4GB manager + 2GB workers/db)
+  - Storage: 20GB
+  - Network: 100Mbps
+
+Recomendado:
+  - CPU: 4 cores
+  - RAM: 12GB (4GB manager + 5GB workers + 3GB db/redis)
+  - Storage: 50GB SSD
+  - Network: 1Gbps
+
+Para Alta Performance:
+  - CPU: 8+ cores
+  - RAM: 24GB+
+  - Storage: 100GB+ NVMe SSD
+  - Network: 10Gbps
+  - Workers: 10+ réplicas
+```
+
+### 🔐 Segurança
+
+- **HTTPS Obrigatório**: Comunicação criptografada via Traefik + Let's Encrypt
+- **JWT Authentication**: Tokens seguros para autenticação de usuários
+- **Rate Limiting**: Proteção contra abuso e ataques DDoS
+- **CORS Configurado**: Controle de origens permitidas
+- **Senhas Hashed**: bcrypt para armazenamento seguro
+- **SQL Injection Protection**: Queries parametrizadas via Prisma
+- **XSS Protection**: Sanitização de inputs e outputs
+
+### 📈 Escalabilidade
+
+O Manager é projetado para escalar horizontalmente:
+
+```yaml
+# Escalar workers
+docker service scale manager-stack_manager-zuckzapgo-workers=10
+
+# Escalar instância principal (com load balancer)
+docker service scale manager-stack_manager-zuckzapgo=2
+
+# Configurar Redis Cluster (para alta disponibilidade)
+# Configurar PostgreSQL com réplicas de leitura
+```
+
+### 🆘 Troubleshooting
+
+#### Workers não processam mensagens
+```bash
+# Verificar logs dos workers
+docker service logs manager-stack_manager-zuckzapgo-workers
+
+# Verificar conexão com Redis
+docker exec -it $(docker ps -q -f name=redis_manager) redis-cli PING
+
+# Limpar fila travada
+docker exec -it $(docker ps -q -f name=redis_manager) redis-cli FLUSHALL
+```
+
+#### Performance degradada
+```bash
+# Verificar uso de recursos
+docker stats
+
+# Aumentar workers
+docker service scale manager-stack_manager-zuckzapgo-workers=10
+
+# Otimizar PostgreSQL
+# Ajustar shared_buffers, work_mem, etc.
+```
+
+### 📚 Documentação Adicional
+
+- **API Documentation**: [Swagger UI](https://app.seudominiodomanager.com/api-docs)
+- **Postman Collection**: Disponível no repositório
+- **Video Tutorials**: [YouTube Channel](#)
+- **Community Support**: [Discord Server](#)
+
+---
+
 ## 🔧 Integrações
 
 ### N8N

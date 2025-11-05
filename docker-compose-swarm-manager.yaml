@@ -1,0 +1,200 @@
+services:
+  manager-zuckzapgo:
+    image: setupautomatizado/manager-zuckzapgo:latest
+    networks:
+      - network_public
+    environment:
+      # Environment: development | production | test
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
+
+      # Database
+      DATABASE_URL: postgresql://zuckzapgo:zuckzapgo@postgres_manager_zuckzapgo:5432/manager_zuckzapgo?schema=public
+
+      # Redis
+      REDIS_URL: redis://redis_manager_zuckzapgo:6379
+
+      # API Configuration
+      NEXT_PUBLIC_API_URL: https://api.seudominiodaapi.com
+      NEXT_PUBLIC_API_TIMEOUT: 30000
+      NEXT_PUBLIC_API_RETRY_ATTEMPTS: 3
+
+      # Log Level: debug | info | warn | error
+      # Development: debug (shows all logs)
+      # Production: error (only errors)
+      NEXT_PUBLIC_LOG_LEVEL: debug
+      # Enable Console Logs in Browser
+      # Development: true
+      # Production: false (improves performance)
+      NEXT_PUBLIC_ENABLE_CONSOLE_LOGS: true
+      # Log Format: pretty | json
+      # Development: pretty (human-readable with colors)
+      # Production: json (structured for log aggregation)
+      NEXT_PUBLIC_LOG_FORMAT: pretty
+
+      # Timezone
+      TZ: America/Sao_Paulo
+
+      # Worker Concurrency Settings
+      WORKER_CONCURRENCY: 50
+      CAMPAIGN_WORKER_CONCURRENCY: 5
+
+      # Rate Limiting
+      MESSAGE_RATE_LIMIT_MAX: 100000
+      MESSAGE_RATE_LIMIT_DURATION: 1000
+    healthcheck:
+      test: ["CMD", "node", "healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      mode: replicated
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      resources:
+        limits:
+          cpus: "1"
+          memory: 4G
+      labels:
+        - traefik.enable=true
+        - traefik.http.routers.manager-zuckzapgo.rule=Host(`app.seudominiodomanager.com`)
+        - traefik.http.routers.manager-zuckzapgo.entrypoints=websecure
+        - traefik.http.routers.manager-zuckzapgo.tls.certresolver=letsencryptresolver
+        - traefik.http.services.manager-zuckzapgo.loadbalancer.server.port=3000
+        - traefik.http.routers.manager-zuckzapgo.service=manager-zuckzapgo
+        - traefik.http.services.manager-zuckzapgo.loadbalancer.passHostHeader=true
+
+  manager-zuckzapgo-workers:
+    image: setupautomatizado/manager-zuckzapgo:latest
+    networks:
+      - network_public
+    command: ["node", "dist/workers/lib/queue/start-workers.js"]
+    environment:
+      # Environment: development | production | test
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: "0.0.0.0"
+
+      # Database
+      DATABASE_URL: postgresql://zuckzapgo:zuckzapgo@postgres_manager_zuckzapgo:5432/manager_zuckzapgo?schema=public
+
+      # Redis
+      REDIS_URL: redis://redis_manager_zuckzapgo:6379
+
+      # API Configuration
+      NEXT_PUBLIC_API_URL: https://api.seudominiodaapi.com
+      NEXT_PUBLIC_API_TIMEOUT: 30000
+      NEXT_PUBLIC_API_RETRY_ATTEMPTS: 3
+
+      # Log Level: debug | info | warn | error
+      # Development: debug (shows all logs)
+      # Production: error (only errors)
+      NEXT_PUBLIC_LOG_LEVEL: debug
+      # Enable Console Logs in Browser
+      # Development: true
+      # Production: false (improves performance)
+      NEXT_PUBLIC_ENABLE_CONSOLE_LOGS: true
+      # Log Format: pretty | json
+      # Development: pretty (human-readable with colors)
+      # Production: json (structured for log aggregation)
+      NEXT_PUBLIC_LOG_FORMAT: pretty
+
+      # Timezone
+      TZ: America/Sao_Paulo
+
+      # Worker Concurrency Settings
+      WORKER_CONCURRENCY: 50
+      CAMPAIGN_WORKER_CONCURRENCY: 5
+
+      # Rate Limiting
+      MESSAGE_RATE_LIMIT_MAX: 100000
+      MESSAGE_RATE_LIMIT_DURATION: 1000
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "ps aux | grep -v grep | grep -q 'start-workers' || exit 1",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    deploy:
+      mode: replicated
+      replicas: 5
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+
+  # ----------------------------------------------------------------------------
+  # PostgreSQL Database
+  # ----------------------------------------------------------------------------
+  postgres_manager_zuckzapgo:
+    image: postgres:18
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: zuckzapgo
+      POSTGRES_PASSWORD: zuckzapgo
+      POSTGRES_DB: manager_zuckzapgo
+    volumes:
+      - postgres_manager_zuckzapgo_data:/var/lib/postgresql
+    networks:
+      - network_public
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zuckzapgo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ----------------------------------------------------------------------------
+  # Redis Cache & Queue
+  # ----------------------------------------------------------------------------
+  redis_manager_zuckzapgo:
+    image: redis:7
+    restart: unless-stopped
+    command: >
+      redis-server
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --save 60 1000
+      --appendonly yes
+    volumes:
+      - redis_manager_zuckzapgo_data:/data
+    networks:
+      - network_public
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+
+volumes:
+  postgres_manager_zuckzapgo_data:
+    external: true
+    name: postgres_manager_zuckzapgo_data
+  redis_manager_zuckzapgo_data:
+    external: true
+    name: redis_manager_zuckzapgo_data
+
+networks:
+  network_public:
+    name: network_public
+    external: true
