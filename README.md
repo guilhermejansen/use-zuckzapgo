@@ -95,9 +95,14 @@ services:
       # SERVER_IP: Endereço IP público divulgado para integrações externas que exigem IP fixo; deixe vazio se usar DNS.
       - SERVER_IP=
 
+      # Healthcheck
+      - APP_ENV=production
+      - APP_REGION=br-central-1
+      - GIT_COMMIT=local-build
+
       # =================== ENDEREÇOS DA APLICAÇÃO ===================
       # ZUCKZAPGO_ADDRESS: URL base publicada em todos os eventos (webhook, filas, sockets) indicando a origem da instância.
-      - ZUCKZAPGO_ADDRESS=https://go.setupautomatizado.com
+      - ZUCKZAPGO_ADDRESS=https://api.seudominiodaapi.com
       # ZUCKZAPGO_PORT: Porta HTTP exposta pelo backend; precisa coincidir com o mapeamento de portas do container.
       - ZUCKZAPGO_PORT=8080
 
@@ -113,7 +118,7 @@ services:
 
       # =================== AUTENTICAÇÃO INTERNA ===================
       # ZUCKZAPGO_ADMIN_TOKEN: Token estático exigido em endpoints administrativos protegidos da API.
-      - ZUCKZAPGO_ADMIN_TOKEN=H4Zbhw72PBKdTIgS
+      - ZUCKZAPGO_ADMIN_TOKEN=SEUTOKENADMIN
 
       # =================== IDENTIDADE DA SESSÃO ===================
       # SESSION_DEVICE_NAME: Nome apresentado ao WhatsApp para identificar o dispositivo da sessão global.
@@ -224,7 +229,7 @@ services:
       # WEBHOOK_RETRY_DELAY: Intervalo inicial entre retentativas de webhook individual.
       - WEBHOOK_RETRY_DELAY=2s
       # WEBHOOK_MAX_RETRY_DELAY: Limite superior para o backoff exponencial de webhook individual.
-      - WEBHOOK_MAX_RETRY_DELAY=30s
+      - WEBHOOK_MAX_RETRY_DELAY=60s
       # WEBHOOK_BACKOFF_FACTOR: Fator multiplicador aplicado ao delay a cada nova tentativa.
       - WEBHOOK_BACKOFF_FACTOR=2.0
       # WEBHOOK_MAX_CONCURRENCY: Quantidade máxima de entregas simultâneas de webhooks individuais.
@@ -232,7 +237,7 @@ services:
 
       # =================== BANCO DE DADOS ===================
       # DATABASE_URL: String de conexão completa para o banco primário (Postgres/MySQL) usada pela aplicação.
-      - DATABASE_URL=postgres://zuckzapgo:zuckzapgo@localhost:5432/zuckzapgo?sslmode=disable&search_path=public
+      - DATABASE_URL=postgres://zuckzapgo:zuckzapgo@postgres_zuckzapgo:5432/zuckzapgo?sslmode=disable&search_path=public
       # DB_TYPE: Driver relacional preferido (postgres ou mysql) quando utilizar variáveis isoladas.
       - DB_TYPE=postgres
 
@@ -364,7 +369,7 @@ services:
       # GLOBAL_WEBHOOK_ENABLED: Ativa entrega de eventos para um endpoint global.
       - GLOBAL_WEBHOOK_ENABLED=false
       # GLOBAL_WEBHOOK_URL: Endpoint HTTP que receberá todos os eventos globais.
-      - GLOBAL_WEBHOOK_URL=https://hook.prod.setupautomatizado.com.br/webhook/debug-zuckzapgo
+      - GLOBAL_WEBHOOK_URL=https://hook.webhook.seudominio.com.br/webhook/debug-zuckzapgo
       # GLOBAL_WEBHOOK_EVENTS: Eventos filtrados e enviados ao webhook global.
       - GLOBAL_WEBHOOK_EVENTS=All
       # GLOBAL_WEBHOOK_TIMEOUT: Tempo máximo para resposta do webhook global.
@@ -384,7 +389,7 @@ services:
       # GLOBAL_RABBITMQ_ENABLED: Habilita fan-out global de eventos através do RabbitMQ.
       - GLOBAL_RABBITMQ_ENABLED=false
       # GLOBAL_RABBITMQ_URL: URL AMQP com usuário, senha e vhost do cluster RabbitMQ.
-      - GLOBAL_RABBITMQ_URL=amqp://zuckzapgo:zuckzapgo@localhost:5672/zuckzapgo
+      - GLOBAL_RABBITMQ_URL=amqp://zuckzapgo:zuckzapgo@rabbitmq_zuckzapgo:5672/zuckzapgo
       # GLOBAL_RABBITMQ_EVENTS: Eventos roteados para o exchange global.
       - GLOBAL_RABBITMQ_EVENTS=Message
       # GLOBAL_RABBITMQ_EXCHANGE: Exchange destino para publicação dos eventos globais.
@@ -480,7 +485,7 @@ services:
       # TRACING_SERVICE_NAME: Nome lógico do serviço reportado ao tracer.
       - TRACING_SERVICE_NAME=zuckzapgo
       # TRACING_SERVICE_VERSION: Versão reportada nas tags de tracing.
-      - TRACING_SERVICE_VERSION=v.1.2.5
+      - TRACING_SERVICE_VERSION=v1.2.6
       # TRACING_ENVIRONMENT: Identificador do ambiente (development, staging, production).
       - TRACING_ENVIRONMENT=development
 
@@ -555,6 +560,36 @@ services:
       # =================== CONTROLE DE ENCERRAMENTO ===================
       # SHUTDOWN_GRACE_PERIOD: Tempo máximo aguardado para finalizar workers antes de encerrar o processo.
       - SHUTDOWN_GRACE_PERIOD=30s
+
+      # =================== EVENT MONITORING SSE CONFIGURATION ===================
+      # Enable real-time event monitoring via Server-Sent Events
+      - MONITORING_ENABLED=false
+      # Maximum concurrent SSE clients connected
+      - MONITORING_MAX_CLIENTS=100
+      # SSE heartbeat interval (keep-alive)
+      - MONITORING_HEARTBEAT_INTERVAL=30s
+      # Event notification buffer size
+      - MONITORING_EVENT_BUFFER_SIZE=10000
+      # Number of worker goroutines processing events
+      - MONITORING_WORKER_COUNT=5
+      # Memory cache TTL for query results
+      - MONITORING_CACHE_TTL=5m
+      # Cache cleanup interval (removes expired entries)
+      - MONITORING_CACHE_CLEANUP_INTERVAL=1m
+      # Session token TTL (for SSE authentication)
+      - MONITORING_SESSION_TOKEN_TTL=5m
+      # Maximum events per page for history endpoint
+      - MONITORING_MAX_PAGE_SIZE=1000
+      # Default page size for history endpoint
+      - MONITORING_DEFAULT_PAGE_SIZE=100
+      # Enable/disable persistence for monitoring events (set to false to keep only in-memory stream)
+      - MONITORING_STORAGE_ENABLED=true
+      # Retention window (in days) for monitoring_events table when storage is enabled
+      - MONITORING_RETENTION_DAYS=7
+      # Interval between automatic prune runs (e.g. 12h, 24h)
+      - MONITORING_PRUNE_INTERVAL=24h
+      # Absolute base URL returned in stream_url (leave empty to fall back to ZUCKZAPGO_ADDRESS or http://localhost:<port>)
+      - MONITORING_STREAM_BASE_URL=https://api.seudominiodaapi.com
     deploy:
       mode: replicated
       replicas: 1
@@ -564,14 +599,11 @@ services:
         constraints: [node.role == manager]
       resources:
         limits:
-          cpus: "2" # Increased for RabbitMQ Global performance
-          memory: 2GB # Increased for high-throughput message processing
-        reservations:
-          cpus: "1"
-          memory: 1GB
+          cpus: "1" # Increased for RabbitMQ Global performance
+          memory: 1GB # Increased for high-throughput message processing
       labels:
         - traefik.enable=true
-        - traefik.http.routers.zuckzapgo_private.rule=Host(`api.zuckzapgo.app`)
+        - traefik.http.routers.zuckzapgo_private.rule=Host(`api.seudominiodaapi.com`)
         - traefik.http.routers.zuckzapgo_private.entrypoints=websecure
         - traefik.http.routers.zuckzapgo_private.priority=1
         - traefik.http.routers.zuckzapgo_private.tls.certresolver=letsencryptresolver
@@ -744,51 +776,51 @@ services:
   #         cpus: "0.25"
   #         memory: 256M
   #   environment:
-  # Enable OTLP collector (required for OpenTelemetry)
-  # - COLLECTOR_OTLP_ENABLED=true
-  # Storage configuration for production
-  # For development: use memory
-  # For production: configure external storage (Elasticsearch, Cassandra, etc)
-  # - SPAN_STORAGE_TYPE=memory
-  # - MEMORY_MAX_TRACES=50000
-  # Sampling configuration
-  #   - SAMPLING_STRATEGIES_FILE=/etc/jaeger/sampling_strategies.json
-  # ports:
-  # Jaeger UI - Web interface to view traces
-  # - target: 16686
-  #   published: 16686
-  #   protocol: tcp
-  #   mode: ingress
-  # OTLP HTTP receiver - used by ZuckZapGo to send traces
-  # - target: 4318
-  #   published: 4318
-  #   protocol: tcp
-  #   mode: ingress
-  # OTLP gRPC receiver (optional)
-  # - target: 4317
-  #   published: 4317
-  #   protocol: tcp
-  #   mode: ingress
-  # Jaeger Collector HTTP (legacy - for compatibility)
-  # - target: 14268
-  #   published: 14268
-  #   protocol: tcp
-  #   mode: ingress
-  # Admin port for health checks
-  #   - target: 14269
-  #     published: 14269
-  #     protocol: tcp
-  #     mode: host
-  # networks:
-  #   - network_public
-  # healthcheck:
-  #   test: ["CMD", "wget", "--spider", "-q", "http://localhost:14269/"]
-  #   interval: 30s
-  #   timeout: 10s
-  #   retries: 3
-  #   start_period: 20s
-  # volumes:
-  #   - jaeger_data_zuckzapgo:/tmp/jaeger
+  #     # Enable OTLP collector (required for OpenTelemetry)
+  #     - COLLECTOR_OTLP_ENABLED=true
+  #     # Storage configuration for production
+  #     # For development: use memory
+  #     # For production: configure external storage (Elasticsearch, Cassandra, etc)
+  #     - SPAN_STORAGE_TYPE=memory
+  #     - MEMORY_MAX_TRACES=50000
+  #     # Sampling configuration
+  #     - SAMPLING_STRATEGIES_FILE=/etc/jaeger/sampling_strategies.json
+  #   ports:
+  #     # Jaeger UI - Web interface to view traces
+  #     - target: 16686
+  #       published: 16686
+  #       protocol: tcp
+  #       mode: ingress
+  #     # OTLP HTTP receiver - used by ZuckZapGo to send traces
+  #     - target: 4318
+  #       published: 4318
+  #       protocol: tcp
+  #       mode: ingress
+  #     # OTLP gRPC receiver (optional)
+  #     - target: 4317
+  #       published: 4317
+  #       protocol: tcp
+  #       mode: ingress
+  #     # Jaeger Collector HTTP (legacy - for compatibility)
+  #     - target: 14268
+  #       published: 14268
+  #       protocol: tcp
+  #       mode: ingress
+  #     # Admin port for health checks
+  #     - target: 14269
+  #       published: 14269
+  #       protocol: tcp
+  #       mode: host
+  #   networks:
+  #     - network_public
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--spider", "-q", "http://localhost:14269/"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 20s
+  #   volumes:
+  #     - jaeger_data_zuckzapgo:/tmp/jaeger
 
 volumes:
   postgres_data_zuckzapgo:
