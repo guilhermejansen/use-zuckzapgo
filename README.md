@@ -74,7 +74,7 @@ Ao assinar, você pode instalar o ZuckZapGo em sua própria máquina ou servidor
 
 ## 🚀 Quick Start
 
-## 🧩 Docker Compose (Swarm) — v1.2.4
+## 🧩 Docker Compose (Swarm) — v1.2.6
 
 ```yaml
 # =================== ZUCKZAPGO STACK PARA PORTAINER ===================
