@@ -11,7 +11,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 - **Gerenciamento Completo de Contatos**: Novos endpoints para adicionar, atualizar, bloquear e gerenciar contatos da lista do WhatsApp
 - **Informações de Dispositivo em Eventos**: Todos os eventos agora incluem `pushName` (nome de exibição) e `businessName` (nome comercial quando aplicável)
-- **Atualização de Perfil Autenticado**: Usuários podem atualizar suas próprias informações (nome, email, senha) com invalidação automática do token anterior
+- **Atualização de Perfil Autenticado**: Usuários podem atualizar nome e/ou token de autenticação com validação e invalidação automática
 - **Melhorias em Enquetes**: Reconstrução completa de metadados de poll, incluindo opções, votos e estatísticas
 - **Context.Context em Toda API**: Refatoração completa adicionando suporte a contexto em todos os métodos para melhor controle de timeout e cancelamento
 - **Monitoramento em Tempo Real**: Stream SSE (Server-Sent Events) para telemetria e diagnósticos ao vivo
@@ -28,18 +28,18 @@ A API agora oferece endpoints dedicados para gerenciar sua lista de contatos do 
   - Adicione novos contatos à sua lista
   - Suporte para nome personalizado (FirstName, FullName)
   - Retorna informações completas do contato adicionado
-  
+
 - ✅ **Atualizar Contatos**: `POST /user/contacts/update`
   - Atualize informações de contatos existentes
   - Modifique nome de exibição e outras propriedades
-  
+
 - ✅ **Bloquear/Desbloquear**: `POST /user/contacts/block`, `POST /user/contacts/unblock`
   - Bloqueie contatos indesejados diretamente pela API
   - Desbloqueie contatos quando necessário
-  
+
 - ✅ **Listar Bloqueados**: `GET /user/contacts/blocked`
   - Consulte todos os contatos atualmente bloqueados
-  
+
 - ✅ **Especificação OpenAPI**: Documentação completa no Swagger
 
 **Exemplo - Adicionar Contato:**
@@ -48,25 +48,9 @@ curl -X POST "https://api.example.com/user/contacts/add" \
   -H "token: <USER_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{
-    "Phone": "5511999999999",
-    "FirstName": "João",
-    "FullName": "João da Silva"
+    "phone": "5511999999999",
+    "full_name": "João Silva"
   }'
-```
-
-**Resposta:**
-```json
-{
-  "success": true,
-  "message": "Contato adicionado com sucesso",
-  "data": {
-    "jid": "5511999999999@s.whatsapp.net",
-    "pushName": "João",
-    "businessName": "",
-    "firstName": "João",
-    "fullName": "João da Silva"
-  }
-}
 ```
 
 #### 📱 Informações de Dispositivo em Eventos
@@ -117,27 +101,24 @@ Todos os eventos agora incluem informações ricas sobre o dispositivo/contato:
 
 Usuários podem atualizar suas próprias informações de forma segura:
 
-- ✅ **Endpoint**: `PUT /user/profile`
+- ✅ **Endpoint**: `POST /user/update`
 - ✅ **Campos Editáveis**:
-  - `name`: Nome de exibição do usuário
-  - `email`: Email de contato
-  - `password`: Nova senha (com validação de senha atual)
+  - `name`: Nome de exibição do usuário (1-255 caracteres)
+  - `token`: Novo token de autenticação (mínimo 8 caracteres)
 - ✅ **Segurança**:
-  - Validação de senha atual obrigatória para alterações sensíveis
-  - Invalidação automática do token anterior após atualização
-  - Novo token gerado e retornado
+  - Validação de token único (não pode estar em uso por outro usuário)
+  - Invalidação automática do token anterior após atualização de token
+  - Token atualizado retornado na resposta
   - Logout forçado de sessões anteriores
 
 **Exemplo:**
 ```bash
-curl -X PUT "https://api.example.com/user/profile" \
+curl -X POST "https://api.example.com/user/update" \
   -H "token: <USER_TOKEN>" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Novo Nome",
-    "email": "novo@email.com",
-    "current_password": "senha_atual",
-    "password": "nova_senha_segura"
+    "token": "novo_token_seguro"
   }'
 ```
 
@@ -147,13 +128,9 @@ curl -X PUT "https://api.example.com/user/profile" \
   "success": true,
   "message": "Perfil atualizado com sucesso",
   "data": {
-    "user": {
-      "id": "user123",
-      "name": "Novo Nome",
-      "email": "novo@email.com",
-      "jid": "5521971532700@s.whatsapp.net"
-    },
-    "new_token": "eyJhbGciOiJIUzI1NiIs..."
+    "id": "user123",
+    "name": "Novo Nome",
+    "token": "novo_token_seguro"
   }
 }
 ```
@@ -306,11 +283,11 @@ Controle completo sobre o arquivo morto de eventos (DLQ - Dead Letter Queue):
   - Filtragem por status (`success`, `failed`, `expired`)
   - Paginação configurável
   - Ordenação por timestamp
-  
+
 - ✅ **Deletar Eventos**: `DELETE /admin/archive/events`
   - Remoção seletiva por IDs
   - Limpeza em lote
-  
+
 - ✅ **Prune Manual**: `POST /admin/dlq/prune`
   - Limpeza de eventos expirados
   - Estatísticas de remoção
@@ -403,41 +380,6 @@ curl -X GET "https://api.example.com/user/avatar?phone=5511999999999&preview=tru
   -H "token: <USER_TOKEN>"
 ```
 
-#### 🔐 Eco de API Configurável
-
-Controle fino sobre eco de mensagens enviadas pela API:
-
-- ✅ **Endpoints**:
-  - `POST /session/echo/api`: Habilitar/desabilitar eco
-  - `GET /session/echo/api`: Consultar status atual
-- ✅ **Configuração Global**: `ECHO_API_MESSAGES_ENABLED` (default: false)
-- ✅ **Override por Usuário**: Preferência individual sobrepõe global
-
-**Exemplo:**
-```bash
-# Habilitar eco de API
-curl -X POST "https://api.example.com/session/echo/api" \
-  -H "token: <USER_TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"enable": true}'
-
-# Consultar status
-curl -X GET "https://api.example.com/session/echo/api" \
-  -H "token: <USER_TOKEN>"
-```
-
-**Resposta:**
-```json
-{
-  "success": true,
-  "data": {
-    "echo_enabled": true,
-    "global_default": false,
-    "user_override": true
-  }
-}
-```
-
 ### 🛠️ Melhorias Técnicas
 
 #### ♻️ Context.Context em Toda a API (Refatoração Massiva)
@@ -492,7 +434,7 @@ func SendMessage(ctx context.Context, client *whatsmeow.Client, jid, text string
   - Corrigido deadlock quando múltiplos transportes falhavam simultaneamente
   - Workers agora recuperam graciosamente de panics
   - Circuit breaker reaberto corretamente após período de recuperação
-  
+
 - ✅ **fix(monitoramento): corrigir ID=0 em eventos SSE**
   - IDs de eventos SSE agora são sequenciais únicos
   - Evita confusão em clientes que dependem de IDs
@@ -504,7 +446,7 @@ func SendMessage(ctx context.Context, client *whatsmeow.Client, jid, text string
   - Tokens antigos são imediatamente revogados
   - Previne uso de credenciais desatualizadas
   - Força re-autenticação em todas as sessões ativas
-  
+
 - ✅ **fix(api): alinhar campo success ao status HTTP**
   - Campo `success` agora reflete corretamente o HTTP status
   - `success: true` somente em respostas 2xx
@@ -525,12 +467,12 @@ func SendMessage(ctx context.Context, client *whatsmeow.Client, jid, text string
   - Exemplos atualizados com cabeçalhos corretos
   - Rotas SSE marcadas explicitamente no Swagger
   - Guia de integração SSE adicionado
-  
+
 - ✅ **docs(api): regenerar swagger e assets do dashboard**
   - Especificação OpenAPI completamente atualizada
   - Dashboard web com novos endpoints
   - Exemplos práticos para todos os novos recursos
-  
+
 - ✅ **docs(api): adiciona especificação OpenAPI para endpoints de contatos**
   - Documentação completa da API de contatos
   - Schemas de request/response
@@ -542,7 +484,7 @@ func SendMessage(ctx context.Context, client *whatsmeow.Client, jid, text string
   - Bibliotecas padrão atualizadas
   - Patches de segurança aplicados
   - Compatibilidade com Go 1.25.1
-  
+
 - ✅ **chore(whatsmeow): atualizar biblioteca whatsmeow-private**
   - Sincronização com upstream mais recente
   - Novos recursos de protocolo
@@ -606,7 +548,7 @@ curl -X POST "https://api.example.com/chat/send/text" \
 
     sse.addEventListener('connection', (e) => {
       const data = JSON.parse(e.data);
-      document.getElementById('status').innerHTML = 
+      document.getElementById('status').innerHTML =
         `✅ Cliente conectado: ${data.userJID} (${data.userName})`;
     });
 
@@ -622,7 +564,7 @@ curl -X POST "https://api.example.com/chat/send/text" \
 
     sse.addEventListener('error', (e) => {
       console.error('Erro SSE:', e);
-      document.getElementById('status').innerHTML = 
+      document.getElementById('status').innerHTML =
         '❌ Conexão perdida. Reconectando...';
     });
   </script>
