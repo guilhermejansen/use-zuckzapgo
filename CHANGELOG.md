@@ -5,6 +5,721 @@ Todas as mudanças importantes neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
+## [v1.2.6] - 2025-11-05
+
+### ✨ Destaques da versão
+
+- **Gerenciamento Completo de Contatos**: Novos endpoints para adicionar, atualizar, bloquear e gerenciar contatos da lista do WhatsApp
+- **Informações de Dispositivo em Eventos**: Todos os eventos agora incluem `pushName` (nome de exibição) e `businessName` (nome comercial quando aplicável)
+- **Atualização de Perfil Autenticado**: Usuários podem atualizar suas próprias informações (nome, email, senha) com invalidação automática do token anterior
+- **Melhorias em Enquetes**: Reconstrução completa de metadados de poll, incluindo opções, votos e estatísticas
+- **Context.Context em Toda API**: Refatoração completa adicionando suporte a contexto em todos os métodos para melhor controle de timeout e cancelamento
+- **Monitoramento em Tempo Real**: Stream SSE (Server-Sent Events) para telemetria e diagnósticos ao vivo
+- **Health Check Enriquecido**: Endpoint `/health` com cache inteligente e diagnósticos completos do sistema
+- **Gerenciamento de Arquivo de Eventos**: Exposição completa da API para consultar, limpar e gerenciar o arquivo morto de eventos
+
+### 🚀 Novos Recursos
+
+#### 📇 Gerenciamento Completo de Contatos
+
+A API agora oferece endpoints dedicados para gerenciar sua lista de contatos do WhatsApp:
+
+- ✅ **Adicionar Contatos**: `POST /user/contacts/add`
+  - Adicione novos contatos à sua lista
+  - Suporte para nome personalizado (FirstName, FullName)
+  - Retorna informações completas do contato adicionado
+  
+- ✅ **Atualizar Contatos**: `POST /user/contacts/update`
+  - Atualize informações de contatos existentes
+  - Modifique nome de exibição e outras propriedades
+  
+- ✅ **Bloquear/Desbloquear**: `POST /user/contacts/block`, `POST /user/contacts/unblock`
+  - Bloqueie contatos indesejados diretamente pela API
+  - Desbloqueie contatos quando necessário
+  
+- ✅ **Listar Bloqueados**: `GET /user/contacts/blocked`
+  - Consulte todos os contatos atualmente bloqueados
+  
+- ✅ **Especificação OpenAPI**: Documentação completa no Swagger
+
+**Exemplo - Adicionar Contato:**
+```bash
+curl -X POST "https://api.example.com/user/contacts/add" \
+  -H "token: <USER_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "Phone": "5511999999999",
+    "FirstName": "João",
+    "FullName": "João da Silva"
+  }'
+```
+
+**Resposta:**
+```json
+{
+  "success": true,
+  "message": "Contato adicionado com sucesso",
+  "data": {
+    "jid": "5511999999999@s.whatsapp.net",
+    "pushName": "João",
+    "businessName": "",
+    "firstName": "João",
+    "fullName": "João da Silva"
+  }
+}
+```
+
+#### 📱 Informações de Dispositivo em Eventos
+
+Todos os eventos agora incluem informações ricas sobre o dispositivo/contato:
+
+- ✅ **pushName**: Nome de exibição do contato (como aparece no WhatsApp)
+- ✅ **businessName**: Nome comercial (quando o contato é uma conta Business)
+- ✅ **Disponível em**:
+  - Webhooks individuais
+  - Webhooks globais
+  - RabbitMQ individual
+  - RabbitMQ global
+  - SQS global
+  - Redis Streams global
+  - WebSocket global
+
+**Exemplo de Payload de Evento:**
+```json
+{
+  "userToken": "***",
+  "userID": "user123",
+  "eventType": "message",
+  "userName": "Alice",
+  "userJID": "5521971532700@s.whatsapp.net",
+  "pushName": "Alice Silva",
+  "businessName": "Alice Consultoria LTDA",
+  "baseURL": "https://api.example.com",
+  "timestamp": 1730793600,
+  "data": {
+    "message": {
+      "conversation": "Olá!",
+      "from": "5511999999999@s.whatsapp.net",
+      "pushName": "João",
+      "businessName": ""
+    }
+  }
+}
+```
+
+**Benefícios:**
+- Identificação mais precisa de remetentes
+- Diferenciação entre contas pessoais e comerciais
+- Melhor experiência em integrações (CRM, ERP, chatbots)
+- Logs e analytics mais ricos
+
+#### 👤 Atualização de Perfil Autenticado
+
+Usuários podem atualizar suas próprias informações de forma segura:
+
+- ✅ **Endpoint**: `PUT /user/profile`
+- ✅ **Campos Editáveis**:
+  - `name`: Nome de exibição do usuário
+  - `email`: Email de contato
+  - `password`: Nova senha (com validação de senha atual)
+- ✅ **Segurança**:
+  - Validação de senha atual obrigatória para alterações sensíveis
+  - Invalidação automática do token anterior após atualização
+  - Novo token gerado e retornado
+  - Logout forçado de sessões anteriores
+
+**Exemplo:**
+```bash
+curl -X PUT "https://api.example.com/user/profile" \
+  -H "token: <USER_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Novo Nome",
+    "email": "novo@email.com",
+    "current_password": "senha_atual",
+    "password": "nova_senha_segura"
+  }'
+```
+
+**Resposta:**
+```json
+{
+  "success": true,
+  "message": "Perfil atualizado com sucesso",
+  "data": {
+    "user": {
+      "id": "user123",
+      "name": "Novo Nome",
+      "email": "novo@email.com",
+      "jid": "5521971532700@s.whatsapp.net"
+    },
+    "new_token": "eyJhbGciOiJIUzI1NiIs..."
+  }
+}
+```
+
+#### 📊 Enquetes (Polls) Enriquecidas
+
+Metadados completos de enquetes agora são reconstruídos e disponibilizados:
+
+- ✅ **Informações da Enquete**:
+  - Nome/título da enquete
+  - Opções disponíveis (com SHA256 para identificação única)
+  - Tipo de seleção (única ou múltipla)
+  - Total de votos recebidos
+- ✅ **Estatísticas de Votos**:
+  - Contagem por opção
+  - Percentual de cada opção
+  - Lista de votantes (quando disponível)
+- ✅ **Disponível em eventos**:
+  - `message.poll_created`
+  - `message.poll_vote`
+  - `message.poll_update`
+
+**Exemplo de Evento de Voto:**
+```json
+{
+  "eventType": "message.poll_vote",
+  "pushName": "Maria",
+  "businessName": "",
+  "data": {
+    "pollInfo": {
+      "name": "Melhor horário para reunião?",
+      "options": [
+        {"name": "Manhã", "optionName": "Manhã"},
+        {"name": "Tarde", "optionName": "Tarde"},
+        {"name": "Noite", "optionName": "Noite"}
+      ],
+      "selectableOptionsCount": 1,
+      "totalVotes": 15
+    },
+    "selectedOptions": [
+      {"optionName": "Tarde"}
+    ],
+    "voter": "5511999999999@s.whatsapp.net"
+  }
+}
+```
+
+#### 📡 Monitoramento em Tempo Real (SSE)
+
+Stream de eventos Server-Sent Events para monitoramento ao vivo:
+
+- ✅ **Endpoint**: `GET /admin/monitoring/stream` (autenticação Admin)
+- ✅ **Eventos Transmitidos**:
+  - Conexões/desconexões de clientes WhatsApp
+  - Eventos de mensagens em tempo real
+  - Métricas de performance
+  - Alertas e erros do sistema
+  - Status de buffers e transportes
+- ✅ **Formato Padrão SSE**:
+  - `id`: Sequencial único
+  - `event`: Tipo do evento
+  - `data`: Payload JSON
+
+**Exemplo de Uso (JavaScript):**
+```javascript
+const eventSource = new EventSource('https://api.example.com/admin/monitoring/stream', {
+  headers: { 'Authorization': 'Bearer <ADMIN_TOKEN>' }
+});
+
+eventSource.addEventListener('connection', (e) => {
+  const data = JSON.parse(e.data);
+  console.log('Cliente conectado:', data.userJID);
+});
+
+eventSource.addEventListener('message', (e) => {
+  const data = JSON.parse(e.data);
+  console.log('Nova mensagem:', data);
+});
+
+eventSource.addEventListener('metrics', (e) => {
+  const data = JSON.parse(e.data);
+  console.log('Métricas:', data.cpu, data.memory, data.goroutines);
+});
+```
+
+**Casos de Uso:**
+- Dashboards em tempo real
+- Alertas proativos
+- Debugging de produção
+- Análise de performance live
+- Monitoramento de SLA
+
+#### ❤️ Health Check Enriquecido
+
+Endpoint `/health` completamente reformulado:
+
+- ✅ **Cache Inteligente**: Resposta cacheada por 30 segundos (configurável)
+- ✅ **Diagnósticos Completos**:
+  - Status do banco de dados (conexão, latência)
+  - Clientes WhatsApp conectados (total e lista)
+  - Uso de memória (heap, stack, GC)
+  - Goroutines ativas
+  - Uptime do servidor
+  - Versão da aplicação
+- ✅ **HTTP Status Codes**:
+  - `200 OK`: Sistema saudável
+  - `503 Service Unavailable`: Problemas detectados
+
+**Exemplo de Resposta:**
+```json
+{
+  "status": "healthy",
+  "version": "v1.2.6",
+  "uptime": "72h35m12s",
+  "timestamp": "2025-11-05T10:30:00Z",
+  "database": {
+    "status": "connected",
+    "latency_ms": 2.5,
+    "driver": "postgres"
+  },
+  "whatsapp": {
+    "connected_clients": 42,
+    "clients": [
+      {"userID": "user1", "jid": "5521...@s.whatsapp.net", "connected": true},
+      {"userID": "user2", "jid": "5511...@s.whatsapp.net", "connected": false}
+    ]
+  },
+  "memory": {
+    "alloc_mb": 245.6,
+    "total_alloc_mb": 1024.3,
+    "sys_mb": 512.8,
+    "num_gc": 156
+  },
+  "goroutines": 187,
+  "cache_hit": false
+}
+```
+
+**Integração com Monitoramento:**
+- Kubernetes liveness/readiness probes
+- Uptime monitoring (UptimeRobot, Pingdom)
+- APM tools (DataDog, New Relic)
+- Alertas customizados
+
+#### 🗄️ Gerenciamento de Arquivo de Eventos
+
+Controle completo sobre o arquivo morto de eventos (DLQ - Dead Letter Queue):
+
+- ✅ **Listar Eventos Arquivados**: `GET /admin/archive/events`
+  - Filtragem por status (`success`, `failed`, `expired`)
+  - Paginação configurável
+  - Ordenação por timestamp
+  
+- ✅ **Deletar Eventos**: `DELETE /admin/archive/events`
+  - Remoção seletiva por IDs
+  - Limpeza em lote
+  
+- ✅ **Prune Manual**: `POST /admin/dlq/prune`
+  - Limpeza de eventos expirados
+  - Estatísticas de remoção
+  - Dry-run disponível
+
+**Exemplo - Listar Eventos Arquivados:**
+```bash
+curl -X GET "https://api.example.com/admin/archive/events?status=failed&limit=50" \
+  -H "Authorization: Bearer <ADMIN_TOKEN>"
+```
+
+**Resposta:**
+```json
+{
+  "success": true,
+  "data": {
+    "events": [
+      {
+        "id": "evt_123",
+        "event_type": "message",
+        "user_id": "user1",
+        "status": "failed",
+        "attempts": 12,
+        "last_error": "timeout após 45s",
+        "created_at": "2025-11-01T10:00:00Z",
+        "archived_at": "2025-11-01T12:30:00Z"
+      }
+    ],
+    "total": 150,
+    "page": 1,
+    "per_page": 50
+  }
+}
+```
+
+#### 🔑 Informações Detalhadas da Licença
+
+Endpoint dedicado para consultar informações da licença ativa:
+
+- ✅ **Endpoint**: `GET /admin/license` (autenticação Admin)
+- ✅ **Informações Retornadas**:
+  - Tipo de licença (`BASIC`, `ENTERPRISE`)
+  - Recursos habilitados
+  - Data de expiração (se aplicável)
+  - Limites de uso
+  - Status de validação
+
+**Exemplo:**
+```bash
+curl -X GET "https://api.example.com/admin/license" \
+  -H "Authorization: Bearer <ADMIN_TOKEN>"
+```
+
+**Resposta:**
+```json
+{
+  "success": true,
+  "data": {
+    "license_type": "ENTERPRISE",
+    "features": [
+      "interactive_buttons",
+      "flows",
+      "carousel_messages",
+      "advanced_media"
+    ],
+    "expires_at": "2026-11-05T00:00:00Z",
+    "limits": {
+      "max_users": -1,
+      "max_messages_per_day": -1
+    },
+    "status": "active",
+    "issued_at": "2025-01-01T00:00:00Z"
+  }
+}
+```
+
+#### 🎨 Avatar Avançado
+
+Novos parâmetros para `GetProfilePictureInfo`:
+
+- ✅ **Parâmetros Adicionais**:
+  - `preview`: Obter URL de preview (baixa resolução)
+  - `existing_id`: Verificar se avatar mudou desde ID conhecido
+  - `quality`: Controle de qualidade da imagem
+- ✅ **Otimização de Banda**: Evita downloads desnecessários
+
+**Exemplo:**
+```bash
+curl -X GET "https://api.example.com/user/avatar?phone=5511999999999&preview=true" \
+  -H "token: <USER_TOKEN>"
+```
+
+#### 🔐 Eco de API Configurável
+
+Controle fino sobre eco de mensagens enviadas pela API:
+
+- ✅ **Endpoints**:
+  - `POST /session/echo/api`: Habilitar/desabilitar eco
+  - `GET /session/echo/api`: Consultar status atual
+- ✅ **Configuração Global**: `ECHO_API_MESSAGES_ENABLED` (default: false)
+- ✅ **Override por Usuário**: Preferência individual sobrepõe global
+
+**Exemplo:**
+```bash
+# Habilitar eco de API
+curl -X POST "https://api.example.com/session/echo/api" \
+  -H "token: <USER_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{"enable": true}'
+
+# Consultar status
+curl -X GET "https://api.example.com/session/echo/api" \
+  -H "token: <USER_TOKEN>"
+```
+
+**Resposta:**
+```json
+{
+  "success": true,
+  "data": {
+    "echo_enabled": true,
+    "global_default": false,
+    "user_override": true
+  }
+}
+```
+
+### 🛠️ Melhorias Técnicas
+
+#### ♻️ Context.Context em Toda a API (Refatoração Massiva)
+
+Adição sistemática de `context.Context` em todos os métodos para melhor controle:
+
+- ✅ **Módulos Refatorados**:
+  - **Business**: Métodos whatsmeow com contexto
+  - **Call**: RejectCall com timeout controlado
+  - **Chat**: Presença e leitura com cancelamento
+  - **Community**: Gerenciamento de comunidades
+  - **Device**: GetUserDevices com contexto
+  - **Events**: Event handlers do WhatsApp
+  - **Group**: Métodos de grupos
+  - **Helpers**: Métodos utilitários
+  - **Newsletter**: Métodos de newsletters
+  - **Privacy**: Métodos de privacidade
+  - **Send**: Métodos de envio
+  - **User**: Métodos de usuário
+
+**Benefícios:**
+- ✅ **Timeouts Precisos**: Controle fino de tempo de execução
+- ✅ **Cancelamento Gracioso**: Interrupção limpa de operações longas
+- ✅ **Rastreamento**: Propagação de trace IDs (OpenTelemetry)
+- ✅ **Melhor Debugging**: Context values para logging contextual
+- ✅ **Preparação Futura**: Base para features avançadas (circuit breaker, retry policies)
+
+**Exemplo de Uso Interno:**
+```go
+// Antes (v1.2.5)
+func SendMessage(client *whatsmeow.Client, jid, text string) error {
+    // ...
+}
+
+// Agora (v1.2.6)
+func SendMessage(ctx context.Context, client *whatsmeow.Client, jid, text string) error {
+    // Respeita timeout do contexto
+    select {
+    case <-ctx.Done():
+        return ctx.Err()
+    default:
+        // ...
+    }
+}
+```
+
+### 🐛 Correções
+
+#### 🔧 Dispatcher e Transporte
+
+- ✅ **fix(dispatcher): impedir bloqueio permanente após falhas de transporte**
+  - Corrigido deadlock quando múltiplos transportes falhavam simultaneamente
+  - Workers agora recuperam graciosamente de panics
+  - Circuit breaker reaberto corretamente após período de recuperação
+  
+- ✅ **fix(monitoramento): corrigir ID=0 em eventos SSE**
+  - IDs de eventos SSE agora são sequenciais únicos
+  - Evita confusão em clientes que dependem de IDs
+  - Melhor rastreamento de eventos perdidos
+
+#### 🔐 Segurança e API
+
+- ✅ **fix(user): invalidar token anterior após atualização de perfil**
+  - Tokens antigos são imediatamente revogados
+  - Previne uso de credenciais desatualizadas
+  - Força re-autenticação em todas as sessões ativas
+  
+- ✅ **fix(api): alinhar campo success ao status HTTP**
+  - Campo `success` agora reflete corretamente o HTTP status
+  - `success: true` somente em respostas 2xx
+  - `success: false` em erros 4xx/5xx
+  - Melhor consistência para consumidores da API
+
+#### 🔄 whatsmeow (Fork Privado)
+
+- ✅ **Fix a race condition where mutation.Action is nil and causes a panic error**
+  - Corrigida condição de corrida em processamento de mutações
+  - Validação de `mutation.Action` antes de acessar
+  - Previne crashes em cenários de alta concorrência
+  - Logs de debug adicionados para diagnóstico
+
+### 📚 Documentação
+
+- ✅ **docs: alinhar exemplos de autorização e marcar rotas SSE**
+  - Exemplos atualizados com cabeçalhos corretos
+  - Rotas SSE marcadas explicitamente no Swagger
+  - Guia de integração SSE adicionado
+  
+- ✅ **docs(api): regenerar swagger e assets do dashboard**
+  - Especificação OpenAPI completamente atualizada
+  - Dashboard web com novos endpoints
+  - Exemplos práticos para todos os novos recursos
+  
+- ✅ **docs(api): adiciona especificação OpenAPI para endpoints de contatos**
+  - Documentação completa da API de contatos
+  - Schemas de request/response
+  - Códigos de erro documentados
+
+### 🔄 Atualizações de Dependências
+
+- ✅ **chore(deps): atualizar dependências do Go**
+  - Bibliotecas padrão atualizadas
+  - Patches de segurança aplicados
+  - Compatibilidade com Go 1.25.1
+  
+- ✅ **chore(whatsmeow): atualizar biblioteca whatsmeow-private**
+  - Sincronização com upstream mais recente
+  - Novos recursos de protocolo
+  - Melhorias de estabilidade e performance
+  - Correções de bugs críticos
+
+### 📦 Exemplos de Uso
+
+#### Fluxo Completo: Adicionar Contato e Enviar Mensagem
+
+```bash
+# 1. Adicionar contato
+curl -X POST "https://api.example.com/user/contacts/add" \
+  -H "token: <USER_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "Phone": "5511999999999",
+    "FirstName": "Cliente",
+    "FullName": "Cliente VIP LTDA"
+  }'
+
+# 2. Enviar mensagem
+curl -X POST "https://api.example.com/chat/send/text" \
+  -H "token: <USER_TOKEN>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "Phone": "5511999999999",
+    "Body": "Olá! Seja bem-vindo à nossa lista de contatos."
+  }'
+
+# 3. Verificar evento (webhook receberá)
+{
+  "eventType": "message.sent",
+  "pushName": "Cliente VIP LTDA",
+  "businessName": "Cliente VIP LTDA",
+  "data": {
+    "message": {
+      "conversation": "Olá! Seja bem-vindo...",
+      "to": "5511999999999@s.whatsapp.net"
+    }
+  }
+}
+```
+
+#### Monitoramento em Tempo Real (Dashboard)
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Monitoramento ZuckZapGo</title>
+</head>
+<body>
+  <div id="status"></div>
+  <div id="events"></div>
+
+  <script>
+    const sse = new EventSource('https://api.example.com/admin/monitoring/stream', {
+      headers: { 'Authorization': 'Bearer <ADMIN_TOKEN>' }
+    });
+
+    sse.addEventListener('connection', (e) => {
+      const data = JSON.parse(e.data);
+      document.getElementById('status').innerHTML = 
+        `✅ Cliente conectado: ${data.userJID} (${data.userName})`;
+    });
+
+    sse.addEventListener('message', (e) => {
+      const data = JSON.parse(e.data);
+      const eventDiv = document.createElement('div');
+      eventDiv.innerHTML = `
+        📨 Nova mensagem de ${data.pushName || data.from}
+        ${data.businessName ? `(${data.businessName})` : ''}
+      `;
+      document.getElementById('events').appendChild(eventDiv);
+    });
+
+    sse.addEventListener('error', (e) => {
+      console.error('Erro SSE:', e);
+      document.getElementById('status').innerHTML = 
+        '❌ Conexão perdida. Reconectando...';
+    });
+  </script>
+</body>
+</html>
+```
+
+### 📈 Estatísticas da Versão
+
+| Categoria              | Quantidade                       |
+| ---------------------- | -------------------------------- |
+| **Novos Endpoints**    | 10+ rotas (contatos, licença, arquivo) |
+| **Refatorações**       | 15 módulos (context.Context)     |
+| **Correções**          | 6 bugs críticos                  |
+| **Documentação**       | OpenAPI completo + 4 guias       |
+| **Commits**            | 26 commits                       |
+| **Linhas Modificadas** | ~5.000 linhas                    |
+
+### 🔄 Compatibilidade
+
+- ✅ **Sem Breaking Changes**: Total compatibilidade com v1.2.5
+- ✅ **APIs Existentes**: Todas as funcionalidades anteriores mantidas
+- ✅ **Bancos de Dados**: SQLite, PostgreSQL e MySQL suportados
+- ✅ **Configurações**: Migração automática e transparente
+- ✅ **Webhooks**: Formato de payload mantido (com adições opcionais)
+- ✅ **Docker**: Imagens multi-arquitetura (amd64 + arm64)
+
+### 🔧 Migração/Upgrade
+
+#### Para Usuários da API
+
+1. **Atualizar imagem Docker:**
+   ```bash
+   docker pull setupautomatizado/zuckzapgo-private:v1.2.6
+   # ou
+   docker pull setupautomatizado/zuckzapgo-private:latest
+   ```
+
+2. **Novos campos em eventos** (opcional):
+   - `pushName` e `businessName` agora disponíveis
+   - Webhooks existentes continuam funcionando
+   - Aproveite os novos campos para melhor UX
+
+3. **Health check** (recomendado):
+   - Atualize seus monitores para usar o novo formato
+   - Cache de 30s melhora performance
+   - Adicione alertas baseados em `status` e `database.latency_ms`
+
+4. **SSE Monitoring** (novo recurso):
+   - Configure dashboards em tempo real
+   - Use para debugging e analytics
+   - Requer autenticação Admin
+
+#### Para Desenvolvedores/Integradores
+
+1. **Context.Context**:
+   - Todos os métodos internos agora aceitam `context.Context`
+   - Extensões customizadas devem ser atualizadas
+   - Melhor suporte a timeout e cancelamento
+
+2. **Novos Endpoints**:
+   - Integre gerenciamento de contatos nos seus sistemas
+   - Use SSE para notificações em tempo real
+   - Consulte `/admin/license` para features dinâmicas
+
+3. **Eco de API**:
+   - Configure `ECHO_API_MESSAGES_ENABLED` conforme necessário
+   - Permite aos usuários controlar individualmente
+   - Útil para evitar loops em integrações bidirecionais
+
+### 🔒 Segurança e Observabilidade
+
+- ✅ **Invalidação de Tokens**: Tokens antigos revogados em atualizações de perfil
+- ✅ **Context Timeouts**: Proteção contra operações travadas
+- ✅ **Race Condition Fix**: Corrigida em whatsmeow
+- ✅ **SSE com Auth**: Stream de monitoramento protegido por token Admin
+- ✅ **Health Check Cache**: Previne sobrecarga em verificações frequentes
+- ✅ **Logs Estruturados**: Melhor rastreabilidade com `pushName`/`businessName`
+
+### 🎯 Próximos Passos Recomendados
+
+1. ✅ **Atualize para v1.2.6**: Aproveite correções e novos recursos
+2. ✅ **Implemente SSE**: Dashboards em tempo real melhoram operação
+3. ✅ **Use Gerenciamento de Contatos**: Automatize manutenção da lista
+4. ✅ **Configure Health Checks**: Monitoramento proativo previne problemas
+5. ✅ **Explore Context.Context**: Melhor controle em operações assíncronas
+
+### 💬 Suporte e Feedback
+
+- 📧 **Email**: contato@setupautomatizado.com.br
+- 🐛 **Issues**: [GitHub Issues](https://github.com/guilhermejansen/use-zuckzapgo/issues)
+- 📚 **Documentação**: [README](https://github.com/guilhermejansen/use-zuckzapgo/blob/main/README.md)
+- 🚀 **Roadmap**: Em breve - v1.3.0 com WebSocket bidirecional e GraphQL
+
+---
+
+
 ## [v1.2.5] - 2025-10-17
 
 ### ✨ Destaques da versão
