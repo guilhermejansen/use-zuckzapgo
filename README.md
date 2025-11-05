@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <strong>🚀 WhatsApp API Gateway with Multi-Device Support, Dashboard, Webhooks, RabbitMQ, S3 Storage, N8N Nodes Community and Chatwoot Integration</strong>
+  <strong>🚀 WhatsApp API Gateway with Multi-Device Support, Interactive Messages (Buttons, Carousels, Lists), Webhooks, WebSockets, RabbitMQ, SQS, Redis Streams, S3 Storage, N8N Nodes Community and Chatwoot Integration</strong>
 </p>
 
 <p align="center">
@@ -62,10 +62,14 @@ Ao assinar, você pode instalar o ZuckZapGo em sua própria máquina ou servidor
 - **📱 Multi-Device Support**: Suporte completo a múltiplos dispositivos WhatsApp
 - **🔄 Concurrent Sessions**: Múltiplas sessões simultâneas
 - **💌 Rich Messages**: Suporte a mensagens de texto, imagens, vídeos, documentos e mais
+- **🎯 Mensagens Interativas**: Botões, carrosséis (carousels), listas, enquetes e flows
 - **🔗 Webhooks**: Sistema completo de webhooks para eventos em tempo real
+- **🌊 WebSockets**: Streaming de eventos em tempo real via WebSocket
 - **✅ User Verification**: Verificação avançada de usuários
 - **🔐 Authentication**: Sistema de autenticação robusto
 - **🐰 RabbitMQ Integration**: Integração completa com RabbitMQ para mensageria
+- **📨 Amazon SQS**: Suporte a filas SQS para distribuição de eventos
+- **🔴 Redis Streams**: Streaming de eventos via Redis para processamento em tempo real
 - **☁️ S3 Storage**: Armazenamento de mídia em S3 (AWS, MinIO, etc.)
 - **🌐 Proxy Support**: Suporte a proxy para conexões WhatsApp
 - **👥 Grupos e Comunidades**: Gerenciamento completo de grupos e comunidades WhatsApp
@@ -73,6 +77,27 @@ Ao assinar, você pode instalar o ZuckZapGo em sua própria máquina ou servidor
 - **❤️ System Health**: Monitoramento de saúde do sistema
 
 ## 🚀 Quick Start
+
+## 📡 API Features
+
+### Mensagens Interativas
+- **🎯 Botões**: Crie mensagens com botões de resposta rápida e botões de chamada para ação
+- **📋 Listas**: Envie listas interativas com múltiplas opções organizadas por seções
+- **🎠 Carrosséis**: Apresente produtos e serviços em formato de carrossel com imagens
+- **📊 Enquetes**: Crie enquetes interativas para engajar seus clientes
+- **🔄 Flows**: Suporte completo a WhatsApp Flows para experiências interativas avançadas
+
+### Distribuição de Eventos
+- **🔗 Webhooks HTTP**: Entrega confiável de eventos via HTTP com retry automático
+- **🌊 WebSockets**: Streaming de eventos em tempo real com suporte a múltiplos clientes
+- **📨 Amazon SQS**: Integração com filas SQS (Standard e FIFO) para processamento assíncrono
+- **🔴 Redis Streams**: Publicação de eventos em Redis Streams para consumo distribuído
+- **🐰 RabbitMQ**: Sistema de mensageria enterprise com exchanges e filas dinâmicas
+
+### Armazenamento de Mídia
+- **☁️ S3 Compatible**: AWS S3, MinIO, DigitalOcean Spaces, Google Cloud Storage
+- **📦 Upload/Download**: Gestão automática de mídias com URLs assinadas
+- **⚡ CDN Ready**: URLs públicas otimizadas para integração com CDN
 
 ## 🧩 Docker Compose (Swarm) — v1.2.6
 
@@ -922,19 +947,48 @@ Integração completa com Chatwoot para atendimento ao cliente:
 - Status de leitura e entrega
 
 ### RabbitMQ
-Sistema de mensageria assíncrona:
-- Eventos em tempo real
-- Filas dinâmicas por usuário
-- Retry automático
-- Dead letter queues
+Sistema de mensageria assíncrona enterprise:
+- **Eventos em tempo real**: Publicação instantânea de todos os eventos WhatsApp
+- **Filas dinâmicas**: Criação automática de filas por usuário e tipo de evento
+- **High Performance**: Pool de conexões, batching e circuit breaker
+- **Retry automático**: Backoff exponencial com até 5 tentativas
+- **Dead letter queues**: Persistência de mensagens com falha
+- **Observabilidade**: Métricas detalhadas de throughput e latência
+
+### Amazon SQS
+Integração com filas AWS para processamento distribuído:
+- **Filas Standard**: Alta throughput, entrega at-least-once
+- **Filas FIFO**: Ordem garantida com deduplicação
+- **Message Groups**: Agrupamento lógico de mensagens relacionadas
+- **Retry configurável**: Controle de tentativas e delays
+- **IAM Ready**: Suporte a credenciais temporárias e perfis AWS
+
+### Redis Streams
+Streaming de eventos para processamento em tempo real:
+- **Consumer Groups**: Distribuição de carga entre consumidores
+- **Persistência**: Eventos mantidos por período configurável
+- **Trimming automático**: Gerenciamento de memória com limite de mensagens
+- **Low Latency**: Publicação sub-milissegundo
+- **Observabilidade**: Timeout e retry configuráveis
+
+### WebSockets
+Streaming bidirecional de eventos:
+- **Real-time**: Entrega instantânea de eventos sem polling
+- **Múltiplos clientes**: Broadcast para vários endpoints simultâneos
+- **Compressão**: Redução de banda com compressão ativável
+- **Reconexão automática**: Retry exponencial com circuit breaker
+- **Custom Headers**: Suporte a autenticação e metadados personalizados
 
 ### S3 Compatible Storage
-Armazenamento de mídia flexível:
-- AWS S3
-- MinIO
-- BlackBlazer
-- DigitalOcean Spaces
-- Google Cloud Storage
+Armazenamento de mídia flexível e escalável:
+- **AWS S3**: Integração nativa com Amazon S3
+- **MinIO**: Storage on-premises ou cloud privado
+- **DigitalOcean Spaces**: Alternativa econômica
+- **Google Cloud Storage**: Compatibilidade multi-cloud
+- **BlackBlazer B2**: Storage de baixo custo
+- **Retenção configurável**: Expiração automática de mídias antigas
+- **URLs públicas**: CDN-ready com domínios customizados
+- **ACL flexível**: Controle de acesso público ou privado
 
 ## 📊 Dashboard
 
