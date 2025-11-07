@@ -5,7 +5,7 @@ Todas as mudanças importantes neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
-## [v1.2.6] - 2025-11-05
+## [v1.2.6] - 2025-11-06
 
 ### ✨ Destaques da versão
 
@@ -17,6 +17,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - **Monitoramento em Tempo Real**: Stream SSE (Server-Sent Events) para telemetria e diagnósticos ao vivo
 - **Health Check Enriquecido**: Endpoint `/health` com cache inteligente e diagnósticos completos do sistema
 - **Gerenciamento de Arquivo de Eventos**: Exposição completa da API para consultar, limpar e gerenciar o arquivo morto de eventos
+- **🚨 Correções Críticas**: Fix de panic durante QR code, correção na rejeição automática de chamadas, e atualização do whatsmeow-private
 
 ### 🚀 Novos Recursos
 
@@ -427,6 +428,30 @@ func SendMessage(ctx context.Context, client *whatsmeow.Client, jid, text string
 ```
 
 ### 🐛 Correções
+
+#### 🚨 Correções Críticas (Atualização 2025-11-06)
+
+- ✅ **fix(events): corrigir panic em getDeviceInfo durante fase de QR code**
+  - Corrigido crash ao tentar acessar informações de dispositivo antes da conexão completa
+  - Validação de estado de conexão antes de buscar pushName/businessName
+  - Tratamento gracioso durante fase de pareamento (QR code)
+  - Previne interrupção do serviço em novas conexões
+  - **Impacto**: Crítico - previne crashes durante inicialização de instâncias
+
+- ✅ **fix(calls): corrigir rejeição automática de chamadas e envio de mensagem para JID correto**
+  - Corrigida lógica de rejeição automática de chamadas de voz/vídeo
+  - Mensagem de rejeição agora enviada para o JID correto do chamador
+  - Validação de configuração `reject_call` antes de processar
+  - Suporte correto para chamadas de grupos
+  - **Impacto**: Alto - garante funcionamento correto da rejeição automática
+
+- ✅ **chore(whatsmeow): atualizar biblioteca whatsmeow-private com correções e melhorias**
+  - Atualização do fork privado do whatsmeow
+  - Correções de protocolo e estabilidade
+  - Melhorias de performance em processamento de eventos
+  - Compatibilidade com últimas mudanças do WhatsApp Web
+  - **Impacto**: Médio - melhora estabilidade geral da conexão
+
 
 #### 🔧 Dispatcher e Transporte
 
