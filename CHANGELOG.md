@@ -20,6 +20,26 @@ Valide a integridade com: `sha256sum -c checksums.txt`
 
 ---
 
+## [v1.2.7] - 2025-11-10
+
+### ✨ Novidades desta Versão
+
+Para detalhes completos, veja a [release v1.2.7](https://github.com/guilhermejansen/use-zuckzapgo/releases/tag/v1.2.7).
+
+### 📦 Pacotes Disponíveis
+
+- Linux AMD64: `linux-amd64-v1.2.7.tar.gz`
+- Linux ARM64: `linux-arm64-v1.2.7.tar.gz`
+- macOS Intel: `darwin-amd64-v1.2.7.tar.gz`
+- macOS Apple Silicon: `darwin-arm64-v1.2.7.tar.gz`
+- Windows: `windows-amd64-v1.2.7.zip`
+
+### 🔐 Verificação
+
+Valide a integridade com: `sha256sum -c checksums.txt`
+
+---
+
 ## [v1.2.7] - 2025-11-08
 
 ### ✨ Novidades desta Versão
