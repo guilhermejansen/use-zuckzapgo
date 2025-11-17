@@ -1,12 +1,8 @@
-# =================== ZUCKZAPGO STACK PARA PORTAINER ===================
-# Stack completa do ZuckZapGo com todos os serviços necessários
-# Configurada para uso em produção com Docker Swarm via Portainer
-
 services:
-  zuckzapgo_private:
+  zuckzapgo-server:
     image: setupautomatizado/zuckzapgo-private:latest
-    networks:
-      - network_public
+    ports:
+      - "8080:8080"
     environment:
       # =================== LICENCIAMENTO E IDENTIDADE ===================
       # LICENSE_KEY: Chave de licença emitida pela ZuckZapGo; habilita ou restringe recursos como botões e flows.
@@ -23,7 +19,7 @@ services:
 
       # =================== ENDEREÇOS DA APLICAÇÃO ===================
       # ZUCKZAPGO_ADDRESS: URL base publicada em todos os eventos (webhook, filas, sockets) indicando a origem da instância.
-      - ZUCKZAPGO_ADDRESS=https://api.example.com
+      - ZUCKZAPGO_ADDRESS=http://localhost:8080
       # ZUCKZAPGO_PORT: Porta HTTP exposta pelo backend; precisa coincidir com o mapeamento de portas do container.
       - ZUCKZAPGO_PORT=8080
 
@@ -158,7 +154,7 @@ services:
 
       # =================== BANCO DE DADOS ===================
       # DATABASE_URL: String de conexão completa para o banco primário (Postgres/MySQL) usada pela aplicação.
-      - DATABASE_URL=postgres://zuckzapgo:zuckzapgo@postgres_zuckzapgo:5432/zuckzapgo?sslmode=disable&search_path=public
+      - DATABASE_URL=postgres://zuckzapgo:zuckzapgo@localhost:5432/zuckzapgo?sslmode=disable&search_path=public
       # DB_TYPE: Driver relacional preferido (postgres ou mysql) quando utilizar variáveis isoladas.
       - DB_TYPE=postgres
 
@@ -188,7 +184,7 @@ services:
       # GLOBAL_S3_ENABLED: Controla se mídias globais serão persistidas em um bucket S3.
       - GLOBAL_S3_ENABLED=false
       # GLOBAL_S3_ENDPOINT: Endpoint HTTP(S) do provedor S3; deixe vazio para AWS padrão.
-      - GLOBAL_S3_ENDPOINT=https://s3.example.com.br
+      - GLOBAL_S3_ENDPOINT=http://localhost:9001
       # GLOBAL_S3_REGION: Região S3 utilizada na autenticação e geração de URLs.
       - GLOBAL_S3_REGION=us-east-1
       # GLOBAL_S3_BUCKET: Nome do bucket onde as mídias globais serão guardadas.
@@ -200,7 +196,7 @@ services:
       # GLOBAL_S3_PATH_STYLE: Quando true, utiliza path-style URLs (compatível com MinIO/outros provedores).
       - GLOBAL_S3_PATH_STYLE=true
       # GLOBAL_S3_PUBLIC_URL: URL pública usada para montar links acessíveis externamente.
-      - GLOBAL_S3_PUBLIC_URL=https://s3.example.com.br
+      - GLOBAL_S3_PUBLIC_URL=http://localhost:9001
       # GLOBAL_S3_MEDIA_DELIVERY: Modo de entrega das mídias nos eventos (base64, url ou both).
       - GLOBAL_S3_MEDIA_DELIVERY=url
       # GLOBAL_S3_RETENTION_DAYS: Quantidade de dias antes de expirar objetos armazenados (0 desativa expiração).
@@ -290,7 +286,7 @@ services:
       # GLOBAL_WEBHOOK_ENABLED: Ativa entrega de eventos para um endpoint global.
       - GLOBAL_WEBHOOK_ENABLED=false
       # GLOBAL_WEBHOOK_URL: Endpoint HTTP que receberá todos os eventos globais.
-      - GLOBAL_WEBHOOK_URL=https://hook.prod.example.com.br/webhook/events-zuckzapgo
+      - GLOBAL_WEBHOOK_URL=http://localhost:5454/webhook/events-zuckzapgo
       # GLOBAL_WEBHOOK_EVENTS: Eventos filtrados e enviados ao webhook global.
       - GLOBAL_WEBHOOK_EVENTS=All
       # GLOBAL_WEBHOOK_TIMEOUT: Tempo máximo para resposta do webhook global.
@@ -310,7 +306,7 @@ services:
       # GLOBAL_RABBITMQ_ENABLED: Habilita fan-out global de eventos através do RabbitMQ.
       - GLOBAL_RABBITMQ_ENABLED=false
       # GLOBAL_RABBITMQ_URL: URL AMQP com usuário, senha e vhost do cluster RabbitMQ.
-      - GLOBAL_RABBITMQ_URL=amqp://zuckzapgo:zuckzapgo@rabbitmq_zuckzapgo:5672/zuckzapgo
+      - GLOBAL_RABBITMQ_URL=amqp://zuckzapgo:zuckzapgo@localhost:5672/zuckzapgo
       # GLOBAL_RABBITMQ_EVENTS: Eventos roteados para o exchange global.
       - GLOBAL_RABBITMQ_EVENTS=Message
       # GLOBAL_RABBITMQ_EXCHANGE: Exchange destino para publicação dos eventos globais.
@@ -510,259 +506,135 @@ services:
       # Interval between automatic prune runs (e.g. 12h, 24h)
       - MONITORING_PRUNE_INTERVAL=24h
       # Absolute base URL returned in stream_url (leave empty to fall back to ZUCKZAPGO_ADDRESS or http://localhost:<port>)
-      - MONITORING_STREAM_BASE_URL=http://api.example.com
-    deploy:
-      mode: replicated
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-      placement:
-        constraints: [node.role == manager]
-      resources:
-        limits:
-          cpus: "2" # Increased for API performance
-          memory: 2GB # Increased for high-throughput message processing
-        reservations:
-          cpus: "1"
-          memory: 1GB
-      labels:
-        - traefik.enable=true
-        - traefik.http.routers.zuckzapgo_private.rule=Host(`api.example.com`)
-        - traefik.http.routers.zuckzapgo_private.entrypoints=websecure
-        - traefik.http.routers.zuckzapgo_private.priority=1
-        - traefik.http.routers.zuckzapgo_private.tls.certresolver=letsencryptresolver
-        - traefik.http.routers.zuckzapgo_private.service=zuckzapgo_private
-        - traefik.http.services.zuckzapgo_private.loadbalancer.server.port=8080
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
+      - MONITORING_STREAM_BASE_URL=http://localhost:8080
+    networks:
+      - zuckzapgo-network
+    restart: on-failure
 
-  # =================== BANCO DE DADOS POSTGRESQL ===================
   postgres_zuckzapgo:
     image: pgvector/pgvector:pg16
     environment:
-      - POSTGRES_USER=zuckzapgo
-      - POSTGRES_PASSWORD=your_secure_password
-      - POSTGRES_DB=zuckzapgo
+      POSTGRES_USER: zuckzapgo
+      POSTGRES_PASSWORD: your_secure_password
+      POSTGRES_DB: zuckzapgo
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_data_zuckzapgo:/var/lib/postgresql/data
     networks:
-      - network_public
-    deploy:
-      mode: replicated
-      replicas: 1
-      placement:
-        constraints:
-          - node.role == manager
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-      resources:
-        limits:
-          cpus: "2" # Increased for API performance
-          memory: 2GB # Increased for high-throughput message processing
-        reservations:
-          cpus: "1"
-          memory: 1GB
+      - zuckzapgo-network
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -U ${POSTGRES_USER:-zuckzapgo} -d ${POSTGRES_DB:-zuckzapgo}",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
+      test: ["CMD-SHELL", "pg_isready -U zuckzapgo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
 
   # =================== MYSQL DATABASE (OPCIONAL) ===================
   # Descomente as linhas abaixo para usar MySQL ao invés de PostgreSQL
-  # zuckzapgo_mysql:
+  # mysql_zuckzapgo:
   #   image: mysql:8.0
   #   environment:
-  #     MYSQL_ROOT_PASSWORD: root_password_super_seguro
+  #     MYSQL_ROOT_PASSWORD: your_secure_root_password
   #     MYSQL_DATABASE: zuckzapgo
   #     MYSQL_USER: zuckzapgo
-  #     MYSQL_PASSWORD: zuckzapgo_production_password
-  #     MYSQL_ROOT_HOST: '%'
+  #     MYSQL_PASSWORD: your_secure_password
+  #     MYSQL_ROOT_HOST: "%"
+  #   ports:
+  #     - "3306:3306"
   #   networks:
-  #     - network_public
+  #     - zuckzapgo-network
+  #   restart: always
   #   volumes:
   #     - mysql_data_zuckzapgo:/var/lib/mysql
   #   command: >
   #     --default-authentication-plugin=mysql_native_password
   #     --character-set-server=utf8mb4
   #     --collation-server=utf8mb4_unicode_ci
-  #     --innodb-buffer-pool-size=1G
-  #     --max-connections=500
-  #     --innodb-log-file-size=256M
-  #   deploy:
-  #     replicas: 1
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 5s
-  #       max_attempts: 3
-  #       window: 120s
-  #     placement:
-  #       constraints:
-  #         - node.role == manager
+  #     --innodb-buffer-pool-size=512M
+  #     --max-connections=200
+  #   healthcheck:
+  #     test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+  #     timeout: 5s
+  #     interval: 5s
+  #     retries: 5
 
-  # =================== RABBITMQ (MENSAGERIA) ===================
   # rabbitmq_zuckzapgo:
   #   image: rabbitmq:4-management
   #   environment:
   #     - RABBITMQ_DEFAULT_USER=zuckzapgo
-  #     - RABBITMQ_DEFAULT_PASS=your_secure_password
+  #     - RABBITMQ_DEFAULT_PASS=zuckzapgo
   #     - RABBITMQ_DEFAULT_VHOST=zuckzapgo
+  #   ports:
+  #     - "15672:15672"
+  #     - "5672:5672"
+  #   networks:
+  #     - zuckzapgo-network
+  #   restart: always
   #   volumes:
   #     - rabbitmq_data_zuckzapgo:/var/lib/rabbitmq
-  #   networks:
-  #     - network_public
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints: [node.role == manager]
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 5s
-  #       max_attempts: 3
-  #     resources:
-  #       limits:
-  #         cpus: "2" # Increased for API performance
-  #         memory: 2GB # Increased for high-throughput message processing
-  #       reservations:
-  #         cpus: "1"
-  #         memory: 1GB
-  #     labels:
-  #       - traefik.enable=true
-  #       - traefik.http.routers.rabbitmq_zuckzapgo.rule=Host(`rabbitmq.zuckzapgo.app`)
-  #       - traefik.http.routers.rabbitmq_zuckzapgo.entrypoints=websecure
-  #       - traefik.http.routers.rabbitmq_zuckzapgo.tls.certresolver=letsencryptresolver
-  #       - traefik.http.routers.rabbitmq_zuckzapgo.service=rabbitmq_zuckzapgo
-  #       - traefik.http.services.rabbitmq_zuckzapgo.loadbalancer.server.port=15672
-  #   healthcheck:
-  #     test: ["CMD", "rabbitmq-diagnostics", "ping"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 60s
 
-  # =================== REDIS STREAMS ===================
-  # redis_streams_zuckzapgo:
+  # =================== REDIS STREAM ===================
+  # redis_zuckzapgo:
   #   image: redis:7
-  #   networks:
-  #     - network_public
   #   ports:
-  #     - target: 6379
-  #       published: 6379
-  #       protocol: tcp
-  #       mode: ingress
+  #     - "6379:6379"
+  #   networks:
+  #     - zuckzapgo-network
+  #   restart: always
   #   volumes:
-  #     - redis_streams_data_zuckzapgo:/data
-  #   deploy:
-  #     mode: replicated
-  #     replicas: 1
-  #     placement:
-  #       constraints: [node.role == manager]
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 5s
-  #       max_attempts: 3
-  #   healthcheck:
-  #     test: ["CMD", "redis-cli", "PING"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #     start_period: 15s
+  #     - redis_data_zuckzapgo:/data
 
   # =================== JAEGER TRACING (OBSERVABILITY) ===================
   # jaeger_zuckzapgo:
   #   image: jaegertracing/all-in-one:latest
-  #   deploy:
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role == manager
-  #     restart_policy:
-  #       condition: on-failure
-  #       delay: 5s
-  #       max_attempts: 3
-  #     resources:
-  #       limits:
-  #         cpus: "1"
-  #         memory: 1G
-  #       reservations:
-  #         cpus: "0.25"
-  #         memory: 256M
   #   environment:
   #     # Enable OTLP collector (required for OpenTelemetry)
   #     - COLLECTOR_OTLP_ENABLED=true
-  #     # Storage configuration for production
-  #     # For development: use memory
-  #     # For production: configure external storage (Elasticsearch, Cassandra, etc)
+  #     # Storage configuration - use memory for development
   #     - SPAN_STORAGE_TYPE=memory
-  #     - MEMORY_MAX_TRACES=50000
+  #     # Memory storage limits
+  #     - MEMORY_MAX_TRACES=10000
   #     # Sampling configuration
   #     - SAMPLING_STRATEGIES_FILE=/etc/jaeger/sampling_strategies.json
   #   ports:
   #     # Jaeger UI - Web interface to view traces
-  #     - target: 16686
-  #       published: 16686
-  #       protocol: tcp
-  #       mode: ingress
+  #     - "16686:16686"
   #     # OTLP HTTP receiver - used by ZuckZapGo to send traces
-  #     - target: 4318
-  #       published: 4318
-  #       protocol: tcp
-  #       mode: ingress
+  #     - "4318:4318"
   #     # OTLP gRPC receiver (optional)
-  #     - target: 4317
-  #       published: 4317
-  #       protocol: tcp
-  #       mode: ingress
+  #     - "4317:4317"
   #     # Jaeger Collector HTTP (legacy - for compatibility)
-  #     - target: 14268
-  #       published: 14268
-  #       protocol: tcp
-  #       mode: ingress
+  #     - "14268:14268"
+  #     # Jaeger Collector gRPC (legacy - for compatibility)
+  #     - "14250:14250"
+  #     # Jaeger Agent Zipkin Thrift (optional)
+  #     - "5775:5775/udp"
+  #     # Jaeger Agent Compact Thrift (optional)
+  #     - "6831:6831/udp"
+  #     # Jaeger Agent Binary Thrift (optional)
+  #     - "6832:6832/udp"
   #     # Admin port for health checks
-  #     - target: 14269
-  #       published: 14269
-  #       protocol: tcp
-  #       mode: host
+  #     - "14269:14269"
   #   networks:
-  #     - network_public
+  #     - zuckzapgo-network
+  #   restart: always
   #   healthcheck:
   #     test: ["CMD", "wget", "--spider", "-q", "http://localhost:14269/"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-  #     start_period: 20s
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #     start_period: 10s
   #   volumes:
   #     - jaeger_data_zuckzapgo:/tmp/jaeger
 
+networks:
+  zuckzapgo-network:
+    driver: bridge
+
 volumes:
   postgres_data_zuckzapgo:
-    name: postgres_data_zuckzapgo
-    external: true
   # rabbitmq_data_zuckzapgo:
-  #   name: rabbitmq_data_zuckzapgo
-  #   external: true
-  # redis_streams_data_zuckzapgo:
-  #   name: redis_streams_data
-  # mysql_data_zuckzapgo:  # Descomente para MySQL
-  #   name: mysql_data_zuckzapgo
-  #   external: true
+  # redis_data_zuckzapgo:
+  # mysql_data_zuckzapgo:
   # jaeger_data_zuckzapgo:
-  #   name: jaeger_data_zuckzapgo
-  #   external: true
-
-networks:
-  network_public:
-    name: network_public
-    external: true
