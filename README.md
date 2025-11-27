@@ -553,10 +553,6 @@ services:
       - GLOBAL_EVENT_BUFFER_MAX_ATTEMPTS=12
       # GLOBAL_EVENT_BUFFER_ARCHIVE_SUCCESS: Quando true, arquiva entregas bem-sucedidas além das falhas.
       - GLOBAL_EVENT_BUFFER_ARCHIVE_SUCCESS=false
-      # GLOBAL_EVENT_DEDUP_WINDOW: Janela de tempo utilizada para deduplicar eventos idênticos.
-      - GLOBAL_EVENT_DEDUP_WINDOW=2m
-      # GLOBAL_EVENT_DEDUP_MAX_KEYS: Quantidade máxima de chaves armazenadas no cache de deduplicação.
-      - GLOBAL_EVENT_DEDUP_MAX_KEYS=50000
       # GLOBAL_EVENT_BATCH_SIZE: Quantidade de eventos agrupados por envio.
       - GLOBAL_EVENT_BATCH_SIZE=10
       # GLOBAL_EVENT_BATCH_TIMEOUT: Tempo máximo aguardando completar um lote.
