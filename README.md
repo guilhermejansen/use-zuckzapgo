@@ -544,7 +544,7 @@ services:
       # GLOBAL_EVENT_BUFFER_USE_DATABASE: Se true, usa banco relacional como buffer persistente de eventos.
       - GLOBAL_EVENT_BUFFER_USE_DATABASE=true
       # GLOBAL_EVENT_BUFFER_VISIBILITY_TIMEOUT: Tempo de leasing antes de devolver o evento para a fila.
-      - GLOBAL_EVENT_BUFFER_VISIBILITY_TIMEOUT=45s
+      - GLOBAL_EVENT_BUFFER_VISIBILITY_TIMEOUT=60s
       # GLOBAL_EVENT_BUFFER_RETRY_BASE: Delay base para cálculo de backoff exponencial.
       - GLOBAL_EVENT_BUFFER_RETRY_BASE=5s
       # GLOBAL_EVENT_BUFFER_RETRY_MAX: Limite máximo de delay entre tentativas.
@@ -558,17 +558,17 @@ services:
       # GLOBAL_EVENT_DEDUP_MAX_KEYS: Quantidade máxima de chaves armazenadas no cache de deduplicação.
       - GLOBAL_EVENT_DEDUP_MAX_KEYS=50000
       # GLOBAL_EVENT_BATCH_SIZE: Quantidade de eventos agrupados por envio.
-      - GLOBAL_EVENT_BATCH_SIZE=1
+      - GLOBAL_EVENT_BATCH_SIZE=10
       # GLOBAL_EVENT_BATCH_TIMEOUT: Tempo máximo aguardando completar um lote.
-      - GLOBAL_EVENT_BATCH_TIMEOUT=25ms
+      - GLOBAL_EVENT_BATCH_TIMEOUT=500ms
       # GLOBAL_EVENT_CIRCUIT_MAX_FAILURES: Falhas consecutivas que disparam o circuito de proteção.
       - GLOBAL_EVENT_CIRCUIT_MAX_FAILURES=5
       # GLOBAL_EVENT_CIRCUIT_RESET: Intervalo antes de testar reabertura do circuito.
       - GLOBAL_EVENT_CIRCUIT_RESET=30s
       # GLOBAL_EVENT_CIRCUIT_COOLDOWN: Espera entre verificações enquanto o circuito está aberto.
-      - GLOBAL_EVENT_CIRCUIT_COOLDOWN=1s
+      - GLOBAL_EVENT_CIRCUIT_COOLDOWN=2s
       # GLOBAL_SKIP_CACHE_TTL: TTL do cache que evita reprocessar eventos filtrados.
-      - GLOBAL_SKIP_CACHE_TTL=30s
+      - GLOBAL_SKIP_CACHE_TTL=60s
       # GLOBAL_EVENT_BUFFER_RETENTION_DAYS: Quantidade de dias mantendo registros ativos no buffer.
       - GLOBAL_EVENT_BUFFER_RETENTION_DAYS=7
       # GLOBAL_EVENT_BUFFER_ARCHIVE_RETENTION_DAYS: Dias de retenção dos registros arquivados.
