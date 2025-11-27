@@ -162,6 +162,26 @@ services:
       # DB_TYPE: Driver relacional preferido (postgres ou mysql) quando utilizar variáveis isoladas.
       - DB_TYPE=postgres
 
+      # =================== POSTGRESQL CONNECTION POOL (ALTA CARGA) ===================
+      # Configurações do pool de conexões PostgreSQL otimizadas para cenários de alta carga
+      # DB_MAX_OPEN_CONNS: Máximo de conexões abertas simultâneas no pool.
+      - DB_MAX_OPEN_CONNS=200
+      # DB_MAX_IDLE_CONNS: Máximo de conexões ociosas mantidas no pool (recomendado ~30-40% do max_open).
+      - DB_MAX_IDLE_CONNS=75
+      # DB_CONN_MAX_LIFETIME_MINUTES: Tempo máximo de vida de uma conexão antes de ser reciclada.
+      - DB_CONN_MAX_LIFETIME_MINUTES=30
+      # DB_CONN_MAX_IDLE_TIME_MINUTES: Tempo máximo que uma conexão pode ficar ociosa antes de ser fechada.
+      - DB_CONN_MAX_IDLE_TIME_MINUTES=5
+
+      # =================== STARTUP E WATCHDOG (ALTA CARGA) ===================
+      # Configurações para inicialização controlada e monitoramento de clientes WhatsApp.
+      # STARTUP_BATCH_SIZE: Quantidade de clientes WhatsApp iniciados por lote.
+      - STARTUP_BATCH_SIZE=50
+      # STARTUP_BATCH_DELAY_MS: Delay em milissegundos entre lotes de inicialização.
+      - STARTUP_BATCH_DELAY_MS=2000
+      # WATCHDOG_INTERVAL_SECONDS: Intervalo do watchdog para verificar saúde dos clientes (default: 300 = 5 minutos).
+      - WATCHDOG_INTERVAL_SECONDS=300
+
       # =================== FILTROS GLOBAIS DE EVENTOS ===================
       # GLOBAL_SKIP_MEDIA_DOWNLOAD: Se true, desativa o download de mídias para todos os usuários.
       - GLOBAL_SKIP_MEDIA_DOWNLOAD=false
@@ -449,10 +469,6 @@ services:
       - GLOBAL_EVENT_BUFFER_MAX_ATTEMPTS=12
       # GLOBAL_EVENT_BUFFER_ARCHIVE_SUCCESS: Quando true, arquiva entregas bem-sucedidas além das falhas.
       - GLOBAL_EVENT_BUFFER_ARCHIVE_SUCCESS=false
-      # GLOBAL_EVENT_DEDUP_WINDOW: Janela de tempo utilizada para deduplicar eventos idênticos.
-      - GLOBAL_EVENT_DEDUP_WINDOW=2m
-      # GLOBAL_EVENT_DEDUP_MAX_KEYS: Quantidade máxima de chaves armazenadas no cache de deduplicação.
-      - GLOBAL_EVENT_DEDUP_MAX_KEYS=50000
       # GLOBAL_EVENT_BATCH_SIZE: Quantidade de eventos agrupados por envio.
       - GLOBAL_EVENT_BATCH_SIZE=10
       # GLOBAL_EVENT_BATCH_TIMEOUT: Tempo máximo aguardando completar um lote.
