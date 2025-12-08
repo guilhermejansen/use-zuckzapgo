@@ -99,7 +99,7 @@ Ao assinar, você pode instalar o ZuckZapGo em sua própria máquina ou servidor
 - **📦 Upload/Download**: Gestão automática de mídias com URLs assinadas
 - **⚡ CDN Ready**: URLs públicas otimizadas para integração com CDN
 
-## 🧩 Docker Compose (Swarm) — v1.2.6
+## 🧩 Docker Compose (Swarm) — v1.4.3
 
 ```yaml
 # =================== ZUCKZAPGO STACK PARA PORTAINER ===================
@@ -510,7 +510,7 @@ services:
       # TRACING_SERVICE_NAME: Nome lógico do serviço reportado ao tracer.
       - TRACING_SERVICE_NAME=zuckzapgo
       # TRACING_SERVICE_VERSION: Versão reportada nas tags de tracing.
-      - TRACING_SERVICE_VERSION=v1.2.6
+      - TRACING_SERVICE_VERSION=v1.4.3
       # TRACING_ENVIRONMENT: Identificador do ambiente (development, staging, production).
       - TRACING_ENVIRONMENT=development
 
