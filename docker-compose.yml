@@ -217,7 +217,7 @@ services:
       - GLOBAL_S3_PATH_STYLE=true
       # GLOBAL_S3_PUBLIC_URL: URL pública usada para montar links acessíveis externamente.
       - GLOBAL_S3_PUBLIC_URL=http://localhost:9001
-      # GLOBAL_S3_MEDIA_DELIVERY: Modo de entrega das mídias nos eventos (base64, url ou both).
+      # GLOBAL_S3_MEDIA_DELIVERY: Modo de entrega das mídias nos eventos (base64, s3, url ou both). "url" e "s3" são equivalentes.
       - GLOBAL_S3_MEDIA_DELIVERY=url
       # GLOBAL_S3_RETENTION_DAYS: Quantidade de dias antes de expirar objetos armazenados (0 desativa expiração).
       - GLOBAL_S3_RETENTION_DAYS=1
@@ -422,7 +422,7 @@ services:
       # TRACING_SERVICE_NAME: Nome lógico do serviço reportado ao tracer.
       - TRACING_SERVICE_NAME=zuckzapgo
       # TRACING_SERVICE_VERSION: Versão reportada nas tags de tracing.
-      - TRACING_SERVICE_VERSION=v1.4.2
+      - TRACING_SERVICE_VERSION=v1.4.3
       # TRACING_ENVIRONMENT: Identificador do ambiente (development, staging, production).
       - TRACING_ENVIRONMENT=development
 
