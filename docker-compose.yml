@@ -224,6 +224,22 @@ services:
       # GLOBAL_S3_DISABLE_ACL: Define se ACLs individuais serão suprimidos; true para buckets com Bucket Owner Enforced.
       - GLOBAL_S3_DISABLE_ACL=true
 
+      # =================== S3 RETENTION CLEANUP ===================
+      # Sistema de limpeza automática de objetos S3 expirados.
+      # O worker GLOBAL processa todos os usuários com s3_enabled=true E s3_retention_days > 0.
+      # S3_RETENTION_ENABLED: Habilita/desabilita o worker de limpeza.
+      - S3_RETENTION_ENABLED=true
+      # S3_RETENTION_INTERVAL: Intervalo entre ciclos de limpeza (default: 1h).
+      - S3_RETENTION_INTERVAL=1h
+      # S3_RETENTION_MAX_CONCURRENCY: Máximo de usuários processados em paralelo.
+      - S3_RETENTION_MAX_CONCURRENCY=5
+      # S3_RETENTION_BATCH_SIZE: Objetos por batch de delete (max: 1000).
+      - S3_RETENTION_BATCH_SIZE=1000
+      # S3_RETENTION_OBJECTS_PER_CYCLE: Limite de objetos por ciclo por usuário.
+      - S3_RETENTION_OBJECTS_PER_CYCLE=10000
+      # S3_RETENTION_OPERATION_TIMEOUT: Timeout para operação de limpeza por usuário.
+      - S3_RETENTION_OPERATION_TIMEOUT=10m
+
       # =================== DISTRIBUIÇÃO GLOBAL SQS ===================
       # GLOBAL_SQS_ENABLED: Ativa o fan-out de eventos para uma fila Amazon SQS.
       - GLOBAL_SQS_ENABLED=false
@@ -422,7 +438,7 @@ services:
       # TRACING_SERVICE_NAME: Nome lógico do serviço reportado ao tracer.
       - TRACING_SERVICE_NAME=zuckzapgo
       # TRACING_SERVICE_VERSION: Versão reportada nas tags de tracing.
-      - TRACING_SERVICE_VERSION=v1.4.3
+      - TRACING_SERVICE_VERSION=v1.4.4
       # TRACING_ENVIRONMENT: Identificador do ambiente (development, staging, production).
       - TRACING_ENVIRONMENT=development
 

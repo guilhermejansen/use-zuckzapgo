@@ -1,5 +1,25 @@
 # 📋 Changelog - ZuckZapGo
 
+## [v1.4.4] - 2025-12-16
+
+### ✨ Novidades desta Versão
+
+Para detalhes completos, veja a [release v1.4.4](https://github.com/guilhermejansen/use-zuckzapgo/releases/tag/v1.4.4).
+
+### 📦 Pacotes Disponíveis
+
+- Linux AMD64: `linux-amd64-v1.4.4.tar.gz`
+- Linux ARM64: `linux-arm64-v1.4.4.tar.gz`
+- macOS Intel: `darwin-amd64-v1.4.4.tar.gz`
+- macOS Apple Silicon: `darwin-arm64-v1.4.4.tar.gz`
+- Windows: `windows-amd64-v1.4.4.zip`
+
+### 🔐 Verificação
+
+Valide a integridade com: `sha256sum -c checksums.txt`
+
+---
+
 ## [v1.4.3] - 2025-12-08
 
 ### ✨ Novidades desta Versão
