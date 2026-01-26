@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "4f14afa4-722b-4b97-93c9-8a3858846030",
-    "name": "ZUCKZAPGO v1.5.1",
-    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 1/21/2026, 7:01:06 PM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
+    "_postman_id": "4be46e8c-1ecc-4cb1-b192-c18a1a4bb0e8",
+    "name": "ZUCKZAPGO v1.5.2",
+    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 1/26/2026, 11:23:03 PM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -1294,6 +1294,97 @@
       "description": "Session related endpoints - 8 requests available",
       "item": [
         {
+          "name": "Complete session refresh with full synchronization",
+          "description": "**Complete Session Refresh with Full Synchronization**\n\nPerforms a complete session refresh including reconnection and optional full synchronization of all WhatsApp data. This is the most comprehensive refresh operation available.\n\n**What this endpoint does:**\n1. Disconnects and reconnects to WhatsApp servers\n2. Synchronizes all 5 App State patch types (contacts, chats, settings)\n3. Checks and uploads PreKeys if needed (encryption keys)\n4. Refreshes Privacy Settings from server\n5. Requests automatic recovery for any failed syncs\n\n**Sync Options (all default to true):**\n- `sync_app_state`: Sync all 5 app state patches (critical_block, critical_unblock_low, regular_low, regular_high, regular)\n- `refresh_prekeys`: Check server prekey count and upload if low (<5 keys)\n- `refresh_privacy`: Force refresh of privacy settings from server\n- `auto_recovery`: If app state sync fails, automatically request recovery from primary device\n\n**App State Patches Explained:**\n- **critical_block**: User settings (push name, locale)\n- **critical_unblock_low**: Contact list\n- **regular_low**: Chat settings (pin, archive, unarchive behavior)\n- **regular_high**: More chat settings (mute, starred messages)\n- **regular**: Protocol info (key expiration)\n\n**PreKeys:**\nPreKeys are encryption keys used by the Signal Protocol. WhatsApp servers need a pool of these keys to establish encrypted sessions. This endpoint checks if the server has enough keys and uploads more if needed.\n\n**Auto Recovery:**\nIf app state sync fails (corrupted data, version mismatch), the auto_recovery feature uses `BuildAppStateRecoveryRequest` to request an unencrypted snapshot from your primary device (phone).\n\n**Typical Duration:** 7-10 seconds (3s reconnect + 2-5s app state + 1s prekeys + 1s privacy)\n\n**Use Cases:**\n- Complete session refresh after long disconnection\n- Recover from sync issues or corrupted local state\n- Ensure all data is up-to-date after configuration changes\n- Periodic maintenance for production deployments\n- Troubleshoot message delivery issues\n\n\n**Endpoint:** `POST /session/refresh`\n**Tags:** Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/refresh",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "refresh"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "// 📝 Complete session refresh with full synchronization\n// 🔗 POST /session/refresh\n// 💡 All optional fields included for complete reference\n\n{\n  \"sync_app_state\": true,\n  \"refresh_prekeys\": true,\n  \"refresh_privacy\": true,\n  \"auto_recovery\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Session refreshed successfully with sync results",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/session/refresh",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "session",
+                    "refresh"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "// 📝 Complete session refresh with full synchronization\n// 🔗 POST /session/refresh\n// 💡 All optional fields included for complete reference\n\n{\n  \"sync_app_state\": true,\n  \"refresh_prekeys\": true,\n  \"refresh_privacy\": true,\n  \"auto_recovery\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Session refreshed successfully with sync results",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"Details\": \"Connection refresh completed\",\n  \"refreshSuccess\": true,\n  \"wasConnected\": true,\n  \"wasLoggedIn\": true,\n  \"newConnected\": true,\n  \"newLoggedIn\": true,\n  \"jid\": \"5521999999999@s.whatsapp.net\",\n  \"sync_options\": {\n    \"sync_app_state\": true,\n    \"refresh_prekeys\": true,\n    \"refresh_privacy\": true,\n    \"auto_recovery\": true\n  },\n  \"sync\": {\n    \"app_state\": [\n      {\n        \"name\": \"critical_block\",\n        \"success\": true,\n        \"duration\": \"1.234s\",\n        \"recovery_requested\": false\n      },\n      {\n        \"name\": \"critical_unblock_low\",\n        \"success\": true,\n        \"duration\": \"0.856s\",\n        \"recovery_requested\": false\n      },\n      {\n        \"name\": \"regular_low\",\n        \"success\": true,\n        \"duration\": \"0.523s\",\n        \"recovery_requested\": false\n      },\n      {\n        \"name\": \"regular_high\",\n        \"success\": true,\n        \"duration\": \"0.412s\",\n        \"recovery_requested\": false\n      },\n      {\n        \"name\": \"regular\",\n        \"success\": true,\n        \"duration\": \"0.678s\",\n        \"recovery_requested\": false\n      }\n    ],\n    \"app_state_success\": true,\n    \"prekeys\": {\n      \"checked\": true,\n      \"server_count\": 47,\n      \"upload_triggered\": false\n    },\n    \"privacy_settings\": {\n      \"fetched\": true\n    },\n    \"total_duration\": \"4.521s\"\n  }\n}"
+            }
+          ],
+          "event": []
+        },
+        {
           "name": "connects to WhatsApp servers",
           "description": "Initiates connection to WhatsApp servers.\n\nIf there is no previous session created, it will generate a QR code that can be retrieved via the [qr](#/Session/get_session_qr) API call.\n\nIf the optional Subscribe is supplied it will limit webhooks to the specified event types. Available events: Message, UndecryptableMessage, Receipt, MediaRetry, ReadReceipt, GroupInfo, JoinedGroup, Picture, BlocklistChange, Blocklist, Connected, Disconnected, ConnectFailure, KeepAliveRestored, KeepAliveTimeout, LoggedOut, ClientOutdated, TemporaryBan, StreamError, StreamReplaced, PairSuccess, PairError, QR, QRScannedWithoutMultidevice, PrivacySettings, PushNameSetting, UserAbout, AppState, AppStateSyncComplete, HistorySync, OfflineSyncCompleted, OfflineSyncPreview, CallOffer, CallAccept, CallTerminate, CallOfferNotice, CallRelayLatency, Presence, ChatPresence, IdentityChange, CATRefreshError, NewsletterJoin, NewsletterLeave, NewsletterMuteChange, NewsletterLiveUpdate, FBMessage, All.\n\nIf no Subscribe is supplied it will subscribe to All events.\n\nIf Immediate is set to false, the action will wait for 10 seconds to retrieve actual connection status from whatsapp, otherwise it will return immediatly.\n\nWhen setting Immediate to true you should check for actual connection status after a few seconds via the [status](#/Session/get_session_status) API call as your connection might fail if the session was closed from another device.\n\n**Connection Behavior:**\n- If you have a valid stored session (previously logged in), it will connect directly without requiring QR code scanning\n- If no valid session exists, a QR code will be generated that must be scanned with your phone\n- Use this endpoint after calling [disconnect](#/Session/post_session_disconnect) to reconnect without QR scanning\n\n**Endpoint:** `POST /session/connect`\n**Tags:** Session",
           "request": {
@@ -1512,33 +1603,6 @@
               "path": [
                 "session",
                 "logout"
-              ]
-            }
-          },
-          "response": [],
-          "event": []
-        },
-        {
-          "name": "Refresh and clean up session without disconnection",
-          "description": "**Session Refresh - Clean Memory Without Reconnection**\n\nPerforms a session cleanup and refresh operation while maintaining the active connection. This is a **maintenance operation** that:\n\n- ✅ **Preserves** your active WebSocket connection\n- ✅ **Maintains** your login session and credentials  \n- ✅ **Cleans up** memory leaks and stale data\n- ✅ **Refreshes** internal session state\n- ✅ **No QR code required** - session remains active\n- ✅ **No reconnection needed** - WebSocket stays connected\n\n**What happens during refresh:**\n1. Cleans up accumulated memory and cached data\n2. Refreshes internal session management structures\n3. Validates and updates session metadata\n4. Maintains all active connections and subscriptions\n5. Preserves message history and chat state\n\n**Use Cases:**\n- Periodic maintenance to prevent memory leaks\n- Resolve session inconsistencies without full reconnection\n- Clean up after extended periods of high message volume\n- Refresh session after configuration changes\n- Troubleshoot connection issues without losing authentication\n\n**Benefits:**\n- Zero downtime - no disconnection occurs\n- Instant operation - no waiting for reconnection\n- Maintains message continuity\n- Resolves memory-related performance issues\n\n**Comparison with other endpoints:**\n- Use [disconnect](#/Session/post_session_disconnect) for temporary suspension (stops message flow)\n- Use [logout](#/Session/post_session_logout) for complete termination (requires QR)\n- Use `refresh` for maintenance while staying connected (no interruption)\n\n**Endpoint:** `POST /session/refresh`\n**Tags:** Session",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "token",
-                "value": "{{api_token}}",
-                "type": "text",
-                "description": "🔑 User authentication token"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/session/refresh",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "session",
-                "refresh"
               ]
             }
           },
@@ -4023,7 +4087,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1769108467,  // Tomorrow at current time\n  \"end_time\": 1769113867,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1769022067\n// +1 hour: 1769025667\n// +1 day: 1769108467\n// +1 week: 1769626867",
+              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1769556183,  // Tomorrow at current time\n  \"end_time\": 1769561583,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1769469783\n// +1 hour: 1769473383\n// +1 day: 1769556183\n// +1 week: 1770074583",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4453,7 +4517,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"Phone\": \"5521971532700\",\n  \"Body\": \"This is my reply to your message\",\n  \"ContextInfo\": {\n    \"stanzaID\": \"3EB06F9067F80BAB89FF\",\n    \"participant\": \"5511888888888@s.whatsapp.net\",\n    \"quotedMessage\": {\n      \"conversation\": \"Original message text being replied to\"\n    }\n  }\n}",
+              "raw": "// 📝 Sends a text message\n// 🔗 POST /chat/send/text\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Body\": \"This is my reply to your message\",\n  \"Id\": \"ABCDABCD1234\",\n  \"Presence\": 3000,\n  \"Duration\": 86400,\n  \"LinkPreview\": true,\n  \"NumberCheck\": true,\n  \"EchoApi\": false,\n  \"ContextInfo\": {\n    \"stanzaID\": \"3EB06F9067F80BAB89FF\",\n    \"participant\": \"5511888888888@s.whatsapp.net\",\n    \"quotedMessage\": {\n      \"conversation\": \"Original message text being replied to\"\n    },\n    \"isForwarded\": false,\n    \"mentionedJID\": [\n      \"5521971532700@s.whatsapp.net\"\n    ],\n    \"mentionAll\": false\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4601,7 +4665,7 @@
       "item": [
         {
           "name": "Force complete app state synchronization",
-          "description": "Forces a complete synchronization of all 5 app state patch types without needing to reconnect to WhatsApp. This updates chat settings, blocks, and other WhatsApp configurations.\n\n**What this syncs:**\n- `critical_block`: Critical blocking data\n- `critical_unblock_low`: Critical unblocking (low priority)\n- `regular_low`: Regular patches (low priority)\n- `regular_high`: Regular patches (high priority)\n- `regular`: Standard patches\n\n**How it works:**\n1. Calls `FetchAppState()` for each patch type\n2. If `full_sync=true`, deletes local version to force complete resync\n3. Updates local database automatically\n4. No reconnection required\n\n**Use Cases:**\n- After device settings change\n- Periodic sync to ensure data consistency\n- Recover from sync issues\n- Update chat settings (muted, pinned, archived)\n\n**Response Time:** Typically 2-5 seconds for all 5 patch types\n\n\n**Endpoint:** `POST /sync/app-state`\n**Tags:** Sync",
+          "description": "Forces a complete synchronization of all 5 app state patch types without needing to reconnect to WhatsApp. This updates chat settings, blocks, and other WhatsApp configurations.\n\n**What this syncs:**\n- `critical_block`: Critical blocking data\n- `critical_unblock_low`: Critical unblocking (low priority)\n- `regular_low`: Regular patches (low priority)\n- `regular_high`: Regular patches (high priority)\n- `regular`: Standard patches\n\n**How it works:**\n1. Calls `FetchAppState()` for each patch type\n2. If `full_sync=true`, deletes local version to force complete resync\n3. Updates local database automatically\n4. No reconnection required\n\n**Auto Recovery Feature:**\nWhen `auto_recovery=true` (default), if a sync fails for any patch type, the system will automatically request a recovery from the primary device using `BuildAppStateRecoveryRequest()`. This requests an unencrypted snapshot of the app state from your phone, which helps recover from corrupted or incomplete sync data.\n\n**Use Cases:**\n- After device settings change\n- Periodic sync to ensure data consistency\n- Recover from sync issues (auto_recovery helps here)\n- Update chat settings (muted, pinned, archived)\n\n**Response Time:** Typically 2-5 seconds for all 5 patch types\n\n\n**Endpoint:** `POST /sync/app-state`\n**Tags:** Sync",
           "request": {
             "method": "POST",
             "header": [
@@ -4630,7 +4694,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"full_sync\": true\n}",
+              "raw": "{\n  \"full_sync\": true,\n  \"auto_recovery\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4638,7 +4702,56 @@
               }
             }
           },
-          "response": [],
+          "response": [
+            {
+              "name": "200 Sync completed (may contain partial errors)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/sync/app-state",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "sync",
+                    "app-state"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"full_sync\": true,\n  \"auto_recovery\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Sync completed (may contain partial errors)",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"App state synchronized successfully. All 5 patch types updated.\",\n  \"auto_recovery_enabled\": true,\n  \"results\": [\n    {\n      \"name\": \"critical_block\",\n      \"success\": true,\n      \"duration\": \"1.234s\",\n      \"recovery_requested\": false\n    },\n    {\n      \"name\": \"critical_unblock_low\",\n      \"success\": true,\n      \"duration\": \"0.856s\",\n      \"recovery_requested\": false\n    },\n    {\n      \"name\": \"regular_low\",\n      \"success\": true,\n      \"duration\": \"0.523s\",\n      \"recovery_requested\": false\n    },\n    {\n      \"name\": \"regular_high\",\n      \"success\": true,\n      \"duration\": \"0.412s\",\n      \"recovery_requested\": false\n    },\n    {\n      \"name\": \"regular\",\n      \"success\": true,\n      \"duration\": \"0.678s\",\n      \"recovery_requested\": false\n    }\n  ]\n}"
+            }
+          ],
           "event": []
         },
         {
