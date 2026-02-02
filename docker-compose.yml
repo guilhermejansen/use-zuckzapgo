@@ -438,7 +438,7 @@ services:
       # TRACING_SERVICE_NAME: Nome lógico do serviço reportado ao tracer.
       - TRACING_SERVICE_NAME=zuckzapgo
       # TRACING_SERVICE_VERSION: Versão reportada nas tags de tracing.
-      - TRACING_SERVICE_VERSION=v1.5.2
+      - TRACING_SERVICE_VERSION=v1.5.3
       # TRACING_ENVIRONMENT: Identificador do ambiente (development, staging, production).
       - TRACING_ENVIRONMENT=development
 
