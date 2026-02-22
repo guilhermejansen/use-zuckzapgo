@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "072faade-962c-4f17-9367-ae51d0469bb8",
-    "name": "ZUCKZAPGO v1.5.4",
-    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 2/2/2026, 7:37:29 AM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
+    "_postman_id": "70244608-bced-4fb7-8e5f-29aad9cc1036",
+    "name": "ZUCKZAPGO v1.6.0",
+    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 2/22/2026, 7:37:41 PM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -136,12 +136,12 @@
       ]
     },
     {
-      "name": "⚙️ Admin (5 endpoints)",
-      "description": "Admin related endpoints - 5 requests available",
+      "name": "⚙️ Admin (6 endpoints)",
+      "description": "Admin related endpoints - 6 requests available",
       "item": [
         {
           "name": "Create a new ZuckZapGo user account",
-          "description": "Create a new ZuckZapGo user account with complete configuration options including webhook URL, proxy settings, S3 storage configuration, RabbitMQ messaging setup, WhatsApp client configuration, and event filtering settings. The user will receive a unique ID and authentication token upon successful creation. All configuration options are optional and will use sensible defaults if not provided. Admin authentication required.\n\n**Endpoint:** `POST /admin/users`\n**Tags:** Admin",
+          "description": "Create a new ZuckZapGo user account with complete configuration options including webhook URL, proxy settings, S3 storage configuration, RabbitMQ messaging setup, WhatsApp client configuration, and event filtering settings. The user will receive a unique ID and authentication token upon successful creation. All configuration options are optional and will use sensible defaults if not provided. Admin authentication required. `s3Config` accepts both `snake_case` and `camelCase` keys for compatibility.\n\n**Endpoint:** `POST /admin/users`\n**Tags:** Admin",
           "request": {
             "method": "POST",
             "header": [
@@ -225,7 +225,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"code\": 201,\n  \"data\": {\n    \"id\": \"5663e0c52063ec35d0ba45f7c2011c06\",\n    \"name\": \"John Doe\",\n    \"token\": \"1234ABCD\",\n    \"echoApiMessages\": false,\n    \"skipMediaDownload\": false,\n    \"skipGroups\": false,\n    \"skipNewsletters\": false,\n    \"skipBroadcasts\": false,\n    \"skipOwnMessages\": false,\n    \"globalTransportSkips\": {\n      \"skipGlobalWebhook\": false,\n      \"skipGlobalRabbitMQ\": false,\n      \"skipGlobalSQS\": false,\n      \"skipGlobalRedis\": false,\n      \"skipGlobalWebSocket\": false,\n      \"skipGlobalS3\": false\n    },\n    \"isFromAPI\": false,\n    \"skipCalls\": false,\n    \"callRejectMessage\": \"Sorry, I cannot take calls at the moment.\",\n    \"callRejectType\": \"busy\",\n    \"webhook\": \"https://webhook.site/1234567890\",\n    \"events\": \"All\",\n    \"proxyConfig\": {\n      \"enabled\": true,\n      \"proxyURL\": \"https://serverproxy.com:9080\"\n    },\n    \"s3Config\": {\n      \"Enabled\": true,\n      \"Endpoint\": \"https://s3.amazonaws.com\",\n      \"Region\": \"us-east-1\",\n      \"Bucket\": \"my-bucket\",\n      \"AccessKey\": \"***\",\n      \"SecretKey\": \"***\",\n      \"PathStyle\": true,\n      \"PublicURL\": \"https://s3.amazonaws.com\",\n      \"MediaDelivery\": \"both\",\n      \"RetentionDays\": 30,\n      \"DisableACL\": true\n    },\n    \"rabbitmqConfig\": {\n      \"enabled\": true,\n      \"url\": \"amqp://guest:guest@localhost:5672/\",\n      \"events\": \"All\",\n      \"exchange\": \"whatsapp.events\",\n      \"exchange_type\": \"topic\",\n      \"queue\": \"whatsapp.user.{user_id}\",\n      \"queue_type\": \"classic\",\n      \"routing_key\": \"whatsapp.{event_type}\",\n      \"durable\": true,\n      \"auto_delete\": false,\n      \"exclusive\": false,\n      \"no_wait\": false,\n      \"delivery_mode\": 2,\n      \"dead_letter_exchange\": \"dlx.whatsapp\",\n      \"dead_letter_routing_key\": \"dlq.events\",\n      \"message_ttl\": 86400000,\n      \"max_length\": 100000,\n      \"max_length_bytes\": 104857600,\n      \"queue_arguments\": {\n        \"x-overflow\": \"reject-publish\"\n      },\n      \"exchange_arguments\": {}\n    },\n    \"whatsappConfig\": {\n      \"waVersion\": \"2.3000.1026436087\",\n      \"waPlatform\": \"WEB\",\n      \"waReleaseChannel\": \"RELEASE\",\n      \"waWebSubPlatform\": \"WEB_BROWSER\",\n      \"waOsName\": \"Mac OS 10\",\n      \"waOsVersion\": \"10.15.7\",\n      \"waDeviceName\": \"Desktop\",\n      \"waManufacturer\": \"Apple\",\n      \"waDeviceBoard\": \"\",\n      \"waLocaleLanguage\": \"en\",\n      \"waLocaleCountry\": \"US\",\n      \"waMcc\": \"000\",\n      \"waMnc\": \"000\",\n      \"waConnectType\": \"WIFI_UNKNOWN\",\n      \"waPlatformType\": \"DESKTOP\"\n    }\n  }\n}"
+              "body": "{\n  \"code\": 201,\n  \"data\": {\n    \"id\": \"5663e0c52063ec35d0ba45f7c2011c06\",\n    \"name\": \"John Doe\",\n    \"token\": \"1234ABCD\",\n    \"echoApiMessages\": false,\n    \"skipMediaDownload\": false,\n    \"skipGroups\": false,\n    \"skipNewsletters\": false,\n    \"skipBroadcasts\": false,\n    \"skipOwnMessages\": false,\n    \"globalTransportSkips\": {\n      \"skipGlobalWebhook\": false,\n      \"skipGlobalRabbitMQ\": false,\n      \"skipGlobalSQS\": false,\n      \"skipGlobalRedis\": false,\n      \"skipGlobalWebSocket\": false,\n      \"skipGlobalS3\": false\n    },\n    \"isFromAPI\": false,\n    \"skipCalls\": false,\n    \"callRejectMessage\": \"Sorry, I cannot take calls at the moment.\",\n    \"callRejectType\": \"busy\",\n    \"webhook\": \"https://webhook.site/1234567890\",\n    \"events\": \"All\",\n    \"proxyConfig\": {\n      \"enabled\": true,\n      \"proxyURL\": \"https://serverproxy.com:9080\"\n    },\n    \"s3Config\": {\n      \"enabled\": true,\n      \"endpoint\": \"https://s3.amazonaws.com\",\n      \"region\": \"us-east-1\",\n      \"bucket\": \"my-bucket\",\n      \"access_key\": \"***\",\n      \"secret_key\": \"***\",\n      \"path_style\": true,\n      \"public_url\": \"https://s3.amazonaws.com\",\n      \"media_delivery\": \"both\",\n      \"retention_days\": 30,\n      \"disable_acl\": true\n    },\n    \"rabbitmqConfig\": {\n      \"enabled\": true,\n      \"url\": \"amqp://guest:guest@localhost:5672/\",\n      \"events\": \"All\",\n      \"exchange\": \"whatsapp.events\",\n      \"exchange_type\": \"topic\",\n      \"queue\": \"whatsapp.user.{user_id}\",\n      \"queue_type\": \"classic\",\n      \"routing_key\": \"whatsapp.{event_type}\",\n      \"durable\": true,\n      \"auto_delete\": false,\n      \"exclusive\": false,\n      \"no_wait\": false,\n      \"delivery_mode\": 2,\n      \"dead_letter_exchange\": \"dlx.whatsapp\",\n      \"dead_letter_routing_key\": \"dlq.events\",\n      \"message_ttl\": 86400000,\n      \"max_length\": 100000,\n      \"max_length_bytes\": 104857600,\n      \"queue_arguments\": {\n        \"x-overflow\": \"reject-publish\"\n      },\n      \"exchange_arguments\": {}\n    },\n    \"whatsappConfig\": {\n      \"waVersion\": \"2.3000.1026436087\",\n      \"waPlatform\": \"WEB\",\n      \"waReleaseChannel\": \"RELEASE\",\n      \"waWebSubPlatform\": \"WEB_BROWSER\",\n      \"waOsName\": \"Mac OS 10\",\n      \"waOsVersion\": \"10.15.7\",\n      \"waDeviceName\": \"Desktop\",\n      \"waManufacturer\": \"Apple\",\n      \"waDeviceBoard\": \"\",\n      \"waLocaleLanguage\": \"en\",\n      \"waLocaleCountry\": \"US\",\n      \"waMcc\": \"000\",\n      \"waMnc\": \"000\",\n      \"waConnectType\": \"WIFI_UNKNOWN\",\n      \"waPlatformType\": \"DESKTOP\"\n    }\n  }\n}"
             }
           ],
           "event": []
@@ -361,6 +361,121 @@
             }
           },
           "response": [],
+          "event": []
+        },
+        {
+          "name": "List instance connection status",
+          "description": "Retrieve a lightweight paginated view of instance connection health using runtime state when available and database fallback when no in-memory client is present.\n\n**Endpoint:** `GET /admin/instances/status`\n**Tags:** Admin",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "{{admin_token}}",
+                "type": "text",
+                "description": "🔐 Admin authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/admin/instances/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "admin",
+                "instances",
+                "status"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "",
+                  "description": "Number of instances per page (default 200, max 1000)",
+                  "disabled": true
+                },
+                {
+                  "key": "offset",
+                  "value": "",
+                  "description": "Pagination offset",
+                  "disabled": true
+                },
+                {
+                  "key": "ids",
+                  "value": "",
+                  "description": "Optional comma-separated list of instance IDs for selective lookup",
+                  "disabled": true
+                },
+                {
+                  "key": "include_total",
+                  "value": "",
+                  "description": "When true, includes total row count in pagination metadata",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Paginated status list",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{admin_token}}",
+                    "type": "text",
+                    "description": "🔐 Admin authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/instances/status",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "instances",
+                    "status"
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "",
+                      "description": "Number of instances per page (default 200, max 1000)",
+                      "disabled": true
+                    },
+                    {
+                      "key": "offset",
+                      "value": "",
+                      "description": "Pagination offset",
+                      "disabled": true
+                    },
+                    {
+                      "key": "ids",
+                      "value": "",
+                      "description": "Optional comma-separated list of instance IDs for selective lookup",
+                      "disabled": true
+                    },
+                    {
+                      "key": "include_total",
+                      "value": "",
+                      "description": "When true, includes total row count in pagination metadata",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "status": "Paginated status list",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": [\n    {\n      \"id\": \"4721ca1031bc81b888efc7f407e455ad\",\n      \"name\": \"teste-api-com-s3\",\n      \"jid\": \"5511999999999@s.whatsapp.net\",\n      \"connected\": true,\n      \"loggedIn\": true,\n      \"hasClient\": true,\n      \"connectionHealth\": \"connected\",\n      \"lastSuccessfulConnect\": 1740248400,\n      \"autoReconnectErrors\": 0,\n      \"enableAutoReconnect\": false,\n      \"source\": \"runtime\",\n      \"timestamp\": \"2026-02-22T15:05:00Z\"\n    }\n  ],\n  \"pagination\": {\n    \"limit\": 200,\n    \"offset\": 0,\n    \"has_more\": false,\n    \"next_offset\": null\n  },\n  \"success\": true\n}"
+            }
+          ],
           "event": []
         }
       ]
@@ -4087,7 +4202,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1770104249,  // Tomorrow at current time\n  \"end_time\": 1770109649,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1770017849\n// +1 hour: 1770021449\n// +1 day: 1770104249\n// +1 week: 1770622649",
+              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1771875462,  // Tomorrow at current time\n  \"end_time\": 1771880862,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1771789062\n// +1 hour: 1771792662\n// +1 day: 1771875462\n// +1 week: 1772393862",
               "options": {
                 "raw": {
                   "language": "json"
