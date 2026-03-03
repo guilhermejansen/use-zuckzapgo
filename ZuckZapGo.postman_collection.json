@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "421d58bf-cd99-4ddb-9611-4fbe25d30f8c",
-    "name": "ZUCKZAPGO v1.8.0",
-    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 3/2/2026, 8:18:17 PM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
+    "_postman_id": "ca5ec47c-90f0-4caa-89b5-6e84fa42dcc5",
+    "name": "ZUCKZAPGO v1.9.0",
+    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 3/3/2026, 12:40:35 AM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -365,7 +365,7 @@
         },
         {
           "name": "List instance connection status",
-          "description": "Retrieve a lightweight paginated view of instance connection health using runtime state when available and database fallback when no in-memory client is present.\n\n**Endpoint:** `GET /admin/instances/status`\n**Tags:** Admin",
+          "description": "Retrieve a lightweight paginated view of instance connection health using runtime state when available and database fallback when no in-memory client is present.\nEach entry includes the current QR code (base64 PNG and raw text) for unpaired instances. QR code fields are only populated when the instance is not connected or not logged in.\n\n\n**Endpoint:** `GET /admin/instances/status`\n**Tags:** Admin",
           "request": {
             "method": "GET",
             "header": [
@@ -473,7 +473,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"code\": 200,\n  \"data\": [\n    {\n      \"id\": \"4721ca1031bc81b888efc7f407e455ad\",\n      \"name\": \"teste-api-com-s3\",\n      \"jid\": \"5511999999999@s.whatsapp.net\",\n      \"connected\": true,\n      \"loggedIn\": true,\n      \"hasClient\": true,\n      \"connectionHealth\": \"connected\",\n      \"lastSuccessfulConnect\": 1740248400,\n      \"autoReconnectErrors\": 0,\n      \"enableAutoReconnect\": false,\n      \"source\": \"runtime\",\n      \"timestamp\": \"2026-02-22T15:05:00Z\"\n    }\n  ],\n  \"pagination\": {\n    \"limit\": 200,\n    \"offset\": 0,\n    \"has_more\": false,\n    \"next_offset\": null\n  },\n  \"success\": true\n}"
+              "body": "{\n  \"code\": 200,\n  \"data\": [\n    {\n      \"id\": \"4721ca1031bc81b888efc7f407e455ad\",\n      \"name\": \"teste-api-com-s3\",\n      \"jid\": \"5511999999999@s.whatsapp.net\",\n      \"qrcode\": \"\",\n      \"qrcode_text\": \"\",\n      \"connected\": true,\n      \"loggedIn\": true,\n      \"hasClient\": true,\n      \"connectionHealth\": \"connected\",\n      \"lastSuccessfulConnect\": 1740248400,\n      \"autoReconnectErrors\": 0,\n      \"enableAutoReconnect\": false,\n      \"source\": \"runtime\",\n      \"timestamp\": \"2026-02-22T15:05:00Z\"\n    }\n  ],\n  \"pagination\": {\n    \"limit\": 200,\n    \"offset\": 0,\n    \"has_more\": false,\n    \"next_offset\": null\n  },\n  \"success\": true\n}"
             }
           ],
           "event": []
@@ -2706,8 +2706,8 @@
       ]
     },
     {
-      "name": "👤 User (15 endpoints)",
-      "description": "User related endpoints - 15 requests available",
+      "name": "👤 User (16 endpoints)",
+      "description": "User related endpoints - 16 requests available",
       "item": [
         {
           "name": "Add or update a contact",
@@ -2869,6 +2869,49 @@
             "body": {
               "mode": "raw",
               "raw": "{\n  \"phone\": \"5491155553934\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        {
+          "name": "Get comprehensive contact information",
+          "description": "Retrieve comprehensive information about a WhatsApp contact by combining data from multiple sources.\nAccepts a phone number (international format without +), a JID (e.g., 5511999999999@s.whatsapp.net),\nor a LID (e.g., 123456@lid).\n\n**Data Sources Combined:**\n- **IsOnWhatsApp**: Registration status and verified name\n- **GetUserInfo**: About/status, picture ID, devices, LID, verified name\n- **GetProfilePictureInfo**: Avatar URL and direct path\n- **GetBusinessProfile**: Email, address, categories, business hours\n- **Store.Contacts**: Cached names (push name, business name, full name)\n- **Store.LIDs**: LID ↔ phone number mapping\n\n**Input Formats:**\n- Phone number: `5511999999999` (international format without +)\n- JID: `5511999999999@s.whatsapp.net`\n- LID: `123456@lid` (will be resolved to phone number first)\n\n**Important Notes:**\n- If a LID is provided, it is resolved to a phone number JID before fetching data\n- If the number is not registered on WhatsApp, only basic info is returned with null fields\n- Business profile data is only available for WhatsApp Business accounts\n- Avatar URL has a temporary expiration and should be consumed promptly\n\n\n**Endpoint:** `POST /user/contact/info`\n**Tags:** User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/user/contact/info",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "contact",
+                "info"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"5511999999999\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4433,7 +4476,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1772569097,  // Tomorrow at current time\n  \"end_time\": 1772574497,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1772482697\n// +1 hour: 1772486297\n// +1 day: 1772569097\n// +1 week: 1773087497",
+              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1772584835,  // Tomorrow at current time\n  \"end_time\": 1772590235,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1772498435\n// +1 hour: 1772502035\n// +1 day: 1772584835\n// +1 week: 1773103235",
               "options": {
                 "raw": {
                   "language": "json"
