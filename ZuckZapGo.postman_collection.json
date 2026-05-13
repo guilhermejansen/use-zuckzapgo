@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "7454ceeb-66af-4f04-a5a4-81daad2db611",
-    "name": "ZUCKZAPGO v1.10.0",
-    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 4/30/2026, 8:43:42 AM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
+    "_postman_id": "ae09e6d6-e984-4089-95e4-018d2b77be15",
+    "name": "ZUCKZAPGO v1.11.0",
+    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 5/13/2026, 9:29:03 AM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -626,7 +626,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"My Newsletter\",\n  \"description\": \"A newsletter about interesting topics\",\n  \"picture\": \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD...\"\n}",
+              "raw": "{\n  \"name\": \"My Newsletter\",\n  \"description\": \"A newsletter about interesting topics\",\n  \"picture\": \"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -932,7 +932,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📝 Send message to newsletter\n// 🔗 POST /newsletter/send\n// 💡 All optional fields included for complete reference\n\n{\n  \"jid\": \"120363025246817665@newsletter\",\n  \"message\": \"Hello subscribers!\",\n  \"image\": \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD...\",\n  \"video\": \"https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4\",\n  \"document\": \"data:application/pdf;base64,JVBERi0xLjQKJcfs...\",\n  \"audio\": \"data:audio/ogg;base64,T2dnUwACAAAAAAAAAAA...\",\n  \"caption\": \"Check this out!\",\n  \"filename\": \"document.pdf\"\n}",
+              "raw": "// 📝 Send message to newsletter\n// 🔗 POST /newsletter/send\n// 💡 All optional fields included for complete reference\n\n{\n  \"jid\": \"120363025246817665@newsletter\",\n  \"message\": \"Hello subscribers!\",\n  \"image\": \"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==\",\n  \"video\": \"https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4\",\n  \"document\": \"data:application/pdf;base64,JVBERi0xLjQKJcfs...\",\n  \"audio\": \"data:audio/ogg;base64,T2dnUwACAAAAAAAAAAA...\",\n  \"caption\": \"Check this out!\",\n  \"filename\": \"document.pdf\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -974,7 +974,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📝 Send Newsletter Admin Invite\n// 🔗 POST /newsletter/admin-invite\n// 💡 All optional fields included for complete reference\n\n{\n  \"phone\": \"5491155553934\",\n  \"newsletter_jid\": \"120363025246817665@newsletter\",\n  \"image\": \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD...\",\n  \"caption\": \"You're invited to be an admin of our newsletter!\",\n  \"name\": \"Tech Newsletter Admin Invite\"\n}",
+              "raw": "// 📝 Send Newsletter Admin Invite\n// 🔗 POST /newsletter/admin-invite\n// 💡 All optional fields included for complete reference\n\n{\n  \"phone\": \"5491155553934\",\n  \"newsletter_jid\": \"120363025246817665@newsletter\",\n  \"image\": \"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==\",\n  \"caption\": \"You're invited to be an admin of our newsletter!\",\n  \"name\": \"Tech Newsletter Admin Invite\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1626,7 +1626,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"Phone\": \"5491155553934\"\n}",
+              "raw": "{\n  \"Phone\": \"5491155553934\",\n  \"client_type\": \"macos\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3316,7 +3316,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"Image\": \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...\"\n}",
+              "raw": "{\n  \"Image\": \"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -3355,7 +3355,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"Image\": \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD...\"\n}",
+                  "raw": "{\n  \"Image\": \"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -4359,8 +4359,8 @@
           "event": []
         },
         {
-          "name": "Send a link message with automatic preview from metadata.",
-          "description": "Send a link message with automatic preview from metadata.\n\n**Endpoint:** `POST /chat/send/link`\n**Tags:** Send",
+          "name": "Send a link message with optional preview override.",
+          "description": "Send a text message that contains a link. By default the preview\ncard (title/description/image) is auto-fetched from the URL's\nOpenGraph tags.\n\nTwo opt-in behaviors are available:\n- `DisablePreview: true` → sends as plain text, no preview card.\n- `Preview: { ... }` → fully customizable preview. When\n  `Preview.fetch_missing` is omitted/false the preview is REPLACE\n  mode (only the fields you set are used; no scrape). When true\n  it is MERGE mode (auto-scrape, then non-empty override wins).\n\n`Preview.image` accepts either a base64 data URL (≤ 5MB) or an\nhttp(s) URL (≤ 8MB). Captions, mentions, replies and forwarding\nvia `ContextInfo` are supported.\n\n\n**Endpoint:** `POST /chat/send/link`\n**Tags:** Send",
           "request": {
             "method": "POST",
             "header": [
@@ -4390,7 +4390,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📝 Send a link message with automatic preview from metadata.\n// 🔗 POST /chat/send/link\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Link\": \"https://example.com\",\n  \"Caption\": \"Link Description\",\n  \"Id\": \"ABCDABCD1234\",\n  \"NumberCheck\": true,\n  \"EchoApi\": true,\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"{{test_phone}}@s.whatsapp.net\",\n    \"IsForwarded\": false,\n    \"MentionedJID\": [\n      \"{{test_phone}}@s.whatsapp.net\"\n    ],\n    \"MentionAll\": false\n  }\n}",
+              "raw": "// 📝 Send a link message with optional preview override.\n// 🔗 POST /chat/send/link\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Link\": \"https://example.com/promo\",\n  \"Caption\": \"Check out this deal\",\n  \"Id\": \"ABCDABCD1234\",\n  \"NumberCheck\": false,\n  \"EchoApi\": false,\n  \"DisablePreview\": false,\n  \"Preview\": {\n    \"title\": \"Coupon: 50% off everything\",\n    \"description\": \"Use code SAVE50 at checkout\",\n    \"image\": \"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==\",\n    \"matched_text\": \"https://example.com/promo\",\n    \"type\": \"image\",\n    \"fetch_missing\": false\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4476,7 +4476,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1777625022,  // Tomorrow at current time\n  \"end_time\": 1777630422,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1777538622\n// +1 hour: 1777542222\n// +1 day: 1777625022\n// +1 week: 1778143422",
+              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1778750943,  // Tomorrow at current time\n  \"end_time\": 1778756343,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1778664543\n// +1 hour: 1778668143\n// +1 day: 1778750943\n// +1 week: 1779269343",
               "options": {
                 "raw": {
                   "language": "json"
@@ -5507,7 +5507,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"GroupJID\": \"120362023605733675@g.us\",\n  \"Image\": \"data:image/jpeg;base64,Akd9300...\"\n}",
+              "raw": "{\n  \"GroupJID\": \"120362023605733675@g.us\",\n  \"Image\": \"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -8081,7 +8081,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"image\": \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD...\",\n  \"caption\": \"Beautiful sunset today! 🌅\",\n  \"id\": \"status-image-123\"\n}",
+              "raw": "{\n  \"image\": \"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==\",\n  \"caption\": \"Beautiful sunset today! 🌅\",\n  \"id\": \"status-image-123\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -8487,9 +8487,86 @@
       ]
     },
     {
-      "name": "🏢 Business (5 endpoints)",
-      "description": "Business related endpoints - 5 requests available",
+      "name": "🏢 Business (6 endpoints)",
+      "description": "Business related endpoints - 6 requests available",
       "item": [
+        {
+          "name": "Fetch sticker pack metadata",
+          "description": "Returns the full metadata of a public WhatsApp sticker pack\n(id, name, publisher, description, image-data-hash, tray image)\nplus the list of individual stickers with everything needed to\ndownload each one through `/chat/downloadsticker` — no extra\nround trip per sticker.\n\nHow to obtain a `packId`:\n- From an incoming Message event when a contact shares a sticker pack.\n- From a public share link `https://getstickerpack.whatsapp.com/?p=<packID>`.\n\n\n**Endpoint:** `GET /business/sticker-pack/{packId}`\n**Tags:** Business",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/sticker-pack/{{packId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "sticker-pack",
+                "{packId}"
+              ],
+              "variable": [
+                {
+                  "key": "packId",
+                  "value": "8e2a3c1f4b5d6e7f8a9b0c1d2e3f4a5b",
+                  "description": "Public WhatsApp sticker pack ID (typically a 32-character hex string visible on the share URL)."
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Sticker pack metadata",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/sticker-pack/{{packId}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "sticker-pack",
+                    "{packId}"
+                  ],
+                  "variable": [
+                    {
+                      "key": "packId",
+                      "value": "8e2a3c1f4b5d6e7f8a9b0c1d2e3f4a5b",
+                      "description": "Public WhatsApp sticker pack ID (typically a 32-character hex string visible on the share URL)."
+                    }
+                  ]
+                }
+              },
+              "status": "Sticker pack metadata",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"success\": true,\n    \"id\": \"8e2a3c1f4b5d6e7f8a9b0c1d2e3f4a5b\",\n    \"name\": \"Cute Cats\",\n    \"publisher\": \"Acme Stickers\",\n    \"description\": \"A pack of expressive cat stickers.\",\n    \"file_size\": \"1238423\",\n    \"image_data_hash\": \"f31a4c...\",\n    \"animated\": 0,\n    \"lottie\": 0,\n    \"preview_image_ids\": [\n      \"1.webp\",\n      \"2.webp\"\n    ],\n    \"tray_image_id\": \"tray.png\",\n    \"tray_image_preview\": \"iVBORw0KGgo...\",\n    \"stickers\": [\n      {\n        \"url\": \"https://mmg.whatsapp.net/.../1.webp\",\n        \"direct_path\": \"/v/t62.43144-24/1.enc\",\n        \"media_key\": \"a1b2c3...\",\n        \"file_hash\": \"d4e5f6...\",\n        \"file_enc_hash\": \"g7h8i9...\",\n        \"file_size\": 24576,\n        \"mimetype\": \"image/webp\",\n        \"width\": 512,\n        \"height\": 512,\n        \"emojis\": [\n          \"😺\"\n        ],\n        \"accessibility_text\": \"Smiling orange cat\",\n        \"handle\": \"01\",\n        \"sticker_hash_without_meta\": \"0a1b2c...\",\n        \"preview_webp_id\": \"1_preview.webp\"\n      }\n    ],\n    \"sticker_count\": 1\n  },\n  \"success\": true\n}"
+            }
+          ],
+          "event": []
+        },
         {
           "name": "Get available bots list",
           "description": "Retrieves a list of all available WhatsApp Business bots that the authenticated user can interact with. Returns bot IDs, names, and basic information about each bot.\n\n**Endpoint:** `GET /business/bots`\n**Tags:** Business",
