@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "ae09e6d6-e984-4089-95e4-018d2b77be15",
-    "name": "ZUCKZAPGO v1.11.0",
-    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 5/13/2026, 9:29:03 AM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
+    "_postman_id": "9ab769a7-262a-47e3-a763-04442e804b4c",
+    "name": "ZUCKZAPGO v1.12.0",
+    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 6/13/2026, 7:00:20 PM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -3718,8 +3718,8 @@
       ]
     },
     {
-      "name": "💬 Chat (14 endpoints)",
-      "description": "Chat related endpoints - 14 requests available",
+      "name": "💬 Chat (15 endpoints)",
+      "description": "Chat related endpoints - 15 requests available",
       "item": [
         {
           "name": "Archive or unarchive a chat",
@@ -4226,6 +4226,97 @@
           "event": []
         },
         {
+          "name": "Reply to a quoted message",
+          "description": "Sends a message that quotes a previous one (built via\n`Client.BuildReply`). Text content only — media replies should use\n`/chat/send/{image,video,document,audio}` with `quoted_msg_id`.\n\n\n**Endpoint:** `POST /chat/reply`\n**Tags:** Chat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/chat/reply",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "chat",
+                "reply"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "// 📝 Reply to a quoted message\n// 🔗 POST /chat/reply\n// 💡 All optional fields included for complete reference\n\n{\n  \"to\": \"5521979232690@s.whatsapp.net\",\n  \"quoted_msg_id\": \"3EB0F2A1C9D04E8F1234\",\n  \"quoted_from_me\": false,\n  \"content_type\": \"text\",\n  \"content\": \"Perfeito, confirmado para amanhã às 10h.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Reply sent",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/reply",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "reply"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "// 📝 Reply to a quoted message\n// 🔗 POST /chat/reply\n// 💡 All optional fields included for complete reference\n\n{\n  \"to\": \"5521979232690@s.whatsapp.net\",\n  \"quoted_msg_id\": \"3EB0F2A1C9D04E8F1234\",\n  \"quoted_from_me\": false,\n  \"content_type\": \"text\",\n  \"content\": \"Perfeito, confirmado para amanhã às 10h.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Reply sent",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message_id\": \"3EB0F2A1C9D04E8FAAAA\",\n  \"timestamp\": \"2026-05-17T22:00:00Z\",\n  \"to\": \"5521979232690@s.whatsapp.net\",\n  \"quoted_msg_id\": \"3EB0F2A1C9D04E8F1234\",\n  \"content_type\": \"text\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
           "name": "Sets chat presence",
           "description": "Sends indication if you are writing or not (state could be either \"composing\" or \"paused\"). Optional Media can be set to \"audio\" for indicating recording a message\n\n**Endpoint:** `POST /chat/presence`\n**Tags:** Chat",
           "request": {
@@ -4476,7 +4567,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1778750943,  // Tomorrow at current time\n  \"end_time\": 1778756343,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1778664543\n// +1 hour: 1778668143\n// +1 day: 1778750943\n// +1 week: 1779269343",
+              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1781463620,  // Tomorrow at current time\n  \"end_time\": 1781469020,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1781377220\n// +1 hour: 1781380820\n// +1 day: 1781463620\n// +1 week: 1781982020",
               "options": {
                 "raw": {
                   "language": "json"
@@ -8095,9 +8186,282 @@
       ]
     },
     {
-      "name": "📞 Call (1 endpoints)",
-      "description": "Call related endpoints - 1 requests available",
+      "name": "📞 Call (6 endpoints)",
+      "description": "Call related endpoints - 6 requests available",
       "item": [
+        {
+          "name": "Accept an incoming call",
+          "description": "Sends an accept stanza for an inbound call. Always available (no feature\nflag, no env). Accepting without a backing WebRTC media bridge will not\nestablish audio/video — pair this with the Call Media endpoints\n(Spec 005) for real media.\n\n\n**Endpoint:** `POST /call/accept`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/accept",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "accept"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Call accepted",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/accept",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "accept"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Call accepted",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\",\n  \"action\": \"accepted\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Originate an outbound call",
+          "description": "Originating an outbound call requires a WebRTC media stack (SDP/ICE/RTP)\nthat is not present in this build. This endpoint always returns\n**501 Not Implemented** — an honest roadmap stub, never a fake success.\n\n\n**Endpoint:** `POST /call/initiate`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/initiate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "initiate"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"5521979232690@s.whatsapp.net\",\n  \"video\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "501 Not implemented - a WebRTC media stack is required",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/initiate",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "initiate"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"to\": \"5521979232690@s.whatsapp.net\",\n  \"video\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Not implemented - a WebRTC media stack is required",
+              "code": 501,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"make_call_not_implemented\",\n  \"reason\": \"originating a call requires a WebRTC media stack not available in this build\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Pre-accept an incoming call (ringing)",
+          "description": "Sends a preaccept (ringing) stanza for an inbound call. Always available\n(no feature flag, no env).\n\n\n**Endpoint:** `POST /call/preaccept`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/preaccept",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "preaccept"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Call preaccepted",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/preaccept",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "preaccept"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Call preaccepted",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\",\n  \"action\": \"preaccepted\"\n}"
+            }
+          ],
+          "event": []
+        },
         {
           "name": "Reject a call and send custom message",
           "description": "Rejects an incoming call with a specific rejection type and optionally sends a custom message to the caller\n\n**Endpoint:** `POST /call/reject/send`\n**Tags:** Call",
@@ -8139,6 +8503,789 @@
             }
           },
           "response": [],
+          "event": []
+        },
+        {
+          "name": "Reject an incoming call",
+          "description": "Sends a reject stanza for an inbound call and, optionally, a follow-up\ntext message to the caller. Always available (no feature flag, no env).\nNo call state is persisted (there is no call_log table). The `v1.call.reject`\nwebhook is co-emitted under the additive `v1` key.\n\n\n**Endpoint:** `POST /call/reject`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/reject",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "reject"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "// 📝 Reject an incoming call\n// 🔗 POST /call/reject\n// 💡 All optional fields included for complete reference\n\n{\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\",\n  \"reject_type\": \"declined\",\n  \"message\": \"Estou em atendimento agora, retorno em até 10 minutos.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Call rejected successfully",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/reject",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "reject"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "// 📝 Reject an incoming call\n// 🔗 POST /call/reject\n// 💡 All optional fields included for complete reference\n\n{\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\",\n  \"reject_type\": \"declined\",\n  \"message\": \"Estou em atendimento agora, retorno em até 10 minutos.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Call rejected successfully",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\",\n  \"reject_type\": \"declined\",\n  \"action\": \"rejected\",\n  \"message_sent\": true\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Terminate an active call",
+          "description": "Sends a terminate stanza with a reason. Default reason is `hangup`.\nAlways available (no feature flag, no env).\n\n\n**Endpoint:** `POST /call/terminate`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/terminate",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "terminate"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\",\n  \"reason\": \"hangup\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Call terminated",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/terminate",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "terminate"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\",\n  \"reason\": \"hangup\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Call terminated",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\",\n  \"reason\": \"hangup\",\n  \"action\": \"terminated\"\n}"
+            }
+          ],
+          "event": []
+        }
+      ]
+    },
+    {
+      "name": "📋 Call Media (7 endpoints)",
+      "description": "Call Media related endpoints - 7 requests available",
+      "item": [
+        {
+          "name": "Configure the per-user call-media sidecar",
+          "description": "Sets the per-user sidecar URL/token. The configuration is held in\nmemory per user — there is **no environment variable** and **no schema\nchange**. Mirrors the shape of the RabbitMQ/S3 per-user config\nendpoints.\n\n\n**Endpoint:** `POST /session/sidecar/config`\n**Tags:** Call Media",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/sidecar/config",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "sidecar",
+                "config"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"enabled\": true,\n  \"url\": \"http://127.0.0.1:7700\",\n  \"token\": \"shared-secret-rotacionado\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Sidecar configuration stored",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/session/sidecar/config",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "session",
+                    "sidecar",
+                    "config"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"enabled\": true,\n  \"url\": \"http://127.0.0.1:7700\",\n  \"token\": \"shared-secret-rotacionado\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Sidecar configuration stored",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"enabled\": true,\n  \"url\": \"http://127.0.0.1:7700\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Delete the per-user call-media sidecar configuration",
+          "description": "\n\n**Endpoint:** `DELETE /session/sidecar/config`\n**Tags:** Call Media",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/sidecar/config",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "sidecar",
+                "config"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Sidecar configuration removed",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/session/sidecar/config",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "session",
+                    "sidecar",
+                    "config"
+                  ]
+                }
+              },
+              "status": "Sidecar configuration removed",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"deleted\": true\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Forward operator ICE candidate to sidecar",
+          "description": "Proxies a single ICE candidate from the operator browser to the per-user sidecar.\n\n**Endpoint:** `POST /call/media/{call_id}/operator-ice`\n**Tags:** Call Media",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/media/{{call_id}}/operator-ice",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "media",
+                "{call_id}",
+                "operator-ice"
+              ],
+              "variable": [
+                {
+                  "key": "call_id",
+                  "value": "call_17B3F2A1C9D04E8F"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"candidate\": \"candidate:1 1 UDP 2122252543 192.168.0.10 50001 typ host\",\n  \"sdp_mid\": \"0\",\n  \"sdp_m_line_index\": 0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 ICE candidate accepted",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/media/{{call_id}}/operator-ice",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "media",
+                    "{call_id}",
+                    "operator-ice"
+                  ],
+                  "variable": [
+                    {
+                      "key": "call_id",
+                      "value": "call_17B3F2A1C9D04E8F"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"candidate\": \"candidate:1 1 UDP 2122252543 192.168.0.10 50001 typ host\",\n  \"sdp_mid\": \"0\",\n  \"sdp_m_line_index\": 0\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "ICE candidate accepted",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Forward operator SDP to sidecar",
+          "description": "Proxies the operator browser SDP offer/answer to the per-user call-media\nsidecar. Returns **503** when the user has no sidecar configured\n(`sidecar_not_configured`) or the configured sidecar is unreachable\n(`sidecar_unreachable`). Never fakes a media session.\n\n\n**Endpoint:** `POST /call/media/{call_id}/operator-sdp`\n**Tags:** Call Media",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/media/{{call_id}}/operator-sdp",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "media",
+                "{call_id}",
+                "operator-sdp"
+              ],
+              "variable": [
+                {
+                  "key": "call_id",
+                  "value": "call_17B3F2A1C9D04E8F",
+                  "description": "Call ID received in the v1.call.offer webhook"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sdp\": \"v=0\\r\\no=- 46117317 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\nm=audio 9 UDP/TLS/RTP/SAVPF 111\\r\\n\",\n  \"type\": \"offer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 SDP answer from the sidecar",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/media/{{call_id}}/operator-sdp",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "media",
+                    "{call_id}",
+                    "operator-sdp"
+                  ],
+                  "variable": [
+                    {
+                      "key": "call_id",
+                      "value": "call_17B3F2A1C9D04E8F",
+                      "description": "Call ID received in the v1.call.offer webhook"
+                    }
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"sdp\": \"v=0\\r\\no=- 46117317 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\nm=audio 9 UDP/TLS/RTP/SAVPF 111\\r\\n\",\n  \"type\": \"offer\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "SDP answer from the sidecar",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"sdp\": \"v=0\\r\\no=- 99110011 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\nm=audio 9 UDP/TLS/RTP/SAVPF 111\\r\\n\",\n  \"type\": \"answer\",\n  \"ice_candidates\": []\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Get the per-user call-media sidecar configuration",
+          "description": "Returns the per-user sidecar configuration with the token masked (`has_token` only).\n\n**Endpoint:** `GET /session/sidecar/config`\n**Tags:** Call Media",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/sidecar/config",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "sidecar",
+                "config"
+              ]
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        {
+          "name": "Hangup call media (sidecar cleanup)",
+          "description": "Tears down the media session on the sidecar and returns the measured\nmedia duration (this is the only place a real `duration_ms` is reported).\n\n\n**Endpoint:** `POST /call/media/{call_id}/hangup`\n**Tags:** Call Media",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/media/{{call_id}}/hangup",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "media",
+                "{call_id}",
+                "hangup"
+              ],
+              "variable": [
+                {
+                  "key": "call_id",
+                  "value": "call_17B3F2A1C9D04E8F"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Media session hung up",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/media/{{call_id}}/hangup",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "media",
+                    "{call_id}",
+                    "hangup"
+                  ],
+                  "variable": [
+                    {
+                      "key": "call_id",
+                      "value": "call_17B3F2A1C9D04E8F"
+                    }
+                  ]
+                }
+              },
+              "status": "Media session hung up",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true,\n  \"duration_ms\": 84210\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Signal sidecar to attach operator PC (outbound)",
+          "description": "Used for outbound calls when the recipient has accepted and the operator\nside is ready to receive media. Returns 503 if the user has no sidecar\nconfigured.\n\n\n**Endpoint:** `POST /call/media/{call_id}/operator-attach`\n**Tags:** Call Media",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/media/{{call_id}}/operator-attach",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "media",
+                "{call_id}",
+                "operator-attach"
+              ],
+              "variable": [
+                {
+                  "key": "call_id",
+                  "value": "call_17B3F2A1C9D04E8F"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Operator side ready",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/media/{{call_id}}/operator-attach",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "media",
+                    "{call_id}",
+                    "operator-attach"
+                  ],
+                  "variable": [
+                    {
+                      "key": "call_id",
+                      "value": "call_17B3F2A1C9D04E8F"
+                    }
+                  ]
+                }
+              },
+              "status": "Operator side ready",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true,\n  \"ready_for_sdp\": true\n}"
+            },
+            {
+              "name": "503 Sidecar not configured for this user",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/media/{{call_id}}/operator-attach",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "media",
+                    "{call_id}",
+                    "operator-attach"
+                  ],
+                  "variable": [
+                    {
+                      "key": "call_id",
+                      "value": "call_17B3F2A1C9D04E8F"
+                    }
+                  ]
+                }
+              },
+              "status": "Sidecar not configured for this user",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"sidecar_not_configured\",\n  \"reason\": \"configure a call-media sidecar via POST /session/sidecar/config\"\n}"
+            }
+          ],
           "event": []
         }
       ]
@@ -8487,9 +9634,100 @@
       ]
     },
     {
-      "name": "🏢 Business (6 endpoints)",
-      "description": "Business related endpoints - 6 requests available",
+      "name": "🏢 Business (14 endpoints)",
+      "description": "Business related endpoints - 14 requests available",
       "item": [
+        {
+          "name": "Fetch order details",
+          "description": "Resolves an order by its ID plus the base64 `token` (both are present\nin the inbound `OrderMessage`). Returns price (minor units), products,\ncurrency and variant info.\n\n\n**Endpoint:** `GET /business/order/{orderID}`\n**Tags:** Business",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/order/{{orderID}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "order",
+                "{orderID}"
+              ],
+              "variable": [
+                {
+                  "key": "orderID",
+                  "value": "1976123456789012"
+                }
+              ],
+              "query": [
+                {
+                  "key": "token",
+                  "value": "Af7Yd2k9...",
+                  "description": "Base64 token from the OrderMessage",
+                  "disabled": false
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Order details",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/{{orderID}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "{orderID}"
+                  ],
+                  "variable": [
+                    {
+                      "key": "orderID",
+                      "value": "1976123456789012"
+                    }
+                  ],
+                  "query": [
+                    {
+                      "key": "token",
+                      "value": "Af7Yd2k9...",
+                      "description": "Base64 token from the OrderMessage",
+                      "disabled": false
+                    }
+                  ]
+                }
+              },
+              "status": "Order details",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"order\": {\n    \"id\": \"1976123456789012\",\n    \"created_at\": \"2026-05-17T19:30:00Z\",\n    \"catalog_id\": \"104857600123\",\n    \"price\": {\n      \"subtotal\": 4998,\n      \"total\": 4998,\n      \"currency\": \"BRL\",\n      \"price_status\": \"final\"\n    },\n    \"products\": [\n      {\n        \"id\": \"prod_001\",\n        \"name\": \"Camiseta Premium\",\n        \"quantity\": 2,\n        \"price\": 2499,\n        \"currency\": \"BRL\",\n        \"image_url\": \"https://example.com/p/cam.jpg\"\n      }\n    ]\n  }\n}"
+            }
+          ],
+          "event": []
+        },
         {
           "name": "Fetch sticker pack metadata",
           "description": "Returns the full metadata of a public WhatsApp sticker pack\n(id, name, publisher, description, image-data-hash, tray image)\nplus the list of individual stickers with everything needed to\ndownload each one through `/chat/downloadsticker` — no extra\nround trip per sticker.\n\nHow to obtain a `packId`:\n- From an incoming Message event when a contact shares a sticker pack.\n- From a public share link `https://getstickerpack.whatsapp.com/?p=<packID>`.\n\n\n**Endpoint:** `GET /business/sticker-pack/{packId}`\n**Tags:** Business",
@@ -8595,6 +9833,157 @@
           "event": []
         },
         {
+          "name": "Get business product catalog",
+          "description": "Paginated catalog read, cached in-memory for 300s. Returns **503\n`catalog_unavailable`** until the upstream catalog read stanza is\nvalidated (honest stub — never a fake empty catalog).\n\n\n**Endpoint:** `GET /business/catalog/{businessJID}`\n**Tags:** Business",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/catalog/{{businessJID}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "catalog",
+                "{businessJID}"
+              ],
+              "variable": [
+                {
+                  "key": "businessJID",
+                  "value": "5521999990000@s.whatsapp.net"
+                }
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": 20,
+                  "disabled": true
+                },
+                {
+                  "key": "cursor",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Catalog page (cached flag indicates a cache hit)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/catalog/{{businessJID}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "catalog",
+                    "{businessJID}"
+                  ],
+                  "variable": [
+                    {
+                      "key": "businessJID",
+                      "value": "5521999990000@s.whatsapp.net"
+                    }
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": 20,
+                      "disabled": true
+                    },
+                    {
+                      "key": "cursor",
+                      "value": "",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "status": "Catalog page (cached flag indicates a cache hit)",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"cached\": false,\n  \"catalog\": {}\n}"
+            },
+            {
+              "name": "503 Catalog read not yet supported",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/catalog/{{businessJID}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "catalog",
+                    "{businessJID}"
+                  ],
+                  "variable": [
+                    {
+                      "key": "businessJID",
+                      "value": "5521999990000@s.whatsapp.net"
+                    }
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": 20,
+                      "disabled": true
+                    },
+                    {
+                      "key": "cursor",
+                      "value": "",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "status": "Catalog read not yet supported",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"catalog_unavailable\",\n  \"reason\": \"catalog read not yet supported\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
           "name": "Get contact QR link",
           "description": "Generates a QR code link for a WhatsApp contact. The QR code can be used to quickly add the contact or start a conversation. Optionally, you can revoke existing QR codes before generating a new one.\n\n**Endpoint:** `POST /business/contact-qr`\n**Tags:** Business",
           "request": {
@@ -8679,6 +10068,272 @@
           "event": []
         },
         {
+          "name": "List business product collections",
+          "description": "Returns 503 `catalog_unavailable` until upstream support is validated.\n\n**Endpoint:** `GET /business/collections/{businessJID}`\n**Tags:** Business",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/collections/{{businessJID}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "collections",
+                "{businessJID}"
+              ],
+              "variable": [
+                {
+                  "key": "businessJID",
+                  "value": "5521999990000@s.whatsapp.net"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Collections",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/collections/{{businessJID}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "collections",
+                    "{businessJID}"
+                  ],
+                  "variable": [
+                    {
+                      "key": "businessJID",
+                      "value": "5521999990000@s.whatsapp.net"
+                    }
+                  ]
+                }
+              },
+              "status": "Collections",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"collections\": []\n}"
+            },
+            {
+              "name": "503 Collections read not yet supported",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/collections/{{businessJID}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "collections",
+                    "{businessJID}"
+                  ],
+                  "variable": [
+                    {
+                      "key": "businessJID",
+                      "value": "5521999990000@s.whatsapp.net"
+                    }
+                  ]
+                }
+              },
+              "status": "Collections read not yet supported",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"catalog_unavailable\",\n  \"reason\": \"collections read not yet supported\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "List business products",
+          "description": "Paginated product list. Returns 503 `catalog_unavailable` until upstream support is validated.\n\n**Endpoint:** `GET /business/products/{businessJID}`\n**Tags:** Business",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/products/{{businessJID}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "products",
+                "{businessJID}"
+              ],
+              "variable": [
+                {
+                  "key": "businessJID",
+                  "value": "5521999990000@s.whatsapp.net"
+                }
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": 20,
+                  "disabled": true
+                },
+                {
+                  "key": "cursor",
+                  "value": "",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Products page",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/products/{{businessJID}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "products",
+                    "{businessJID}"
+                  ],
+                  "variable": [
+                    {
+                      "key": "businessJID",
+                      "value": "5521999990000@s.whatsapp.net"
+                    }
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": 20,
+                      "disabled": true
+                    },
+                    {
+                      "key": "cursor",
+                      "value": "",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "status": "Products page",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"products\": [],\n  \"next_cursor\": \"\"\n}"
+            },
+            {
+              "name": "503 Product list read not yet supported",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/products/{{businessJID}}",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "products",
+                    "{businessJID}"
+                  ],
+                  "variable": [
+                    {
+                      "key": "businessJID",
+                      "value": "5521999990000@s.whatsapp.net"
+                    }
+                  ],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": 20,
+                      "disabled": true
+                    },
+                    {
+                      "key": "cursor",
+                      "value": "",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "status": "Product list read not yet supported",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"catalog_unavailable\",\n  \"reason\": \"product list read not yet supported\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
           "name": "Resolve business message link",
           "description": "Resolves a WhatsApp Business message link to retrieve detailed information about the business, including business name, category, description, website, email, address, and verification status. This is useful for validating business links before interacting with them.\n\n**Endpoint:** `POST /business/resolve-link`\n**Tags:** Business",
           "request": {
@@ -8718,6 +10373,378 @@
             }
           },
           "response": [],
+          "event": []
+        },
+        {
+          "name": "Send a catalog deeplink message",
+          "description": "Sends a text message linking to a business catalog.\n\n**Endpoint:** `POST /business/catalog/send`\n**Tags:** Business",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/catalog/send",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "catalog",
+                "send"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"5521979232690@s.whatsapp.net\",\n  \"business_jid\": \"5521999990000@s.whatsapp.net\",\n  \"caption\": \"Confira nosso catálogo completo 👇\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Catalog deeplink sent",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/catalog/send",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "catalog",
+                    "send"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"to\": \"5521979232690@s.whatsapp.net\",\n  \"business_jid\": \"5521999990000@s.whatsapp.net\",\n  \"caption\": \"Confira nosso catálogo completo 👇\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Catalog deeplink sent",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message_id\": \"3EB0F2A1C9D04E8FBBBB\",\n  \"timestamp\": \"2026-05-17T22:00:00Z\",\n  \"to\": \"5521979232690@s.whatsapp.net\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Send a product card",
+          "description": "Sends a single product card (ProductMessage) referencing a catalog product.\n\n**Endpoint:** `POST /business/product/send`\n**Tags:** Business",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/product/send",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "product",
+                "send"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "// 📝 Send a product card\n// 🔗 POST /business/product/send\n// 💡 All optional fields included for complete reference\n\n{\n  \"to\": \"5521979232690@s.whatsapp.net\",\n  \"business_jid\": \"5521999990000@s.whatsapp.net\",\n  \"product_id\": \"prod_001\",\n  \"caption\": \"Esse é o mais vendido 🔥\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Product card sent",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/product/send",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "product",
+                    "send"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "// 📝 Send a product card\n// 🔗 POST /business/product/send\n// 💡 All optional fields included for complete reference\n\n{\n  \"to\": \"5521979232690@s.whatsapp.net\",\n  \"business_jid\": \"5521999990000@s.whatsapp.net\",\n  \"product_id\": \"prod_001\",\n  \"caption\": \"Esse é o mais vendido 🔥\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Product card sent",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message_id\": \"3EB0F2A1C9D04E8FCCCC\",\n  \"timestamp\": \"2026-05-17T22:00:00Z\",\n  \"to\": \"5521979232690@s.whatsapp.net\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Send a product list message with sections",
+          "description": "Sends a ProductList message with one or more sections, each containing product IDs.\n\n**Endpoint:** `POST /business/product-list/send`\n**Tags:** Business",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/product-list/send",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "product-list",
+                "send"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "// 📝 Send a product list message with sections\n// 🔗 POST /business/product-list/send\n// 💡 All optional fields included for complete reference\n\n{\n  \"to\": \"5521979232690@s.whatsapp.net\",\n  \"business_jid\": \"5521999990000@s.whatsapp.net\",\n  \"header\": \"Ofertas da Semana\",\n  \"body\": \"Selecione os itens desejados\",\n  \"footer\": \"Promoção válida até domingo\",\n  \"sections\": [\n    {\n      \"title\": \"Camisetas\",\n      \"products\": [\n        {\n          \"product_id\": \"prod_001\"\n        },\n        {\n          \"product_id\": \"prod_002\"\n        }\n      ]\n    },\n    {\n      \"title\": \"Acessórios\",\n      \"products\": [\n        {\n          \"product_id\": \"prod_010\"\n        }\n      ]\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Product list sent",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/product-list/send",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "product-list",
+                    "send"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "// 📝 Send a product list message with sections\n// 🔗 POST /business/product-list/send\n// 💡 All optional fields included for complete reference\n\n{\n  \"to\": \"5521979232690@s.whatsapp.net\",\n  \"business_jid\": \"5521999990000@s.whatsapp.net\",\n  \"header\": \"Ofertas da Semana\",\n  \"body\": \"Selecione os itens desejados\",\n  \"footer\": \"Promoção válida até domingo\",\n  \"sections\": [\n    {\n      \"title\": \"Camisetas\",\n      \"products\": [\n        {\n          \"product_id\": \"prod_001\"\n        },\n        {\n          \"product_id\": \"prod_002\"\n        }\n      ]\n    },\n    {\n      \"title\": \"Acessórios\",\n      \"products\": [\n        {\n          \"product_id\": \"prod_010\"\n        }\n      ]\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Product list sent",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message_id\": \"3EB0F2A1C9D04E8FDDDD\",\n  \"timestamp\": \"2026-05-17T22:00:00Z\",\n  \"to\": \"5521979232690@s.whatsapp.net\",\n  \"sections\": 2\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Send a shop deeplink (enterprise license required)",
+          "description": "Sends a shop deeplink. Gated by the project's **existing**\nenterprise-license mechanism (`ensureEnterpriseLicense` — the same gate\nas carousel/flows/interactive). No new environment variable and no new\nlicense key. Returns **403** when the instance is not enterprise.\n\n\n**Endpoint:** `POST /business/shop/send`\n**Tags:** Business",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/shop/send",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "shop",
+                "send"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"5521979232690@s.whatsapp.net\",\n  \"business_jid\": \"5521999990000@s.whatsapp.net\",\n  \"caption\": \"Acesse nossa loja oficial:\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Shop deeplink sent",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/shop/send",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "shop",
+                    "send"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"to\": \"5521979232690@s.whatsapp.net\",\n  \"business_jid\": \"5521999990000@s.whatsapp.net\",\n  \"caption\": \"Acesse nossa loja oficial:\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Shop deeplink sent",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message_id\": \"3EB0F2A1C9D04E8FEEEE\",\n  \"timestamp\": \"2026-05-17T22:00:00Z\",\n  \"to\": \"5521979232690@s.whatsapp.net\"\n}"
+            }
+          ],
           "event": []
         },
         {
