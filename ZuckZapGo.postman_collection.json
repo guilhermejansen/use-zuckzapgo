@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "bd0bcdf5-c827-43bd-bb5a-bf8991421349",
-    "name": "ZUCKZAPGO v1.13.2",
-    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 6/25/2026, 10:44:48 PM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
+    "_postman_id": "dc3b22de-e20c-49a4-8516-62e02e94f9da",
+    "name": "ZUCKZAPGO v1.13.3",
+    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n<h2>📞 Calls — LLM build guide</h2><p>Building a WhatsApp <b>voice-call</b> integration? Open <a href=\"/api/llm.txt\" target=\"_blank\" rel=\"noopener\"><b>llm.txt</b></a> — a complete, self-contained spec you can paste into any LLM (Claude, GPT, Gemini, …) to generate a perfect calls integration (REST control + bidirectional PCM audio over WebSocket). It also surfaces as the external-docs link on the <code>Call</code> tag below.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 6/29/2026, 3:35:39 AM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -4185,7 +4185,7 @@
         },
         {
           "name": "Reacts to a message",
-          "description": "Sends a reaction to some message. Phone, Body and Id are mandatory. If reaction is for your own message, prefix Phone with 'me:'. Body should be the reaction emoji.\n\n**Endpoint:** `POST /chat/react`\n**Tags:** Chat",
+          "description": "Sends a reaction (emoji) to a message. `Phone`, `Body` and `Id` are mandatory.\n\n**⚠️ Addressing (important for iOS / LID):**\nWhatsApp migrated chats to **LID** identifiers (`@lid`). iOS validates the reaction\naddressing **strictly**: the reaction key must point to the chat in the same namespace\n(PN vs LID) under which the device stored the original message. Otherwise the reaction is\n**silently dropped on iOS** (Android/Web are lenient and merge PN↔LID). Because of this,\nfor 1:1 chats the API resolves **PN→LID automatically**, and you may optionally pass\n`Chat`/`Sender` with the `@lid` JIDs the webhook already delivers.\n\n**Golden rule: send back what the webhook gave you.**\n- 🟢 **Private (1:1):** the phone number (PN) in `Phone` is enough — PN→LID is automatic.\n  Optional: pass `Chat` with the webhook `Info.Chat` (`@lid`) to guarantee rendering.\n- 👥 **Group (someone else's message):** pass `Sender` with the webhook `Info.Sender` (`@lid`).\n- 🙋 **Your own message (sent by the instance):** prefix `Id` with `me:`.\n- ❌ **Remove a reaction:** empty `Body` (`\"\"`) or `\"remove\"`.\n\n**Fields:**\n- `Phone` (required): destination chat. Private = number (PN); group = `@g.us` JID.\n- `Body` (required): reaction emoji. `\"\"` or `\"remove\"` removes it.\n- `Id` (required): target message ID. Prefix `me:` when the message is yours.\n- `Sender` (group): JID of the reacted message's author (use the webhook `@lid`).\n- `Chat` (optional): exact chat JID (webhook `@lid`) — aligns destination and key.\n\n\n**Endpoint:** `POST /chat/react`\n**Tags:** Chat",
           "request": {
             "method": "POST",
             "header": [
@@ -4214,7 +4214,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"Phone\": \"5521971532700\",\n  \"Body\": \"❤️\",\n  \"Id\": \"me:3EB06F9067F80BAB89FF\"\n}",
+              "raw": "// 📝 Reacts to a message\n// 🔗 POST /chat/react\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Body\": \"❤️\",\n  \"Id\": \"me:3EB06F9067F80BAB89FF\",\n  \"Sender\": \"227294266302623@lid\",\n  \"Chat\": \"227294266302623@lid\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4567,7 +4567,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1782513888,  // Tomorrow at current time\n  \"end_time\": 1782519288,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1782427488\n// +1 hour: 1782431088\n// +1 day: 1782513888\n// +1 week: 1783032288",
+              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1782790539,  // Tomorrow at current time\n  \"end_time\": 1782795939,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1782704139\n// +1 hour: 1782707739\n// +1 day: 1782790539\n// +1 week: 1783308939",
               "options": {
                 "raw": {
                   "language": "json"
@@ -8270,12 +8270,12 @@
       ]
     },
     {
-      "name": "📞 Call (6 endpoints)",
-      "description": "Call related endpoints - 6 requests available",
+      "name": "📞 Call (16 endpoints)",
+      "description": "Call related endpoints - 16 requests available",
       "item": [
         {
           "name": "Accept an incoming call",
-          "description": "Sends an accept stanza for an inbound call. Always available (no feature\nflag, no env). Accepting without a backing WebRTC media bridge will not\nestablish audio/video — pair this with the Call Media endpoints\n(Spec 005) for real media.\n\n\n**Endpoint:** `POST /call/accept`\n**Tags:** Call",
+          "description": "Sends an accept stanza for an inbound call. Always available (no feature\nflag, no env). Accepting without a backing WebRTC media bridge will not\nestablish audio/video — for real media use the native calls engine\n(`/call/config` with `callsEnabled: true`) and drive the call via\n`/call/answer`, `/call/play`, `/call/hangup` and `/call/{call_id}/stream`.\n\n\n**Endpoint:** `POST /call/accept`\n**Tags:** Call",
           "request": {
             "method": "POST",
             "header": [
@@ -8360,6 +8360,530 @@
                 }
               ],
               "body": "{\n  \"success\": true,\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\",\n  \"action\": \"accepted\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Answer a ringing inbound call",
+          "description": "Answers a ringing inbound call. Used in `manual` mode, where your app\ndrives inbound calls explicitly. Returns **404** when the `callId` is not\na live call, **409** when the engine is not enabled for the instance.\n\n\n**Endpoint:** `POST /call/answer`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/answer",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "answer"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"callId\": \"call_17B3F2A1C9D04E8F\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Call answered",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/answer",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "answer"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_17B3F2A1C9D04E8F\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Call answered",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true\n}"
+            },
+            {
+              "name": "400 Bad request - callId is required",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/answer",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "answer"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_17B3F2A1C9D04E8F\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad request - callId is required",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"callId is required\"\n}"
+            },
+            {
+              "name": "404 Call not found",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/answer",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "answer"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_17B3F2A1C9D04E8F\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Call not found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"call not found\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Bidirectional raw-PCM call media WebSocket",
+          "description": "Upgrades the HTTP connection to a **WebSocket** that bridges raw PCM\naudio with a live call. This endpoint is intended for `manual` mode and\nreal-time integrations (custom STT/TTS, audio bots, monitoring).\n\n**Protocol (binary frames only):**\n- **Server → client**: the engine sends the peer's audio as binary\n  frames of signed 16-bit little-endian (`s16le`) PCM, **16 kHz mono**.\n  Each frame is **960 samples = 1920 bytes**, one frame per **60 ms**.\n- **Client → server**: send binary `s16le` 16 kHz mono frames; they are\n  decoded and played to the peer. The same 960-sample / 1920-byte / 60 ms\n  framing is expected.\n- Non-binary (text) frames are ignored.\n\nThe stream consumes the call's single inbound audio sink, so it is\n**mutually exclusive with recording** for the same call — do not start a\nrecording while a stream is attached, and vice versa.\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `GET /call/{call_id}/stream`\n**Tags:** Call",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/{{call_id}}/stream",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "{call_id}",
+                "stream"
+              ],
+              "variable": [
+                {
+                  "key": "call_id",
+                  "value": "call_17B3F2A1C9D04E8F",
+                  "description": "ID of a live call (from /call/dial, /call/status, or the inbound webhook)"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "404 Call not found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/{{call_id}}/stream",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "{call_id}",
+                    "stream"
+                  ],
+                  "variable": [
+                    {
+                      "key": "call_id",
+                      "value": "call_17B3F2A1C9D04E8F",
+                      "description": "ID of a live call (from /call/dial, /call/status, or the inbound webhook)"
+                    }
+                  ]
+                }
+              },
+              "status": "Call not found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"call not found\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Get the native calls engine configuration",
+          "description": "Returns the per-instance native VoIP calls engine configuration. The\nengine is a native WebRTC/Opus media stack (no external sidecar) that\ncan answer, originate, record, play audio into, and bidirectionally\nstream raw PCM for WhatsApp calls.\n\n**`callInboundMode`** controls how inbound calls are handled by the engine:\n- `manual` — the engine answers and your app drives the call via the\n  control API (`/call/answer`, `/call/play`, `/call/hangup`) and the\n  `/call/{call_id}/stream` WebSocket. Full programmatic control.\n- `webhook` — the engine answers automatically; call lifecycle events\n  (and recordings, when `callRecord` is on) are delivered via your\n  configured webhooks. This is the default when `callInboundMode` is empty.\n- `bot` — the engine answers, speaks `callGreeting` via your TTS provider,\n  then hangs up. One-shot announcement.\n- `ivr` — the engine answers, plays `callGreeting`, listens for one\n  utterance, transcribes it via your STT provider, and emits a\n  `transcript` event. Single-turn capture.\n- `ai` — full conversation loop: STT → LLM → TTS using your BYO provider\n  endpoints and `callSystemPrompt`. No AI SDK is embedded in the engine.\n- `reject` — the engine is off for inbound; legacy auto-reject behavior.\n\nOutbound dialing (`/call/dial`) works whenever `callsEnabled` is true,\nindependent of `callInboundMode`. Configuration changes apply on the\ninstance's NEXT reconnect.\n\n\n**Endpoint:** `GET /call/config`\n**Tags:** Call",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/config",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "config"
+              ]
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        {
+          "name": "Hang up a live call",
+          "description": "Ends a live call (inbound or outbound, answered or ringing) and tears\ndown its media session. Returns **404** when the `callId` is not a live\ncall, **409** when the engine is not enabled for the instance.\n\n\n**Endpoint:** `POST /call/hangup`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/hangup",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "hangup"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"callId\": \"call_17B3F2A1C9D04E8F\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Call hung up",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/hangup",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "hangup"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_17B3F2A1C9D04E8F\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Call hung up",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true\n}"
+            },
+            {
+              "name": "404 Call not found",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/hangup",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "hangup"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_17B3F2A1C9D04E8F\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Call not found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"call not found\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "List live calls",
+          "description": "Returns the engine's currently tracked calls for the instance, with the\nlive state machine, direction, media flags and start time of each call.\nRequires the calls engine to be enabled for the instance (otherwise 409).\n\n\n**Endpoint:** `GET /call/status`\n**Tags:** Call",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "status"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Live calls snapshot",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/status",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "status"
+                  ]
+                }
+              },
+              "status": "Live calls snapshot",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"calls\": [\n    {\n      \"callId\": \"call_17B3F2A1C9D04E8F\",\n      \"peer\": \"5521979232690@s.whatsapp.net\",\n      \"state\": \"active\",\n      \"direction\": \"inbound\",\n      \"video\": false,\n      \"recording\": true,\n      \"startedAt\": \"2026-06-27T14:21:08Z\"\n    },\n    {\n      \"callId\": \"call_22A9E1B7D3F84C10\",\n      \"peer\": \"5521988887777@s.whatsapp.net\",\n      \"state\": \"ringing\",\n      \"direction\": \"outbound\",\n      \"video\": false,\n      \"recording\": false,\n      \"startedAt\": \"2026-06-27T14:22:55Z\"\n    }\n  ]\n}"
+            },
+            {
+              "name": "409 Calls engine not enabled for this instance",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/status",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "status"
+                  ]
+                }
+              },
+              "status": "Calls engine not enabled for this instance",
+              "code": 409,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"calls engine not enabled for this instance (set calls_enabled and reconnect)\"\n}"
             }
           ],
           "event": []
@@ -8451,6 +8975,284 @@
                 }
               ],
               "body": "{\n  \"error\": \"make_call_not_implemented\",\n  \"reason\": \"originating a call requires a WebRTC media stack not available in this build\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Place an outbound call",
+          "description": "Originates an outbound native call to a phone number using the engine's\nWebRTC/Opus media stack. Works whenever `callsEnabled` is true,\nindependent of `callInboundMode`. The returned `callId` is used by every\nother control endpoint and by the media-stream WebSocket.\n\n`phone` must be the destination in E.164 **digits only** (no leading `+`).\nReturns **502** when the peer is unreachable, **409** when the engine is\nnot enabled for the instance.\n\n\n**Endpoint:** `POST /call/dial`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/dial",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "dial"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"5521979232690\",\n  \"video\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Outbound call placed",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/dial",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "dial"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"5521979232690\",\n  \"video\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Outbound call placed",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\"\n}"
+            },
+            {
+              "name": "400 Bad request - phone is required",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/dial",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "dial"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"5521979232690\",\n  \"video\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad request - phone is required",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"phone is required\"\n}"
+            },
+            {
+              "name": "502 Peer unreachable",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/dial",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "dial"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"5521979232690\",\n  \"video\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Peer unreachable",
+              "code": 502,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"peer unreachable\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Play audio into a live call",
+          "description": "Streams an audio source into the call so the peer hears it. Provide\nexactly one of `audioUrl` (fetched by the engine) or `audioBase64`\n(inline). The audio container is auto-detected (**WAV**, **MP3** or\n**Ogg-Opus**) and resampled to **16 kHz mono** before being encoded to\nOpus for the call. Returns **404** when the `callId` is not a live call.\n\n\n**Endpoint:** `POST /call/play`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/play",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "play"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"callId\": \"call_17B3F2A1C9D04E8F\",\n  \"audioUrl\": \"https://cdn.example.com/prompts/greeting.mp3\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Audio queued for playback",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/play",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "play"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_17B3F2A1C9D04E8F\",\n  \"audioUrl\": \"https://cdn.example.com/prompts/greeting.mp3\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Audio queued for playback",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true\n}"
             }
           ],
           "event": []
@@ -8681,6 +9483,192 @@
           "event": []
         },
         {
+          "name": "Start recording a call",
+          "description": "Starts recording the peer's audio of a live call to a WAV file.\nRequires object storage (S3) to be configured for the instance, since\nthe finalized recording is uploaded on stop. Recording and the\n`/call/{call_id}/stream` WebSocket both consume the call's single inbound\naudio sink, so they are **mutually exclusive per call**. Returns **404**\nwhen the `callId` is not a live call.\n\n\n**Endpoint:** `POST /call/record/start`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/record/start",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "record",
+                "start"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"callId\": \"call_17B3F2A1C9D04E8F\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Recording started",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/record/start",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "record",
+                    "start"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_17B3F2A1C9D04E8F\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Recording started",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Stop recording a call",
+          "description": "Finalizes the in-progress recording, uploads the WAV to object storage\n(S3), and returns the storage key/URL under `mediaKey`. Returns **404**\nwhen the `callId` is not a live call.\n\n\n**Endpoint:** `POST /call/record/stop`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/record/stop",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "record",
+                "stop"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"callId\": \"call_17B3F2A1C9D04E8F\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Recording finalized and uploaded",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/record/stop",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "record",
+                    "stop"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_17B3F2A1C9D04E8F\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Recording finalized and uploaded",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true,\n  \"mediaKey\": \"recordings/2026/06/27/call_17B3F2A1C9D04E8F.wav\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
           "name": "Terminate an active call",
           "description": "Sends a terminate stanza with a reason. Default reason is `hangup`.\nAlways available (no feature flag, no env).\n\n\n**Endpoint:** `POST /call/terminate`\n**Tags:** Call",
           "request": {
@@ -8770,18 +9758,12 @@
             }
           ],
           "event": []
-        }
-      ]
-    },
-    {
-      "name": "📋 Call Media (7 endpoints)",
-      "description": "Call Media related endpoints - 7 requests available",
-      "item": [
+        },
         {
-          "name": "Configure the per-user call-media sidecar",
-          "description": "Sets the per-user sidecar URL/token. The configuration is held in\nmemory per user — there is **no environment variable** and **no schema\nchange**. Mirrors the shape of the RabbitMQ/S3 per-user config\nendpoints.\n\n\n**Endpoint:** `POST /session/sidecar/config`\n**Tags:** Call Media",
+          "name": "Update the native calls engine configuration",
+          "description": "Persists the per-instance native calls engine configuration. The new\nconfiguration takes effect on the instance's NEXT reconnect.\n\n- An empty `callInboundMode` defaults to `webhook`.\n- An invalid `callInboundMode` (not one of\n  `manual|webhook|bot|ivr|ai|reject`) returns **400**.\n- `callProviderToken` is **write-only**: it is stored and sent to your\n  BYO voice provider endpoints as `Authorization: Bearer <token>`, but\n  is never returned by `GET /call/config`.\n\nBYO voice providers (used by `bot`/`ivr`/`ai` modes) are called over\nplain HTTP by the engine:\n- **STT** — `POST callSttUrl`, request body `audio/wav`, response JSON `{ \"text\": \"...\" }`.\n- **LLM** — `POST callLlmUrl`, request body `{ \"system\": \"...\", \"messages\": [...] }`, response JSON `{ \"reply\": \"...\" }`.\n- **TTS** — `POST callTtsUrl`, request body `{ \"text\": \"...\" }`, response `audio/wav` or raw s16le PCM.\n\n\n**Endpoint:** `PUT /call/config`\n**Tags:** Call",
           "request": {
-            "method": "POST",
+            "method": "PUT",
             "header": [
               {
                 "key": "token",
@@ -8797,182 +9779,18 @@
               }
             ],
             "url": {
-              "raw": "{{base_url}}/session/sidecar/config",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "session",
-                "sidecar",
-                "config"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"enabled\": true,\n  \"url\": \"http://127.0.0.1:7700\",\n  \"token\": \"shared-secret-rotacionado\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": [
-            {
-              "name": "200 Sidecar configuration stored",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "token",
-                    "value": "{{api_token}}",
-                    "type": "text",
-                    "description": "🔑 User authentication token"
-                  },
-                  {
-                    "key": "Content-Type",
-                    "value": "application/json",
-                    "type": "text",
-                    "description": "📦 JSON request payload"
-                  }
-                ],
-                "url": {
-                  "raw": "{{base_url}}/session/sidecar/config",
-                  "host": [
-                    "{{base_url}}"
-                  ],
-                  "path": [
-                    "session",
-                    "sidecar",
-                    "config"
-                  ]
-                },
-                "body": {
-                  "mode": "raw",
-                  "raw": "{\n  \"enabled\": true,\n  \"url\": \"http://127.0.0.1:7700\",\n  \"token\": \"shared-secret-rotacionado\"\n}",
-                  "options": {
-                    "raw": {
-                      "language": "json"
-                    }
-                  }
-                }
-              },
-              "status": "Sidecar configuration stored",
-              "code": 200,
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "body": "{\n  \"success\": true,\n  \"enabled\": true,\n  \"url\": \"http://127.0.0.1:7700\"\n}"
-            }
-          ],
-          "event": []
-        },
-        {
-          "name": "Delete the per-user call-media sidecar configuration",
-          "description": "\n\n**Endpoint:** `DELETE /session/sidecar/config`\n**Tags:** Call Media",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "token",
-                "value": "{{api_token}}",
-                "type": "text",
-                "description": "🔑 User authentication token"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/session/sidecar/config",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "session",
-                "sidecar",
-                "config"
-              ]
-            }
-          },
-          "response": [
-            {
-              "name": "200 Sidecar configuration removed",
-              "originalRequest": {
-                "method": "DELETE",
-                "header": [
-                  {
-                    "key": "token",
-                    "value": "{{api_token}}",
-                    "type": "text",
-                    "description": "🔑 User authentication token"
-                  }
-                ],
-                "url": {
-                  "raw": "{{base_url}}/session/sidecar/config",
-                  "host": [
-                    "{{base_url}}"
-                  ],
-                  "path": [
-                    "session",
-                    "sidecar",
-                    "config"
-                  ]
-                }
-              },
-              "status": "Sidecar configuration removed",
-              "code": 200,
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "body": "{\n  \"success\": true,\n  \"deleted\": true\n}"
-            }
-          ],
-          "event": []
-        },
-        {
-          "name": "Forward operator ICE candidate to sidecar",
-          "description": "Proxies a single ICE candidate from the operator browser to the per-user sidecar.\n\n**Endpoint:** `POST /call/media/{call_id}/operator-ice`\n**Tags:** Call Media",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "token",
-                "value": "{{api_token}}",
-                "type": "text",
-                "description": "🔑 User authentication token"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text",
-                "description": "📦 JSON request payload"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/call/media/{{call_id}}/operator-ice",
+              "raw": "{{base_url}}/call/config",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "call",
-                "media",
-                "{call_id}",
-                "operator-ice"
-              ],
-              "variable": [
-                {
-                  "key": "call_id",
-                  "value": "call_17B3F2A1C9D04E8F"
-                }
+                "config"
               ]
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"candidate\": \"candidate:1 1 UDP 2122252543 192.168.0.10 50001 typ host\",\n  \"sdp_mid\": \"0\",\n  \"sdp_m_line_index\": 0\n}",
+              "raw": "// 📝 Update the native calls engine configuration\n// 🔗 PUT /call/config\n// 💡 All optional fields included for complete reference\n\n{\n  \"callsEnabled\": true,\n  \"callInboundMode\": \"ai\",\n  \"callRecord\": true,\n  \"callSttUrl\": \"https://voice.example.com/stt\",\n  \"callLlmUrl\": \"https://voice.example.com/llm\",\n  \"callTtsUrl\": \"https://voice.example.com/tts\",\n  \"callProviderToken\": \"vp_live_8f3c2a90b14d4e7f\",\n  \"callSystemPrompt\": \"Você é a recepcionista virtual da Acme. Seja breve e cordial.\",\n  \"callGreeting\": \"Olá! Você ligou para a Acme. Como posso ajudar?\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -8982,9 +9800,9 @@
           },
           "response": [
             {
-              "name": "200 ICE candidate accepted",
+              "name": "200 Configuration stored (applies on next reconnect)",
               "originalRequest": {
-                "method": "POST",
+                "method": "PUT",
                 "header": [
                   {
                     "key": "token",
@@ -9000,26 +9818,18 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{base_url}}/call/media/{{call_id}}/operator-ice",
+                  "raw": "{{base_url}}/call/config",
                   "host": [
                     "{{base_url}}"
                   ],
                   "path": [
                     "call",
-                    "media",
-                    "{call_id}",
-                    "operator-ice"
-                  ],
-                  "variable": [
-                    {
-                      "key": "call_id",
-                      "value": "call_17B3F2A1C9D04E8F"
-                    }
+                    "config"
                   ]
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"candidate\": \"candidate:1 1 UDP 2122252543 192.168.0.10 50001 typ host\",\n  \"sdp_mid\": \"0\",\n  \"sdp_m_line_index\": 0\n}",
+                  "raw": "// 📝 Update the native calls engine configuration\n// 🔗 PUT /call/config\n// 💡 All optional fields included for complete reference\n\n{\n  \"callsEnabled\": true,\n  \"callInboundMode\": \"ai\",\n  \"callRecord\": true,\n  \"callSttUrl\": \"https://voice.example.com/stt\",\n  \"callLlmUrl\": \"https://voice.example.com/llm\",\n  \"callTtsUrl\": \"https://voice.example.com/tts\",\n  \"callProviderToken\": \"vp_live_8f3c2a90b14d4e7f\",\n  \"callSystemPrompt\": \"Você é a recepcionista virtual da Acme. Seja breve e cordial.\",\n  \"callGreeting\": \"Olá! Você ligou para a Acme. Como posso ajudar?\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -9027,7 +9837,7 @@
                   }
                 }
               },
-              "status": "ICE candidate accepted",
+              "status": "Configuration stored (applies on next reconnect)",
               "code": 200,
               "header": [
                 {
@@ -9036,63 +9846,11 @@
                 }
               ],
               "body": "{\n  \"ok\": true\n}"
-            }
-          ],
-          "event": []
-        },
-        {
-          "name": "Forward operator SDP to sidecar",
-          "description": "Proxies the operator browser SDP offer/answer to the per-user call-media\nsidecar. Returns **503** when the user has no sidecar configured\n(`sidecar_not_configured`) or the configured sidecar is unreachable\n(`sidecar_unreachable`). Never fakes a media session.\n\n\n**Endpoint:** `POST /call/media/{call_id}/operator-sdp`\n**Tags:** Call Media",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "token",
-                "value": "{{api_token}}",
-                "type": "text",
-                "description": "🔑 User authentication token"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text",
-                "description": "📦 JSON request payload"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/call/media/{{call_id}}/operator-sdp",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "call",
-                "media",
-                "{call_id}",
-                "operator-sdp"
-              ],
-              "variable": [
-                {
-                  "key": "call_id",
-                  "value": "call_17B3F2A1C9D04E8F",
-                  "description": "Call ID received in the v1.call.offer webhook"
-                }
-              ]
             },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"sdp\": \"v=0\\r\\no=- 46117317 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\nm=audio 9 UDP/TLS/RTP/SAVPF 111\\r\\n\",\n  \"type\": \"offer\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": [
             {
-              "name": "200 SDP answer from the sidecar",
+              "name": "400 Bad request - invalid callInboundMode",
               "originalRequest": {
-                "method": "POST",
+                "method": "PUT",
                 "header": [
                   {
                     "key": "token",
@@ -9108,27 +9866,18 @@
                   }
                 ],
                 "url": {
-                  "raw": "{{base_url}}/call/media/{{call_id}}/operator-sdp",
+                  "raw": "{{base_url}}/call/config",
                   "host": [
                     "{{base_url}}"
                   ],
                   "path": [
                     "call",
-                    "media",
-                    "{call_id}",
-                    "operator-sdp"
-                  ],
-                  "variable": [
-                    {
-                      "key": "call_id",
-                      "value": "call_17B3F2A1C9D04E8F",
-                      "description": "Call ID received in the v1.call.offer webhook"
-                    }
+                    "config"
                   ]
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"sdp\": \"v=0\\r\\no=- 46117317 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\nm=audio 9 UDP/TLS/RTP/SAVPF 111\\r\\n\",\n  \"type\": \"offer\"\n}",
+                  "raw": "// 📝 Update the native calls engine configuration\n// 🔗 PUT /call/config\n// 💡 All optional fields included for complete reference\n\n{\n  \"callsEnabled\": true,\n  \"callInboundMode\": \"ai\",\n  \"callRecord\": true,\n  \"callSttUrl\": \"https://voice.example.com/stt\",\n  \"callLlmUrl\": \"https://voice.example.com/llm\",\n  \"callTtsUrl\": \"https://voice.example.com/tts\",\n  \"callProviderToken\": \"vp_live_8f3c2a90b14d4e7f\",\n  \"callSystemPrompt\": \"Você é a recepcionista virtual da Acme. Seja breve e cordial.\",\n  \"callGreeting\": \"Olá! Você ligou para a Acme. Como posso ajudar?\"\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -9136,238 +9885,15 @@
                   }
                 }
               },
-              "status": "SDP answer from the sidecar",
-              "code": 200,
+              "status": "Bad request - invalid callInboundMode",
+              "code": 400,
               "header": [
                 {
                   "key": "Content-Type",
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"sdp\": \"v=0\\r\\no=- 99110011 2 IN IP4 127.0.0.1\\r\\ns=-\\r\\nt=0 0\\r\\nm=audio 9 UDP/TLS/RTP/SAVPF 111\\r\\n\",\n  \"type\": \"answer\",\n  \"ice_candidates\": []\n}"
-            }
-          ],
-          "event": []
-        },
-        {
-          "name": "Get the per-user call-media sidecar configuration",
-          "description": "Returns the per-user sidecar configuration with the token masked (`has_token` only).\n\n**Endpoint:** `GET /session/sidecar/config`\n**Tags:** Call Media",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "token",
-                "value": "{{api_token}}",
-                "type": "text",
-                "description": "🔑 User authentication token"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/session/sidecar/config",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "session",
-                "sidecar",
-                "config"
-              ]
-            }
-          },
-          "response": [],
-          "event": []
-        },
-        {
-          "name": "Hangup call media (sidecar cleanup)",
-          "description": "Tears down the media session on the sidecar and returns the measured\nmedia duration (this is the only place a real `duration_ms` is reported).\n\n\n**Endpoint:** `POST /call/media/{call_id}/hangup`\n**Tags:** Call Media",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "token",
-                "value": "{{api_token}}",
-                "type": "text",
-                "description": "🔑 User authentication token"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/call/media/{{call_id}}/hangup",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "call",
-                "media",
-                "{call_id}",
-                "hangup"
-              ],
-              "variable": [
-                {
-                  "key": "call_id",
-                  "value": "call_17B3F2A1C9D04E8F"
-                }
-              ]
-            }
-          },
-          "response": [
-            {
-              "name": "200 Media session hung up",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "token",
-                    "value": "{{api_token}}",
-                    "type": "text",
-                    "description": "🔑 User authentication token"
-                  }
-                ],
-                "url": {
-                  "raw": "{{base_url}}/call/media/{{call_id}}/hangup",
-                  "host": [
-                    "{{base_url}}"
-                  ],
-                  "path": [
-                    "call",
-                    "media",
-                    "{call_id}",
-                    "hangup"
-                  ],
-                  "variable": [
-                    {
-                      "key": "call_id",
-                      "value": "call_17B3F2A1C9D04E8F"
-                    }
-                  ]
-                }
-              },
-              "status": "Media session hung up",
-              "code": 200,
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "body": "{\n  \"ok\": true,\n  \"duration_ms\": 84210\n}"
-            }
-          ],
-          "event": []
-        },
-        {
-          "name": "Signal sidecar to attach operator PC (outbound)",
-          "description": "Used for outbound calls when the recipient has accepted and the operator\nside is ready to receive media. Returns 503 if the user has no sidecar\nconfigured.\n\n\n**Endpoint:** `POST /call/media/{call_id}/operator-attach`\n**Tags:** Call Media",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "token",
-                "value": "{{api_token}}",
-                "type": "text",
-                "description": "🔑 User authentication token"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/call/media/{{call_id}}/operator-attach",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "call",
-                "media",
-                "{call_id}",
-                "operator-attach"
-              ],
-              "variable": [
-                {
-                  "key": "call_id",
-                  "value": "call_17B3F2A1C9D04E8F"
-                }
-              ]
-            }
-          },
-          "response": [
-            {
-              "name": "200 Operator side ready",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "token",
-                    "value": "{{api_token}}",
-                    "type": "text",
-                    "description": "🔑 User authentication token"
-                  }
-                ],
-                "url": {
-                  "raw": "{{base_url}}/call/media/{{call_id}}/operator-attach",
-                  "host": [
-                    "{{base_url}}"
-                  ],
-                  "path": [
-                    "call",
-                    "media",
-                    "{call_id}",
-                    "operator-attach"
-                  ],
-                  "variable": [
-                    {
-                      "key": "call_id",
-                      "value": "call_17B3F2A1C9D04E8F"
-                    }
-                  ]
-                }
-              },
-              "status": "Operator side ready",
-              "code": 200,
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "body": "{\n  \"ok\": true,\n  \"ready_for_sdp\": true\n}"
-            },
-            {
-              "name": "503 Sidecar not configured for this user",
-              "originalRequest": {
-                "method": "POST",
-                "header": [
-                  {
-                    "key": "token",
-                    "value": "{{api_token}}",
-                    "type": "text",
-                    "description": "🔑 User authentication token"
-                  }
-                ],
-                "url": {
-                  "raw": "{{base_url}}/call/media/{{call_id}}/operator-attach",
-                  "host": [
-                    "{{base_url}}"
-                  ],
-                  "path": [
-                    "call",
-                    "media",
-                    "{call_id}",
-                    "operator-attach"
-                  ],
-                  "variable": [
-                    {
-                      "key": "call_id",
-                      "value": "call_17B3F2A1C9D04E8F"
-                    }
-                  ]
-                }
-              },
-              "status": "Sidecar not configured for this user",
-              "code": 503,
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json"
-                }
-              ],
-              "body": "{\n  \"error\": \"sidecar_not_configured\",\n  \"reason\": \"configure a call-media sidecar via POST /session/sidecar/config\"\n}"
+              "body": "{\n  \"error\": \"invalid call_inbound_mode: must be manual, bot, ivr, ai, webhook, or reject\"\n}"
             }
           ],
           "event": []
