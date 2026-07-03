@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "dc3b22de-e20c-49a4-8516-62e02e94f9da",
-    "name": "ZUCKZAPGO v1.13.3",
-    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n<h2>📞 Calls — LLM build guide</h2><p>Building a WhatsApp <b>voice-call</b> integration? Open <a href=\"/api/llm.txt\" target=\"_blank\" rel=\"noopener\"><b>llm.txt</b></a> — a complete, self-contained spec you can paste into any LLM (Claude, GPT, Gemini, …) to generate a perfect calls integration (REST control + bidirectional PCM audio over WebSocket). It also surfaces as the external-docs link on the <code>Call</code> tag below.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 6/29/2026, 3:35:39 AM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
+    "_postman_id": "d32e2700-02ae-450e-9f48-52b23bff27c7",
+    "name": "ZUCKZAPGO v1.14.0",
+    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n<h2>📞 Calls — LLM build guide</h2><p>Building a WhatsApp <b>voice or video call</b> integration? Open <a href=\"/api/llm.txt\" target=\"_blank\" rel=\"noopener\"><b>llm.txt</b></a> — a complete, self-contained spec you can paste into any LLM (Claude, GPT, Gemini, …) to generate a perfect calls integration (REST control + bidirectional PCM audio over WebSocket + bidirectional H.264 video over WebSocket + passkey pairing appendix). It also surfaces as the external-docs link on the <code>Call</code> tag below.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 7/3/2026, 3:16:55 AM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -1405,8 +1405,8 @@
       ]
     },
     {
-      "name": "🔗 Session (8 endpoints)",
-      "description": "Session related endpoints - 8 requests available",
+      "name": "🔗 Session (12 endpoints)",
+      "description": "Session related endpoints - 12 requests available",
       "item": [
         {
           "name": "Complete session refresh with full synchronization",
@@ -1500,6 +1500,69 @@
           "event": []
         },
         {
+          "name": "Confirm passkey pairing",
+          "description": "Sends the final confirmation to WhatsApp servers that the pairing code\nwas verified by the user. Required when `skipHandoffUX=false`. When\n`skipHandoffUX=true`, the backend auto-confirms and this endpoint is not\nneeded.\n\n\n**Endpoint:** `POST /session/passkey/confirm`\n**Tags:** Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/passkey/confirm",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "passkey",
+                "confirm"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Confirmation sent successfully",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/session/passkey/confirm",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "session",
+                    "passkey",
+                    "confirm"
+                  ]
+                }
+              },
+              "status": "Confirmation sent successfully",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": \"confirmed\",\n  \"details\": \"Passkey confirmation sent. Pairing should complete shortly.\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
           "name": "connects to WhatsApp servers",
           "description": "Initiates connection to WhatsApp servers.\n\nIf there is no previous session created, it will generate a QR code that can be retrieved via the [qr](#/Session/get_session_qr) API call.\n\nIf the optional Subscribe is supplied it will limit webhooks to the specified event types. Available events: Message, UndecryptableMessage, Receipt, MediaRetry, ReadReceipt, GroupInfo, JoinedGroup, Picture, BlocklistChange, Blocklist, Connected, Disconnected, ConnectFailure, KeepAliveRestored, KeepAliveTimeout, LoggedOut, ClientOutdated, TemporaryBan, StreamError, StreamReplaced, PairSuccess, PairError, QR, QRScannedWithoutMultidevice, PrivacySettings, PushNameSetting, UserAbout, AppState, AppStateSyncComplete, HistorySync, OfflineSyncCompleted, OfflineSyncPreview, CallOffer, CallAccept, CallTerminate, CallOfferNotice, CallRelayLatency, Presence, ChatPresence, IdentityChange, CATRefreshError, NewsletterJoin, NewsletterLeave, NewsletterMuteChange, NewsletterLiveUpdate, FBMessage, All.\n\nIf no Subscribe is supplied it will subscribe to All events.\n\nIf Immediate is set to false, the action will wait for 10 seconds to retrieve actual connection status from whatsapp, otherwise it will return immediatly.\n\nWhen setting Immediate to true you should check for actual connection status after a few seconds via the [status](#/Session/get_session_status) API call as your connection might fail if the session was closed from another device.\n\n**Connection Behavior:**\n- If you have a valid stored session (previously logged in), it will connect directly without requiring QR code scanning\n- If no valid session exists, a QR code will be generated that must be scanned with your phone\n- Use this endpoint after calling [disconnect](#/Session/post_session_disconnect) to reconnect without QR scanning\n\n**Endpoint:** `POST /session/connect`\n**Tags:** Session",
           "request": {
@@ -1566,6 +1629,69 @@
             }
           },
           "response": [],
+          "event": []
+        },
+        {
+          "name": "Get passkey pairing status",
+          "description": "Returns the current passkey challenge, confirmation code, and pairing\nstate for the instance. Poll this endpoint after `/session/connect` when\nthe account is enrolled in WhatsApp's passkey linking cohort.\n\n\n**Endpoint:** `GET /session/passkey/status`\n**Tags:** Session",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/passkey/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "passkey",
+                "status"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Passkey state snapshot",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/session/passkey/status",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "session",
+                    "passkey",
+                    "status"
+                  ]
+                }
+              },
+              "status": "Passkey state snapshot",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"required\": true,\n  \"challenge\": {\n    \"rpId\": \"whatsapp.com\",\n    \"allowCredentials\": [],\n    \"userVerification\": \"required\",\n    \"timeout\": 600000\n  },\n  \"responseSubmitted\": false,\n  \"confirmed\": false,\n  \"confirmationCode\": \"123456\",\n  \"skipHandoffUX\": false,\n  \"error\": \"\"\n}"
+            }
+          ],
           "event": []
         },
         {
@@ -1698,6 +1824,97 @@
           ]
         },
         {
+          "name": "Import an existing web.whatsapp.com session (BETA)",
+          "description": "**BETA · impersonation-grade — guard this endpoint.**\n\nPath B of the passkey/linking strategy: instead of forwarding a WebAuthn\nassertion, import an existing `web.whatsapp.com` session and boot it as a\nnative whatsmeow device. No new database migration — it writes through the\nexisting session store.\n\nAccepts **either**:\n- a **structured `WebDeviceSnapshot`** (recommended): `meJid`,\n  `registrationId`, `noiseKey`, `identityKey`, `signedPreKey`, `account`\n  (`ADVSignedDeviceIdentity`), optional `advSecretKey`; **or**\n- the **companion's generic wa-web dump** (`{\"source\":\"wa-web\", ...}`) —\n  best-effort auto-extraction; returns **422** with the list of fields it\n  could not resolve (it never fabricates key material).\n\nPrefer a **short-lived pairing code** over a full token in the `token`\nheader. After acceptance the device boots; poll `GET /session/status` until\n`loggedIn`.\n\n\n**Endpoint:** `POST /session/import`\n**Tags:** Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/import",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "import"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "// 📝 Import an existing web.whatsapp.com session (BETA)\n// 🔗 POST /session/import\n// 💡 All optional fields included for complete reference\n\n{\n  \"meJid\": \"{{test_group}}\",\n  \"lid\": \"LID_001\",\n  \"registrationId\": 1,\n  \"noiseKey\": {\n    \"priv\": \"example_priv\",\n    \"pub\": \"example_pub\"\n  },\n  \"identityKey\": {\n    \"priv\": \"example_priv\",\n    \"pub\": \"example_pub\"\n  },\n  \"signedPreKey\": {\n    \"keyId\": 1,\n    \"priv\": \"example_priv\",\n    \"pub\": \"example_pub\",\n    \"signature\": \"example_signature\"\n  },\n  \"account\": {\n    \"details\": \"example_details\",\n    \"accountSignature\": \"example_accountSignature\",\n    \"accountSignatureKey\": \"example_accountSignatureKey\",\n    \"deviceSignature\": \"example_deviceSignature\"\n  },\n  \"advSecretKey\": \"example_advSecretKey\",\n  \"platform\": \"example_platform\",\n  \"pushName\": \"Example pushName\",\n  \"businessName\": \"Example businessName\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Import accepted; device booting",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/session/import",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "session",
+                    "import"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "// 📝 Import an existing web.whatsapp.com session (BETA)\n// 🔗 POST /session/import\n// 💡 All optional fields included for complete reference\n\n{\n  \"meJid\": \"{{test_group}}\",\n  \"lid\": \"LID_001\",\n  \"registrationId\": 1,\n  \"noiseKey\": {\n    \"priv\": \"example_priv\",\n    \"pub\": \"example_pub\"\n  },\n  \"identityKey\": {\n    \"priv\": \"example_priv\",\n    \"pub\": \"example_pub\"\n  },\n  \"signedPreKey\": {\n    \"keyId\": 1,\n    \"priv\": \"example_priv\",\n    \"pub\": \"example_pub\",\n    \"signature\": \"example_signature\"\n  },\n  \"account\": {\n    \"details\": \"example_details\",\n    \"accountSignature\": \"example_accountSignature\",\n    \"accountSignatureKey\": \"example_accountSignatureKey\",\n    \"deviceSignature\": \"example_deviceSignature\"\n  },\n  \"advSecretKey\": \"example_advSecretKey\",\n  \"platform\": \"example_platform\",\n  \"pushName\": \"Example pushName\",\n  \"businessName\": \"Example businessName\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Import accepted; device booting",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": \"imported\",\n  \"jid\": \"5521999999999:0@s.whatsapp.net\",\n  \"note\": \"device booting (BETA); poll /session/status for loggedIn\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
           "name": "Logs out from WhatsApp",
           "description": "**Complete Session Termination - Full Logout**\n\nPerforms a complete logout and terminates all connections to WhatsApp servers. This is a **destructive operation** that:\n\n- ❌ **Completely removes** your stored session and credentials\n- ❌ **Requires QR code scanning** for next connection\n- ❌ Closes all WebSocket connections permanently\n- ❌ Clears all local session data and authentication tokens\n- ❌ Invalidates the session on WhatsApp's servers\n\n**What happens after logout:**\n1. Your device is removed from WhatsApp's active device list\n2. All stored session credentials are permanently deleted\n3. Next [connect](#/Session/post_session_connect) call will require fresh QR code authentication\n4. You must scan the QR code with your phone to re-establish the session\n\n**Use Cases:**\n- Permanently removing the API connection from your WhatsApp account\n- Security purposes (revoke access completely)\n- Switching to a different WhatsApp account\n- Full reset of the API integration\n\n**Important:** This action cannot be undone. After logout, you must go through the complete setup process again, including QR code scanning.\n\n**Comparison with other endpoints:**\n- Use [disconnect](#/Session/post_session_disconnect) for temporary suspension (preserves session)\n- Use `logout` for permanent termination (requires new QR setup)\n- Use [refresh](#/Session/post_session_refresh) for session cleanup without logout\n\n**Endpoint:** `POST /session/logout`\n**Tags:** Session",
           "request": {
@@ -1764,6 +1981,99 @@
             }
           },
           "response": [],
+          "event": []
+        },
+        {
+          "name": "Submit passkey WebAuthn response",
+          "description": "Receives a WebAuthn assertion response from the user's authenticator and\nforwards it to WhatsApp servers. All binary fields must be\n**base64url-encoded** (no padding). The client MUST NOT construct the\n`rpId`: it passes the `publicKey` returned verbatim by\n`GET /session/passkey/status` (which carries `rpId=\"whatsapp.com\"`) to\n`navigator.credentials.get()`, and runs the ceremony only at the **origin**\n`https://web.whatsapp.com`.\n\n\n**Endpoint:** `POST /session/passkey/response`\n**Tags:** Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/passkey/response",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "passkey",
+                "response"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "// 📝 Submit passkey WebAuthn response\n// 🔗 POST /session/passkey/response\n// 💡 All optional fields included for complete reference\n\n{\n  \"id\": \"credential-id\",\n  \"rawId\": \"base64url-encoded-raw-id\",\n  \"type\": \"public-key\",\n  \"response\": {\n    \"clientDataJSON\": \"base64url-encoded-client-data\",\n    \"authenticatorData\": \"base64url-encoded-authenticator-data\",\n    \"signature\": \"base64url-encoded-signature\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Response submitted successfully",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/session/passkey/response",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "session",
+                    "passkey",
+                    "response"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "// 📝 Submit passkey WebAuthn response\n// 🔗 POST /session/passkey/response\n// 💡 All optional fields included for complete reference\n\n{\n  \"id\": \"credential-id\",\n  \"rawId\": \"base64url-encoded-raw-id\",\n  \"type\": \"public-key\",\n  \"response\": {\n    \"clientDataJSON\": \"base64url-encoded-client-data\",\n    \"authenticatorData\": \"base64url-encoded-authenticator-data\",\n    \"signature\": \"base64url-encoded-signature\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Response submitted successfully",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"status\": \"submitted\",\n  \"details\": \"Passkey response sent to WhatsApp. Await confirmation.\"\n}"
+            }
+          ],
           "event": []
         }
       ]
@@ -4567,7 +4877,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1782790539,  // Tomorrow at current time\n  \"end_time\": 1782795939,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1782704139\n// +1 hour: 1782707739\n// +1 day: 1782790539\n// +1 week: 1783308939",
+              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1783135015,  // Tomorrow at current time\n  \"end_time\": 1783140415,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1783048615\n// +1 hour: 1783052215\n// +1 day: 1783135015\n// +1 week: 1783653415",
               "options": {
                 "raw": {
                   "language": "json"
@@ -8270,8 +8580,8 @@
       ]
     },
     {
-      "name": "📞 Call (16 endpoints)",
-      "description": "Call related endpoints - 16 requests available",
+      "name": "📞 Call (18 endpoints)",
+      "description": "Call related endpoints - 18 requests available",
       "item": [
         {
           "name": "Accept an incoming call",
@@ -8549,6 +8859,42 @@
               "body": "{\n  \"error\": \"call not found\"\n}"
             }
           ],
+          "event": []
+        },
+        {
+          "name": "Bidirectional H.264 video WebSocket",
+          "description": "Upgrades the HTTP connection to a **WebSocket** that carries encoded\n**H.264 Annex-B** video for a live call. Open this socket in addition to\n`/call/{call_id}/stream` when the call was placed or answered with video.\n\n**Protocol (binary frames only):**\n- **Server → client**: peer video as H.264 Annex-B access units. Each\n  binary message is one access unit (NALUs prefixed with start code\n  `0x00 0x00 0x00 0x01`). Feed directly to an H.264 decoder.\n- **Client → server**: your camera video as H.264 Annex-B access units.\n  The engine forwards them to the peer. Send an IDR/keyframe immediately\n  after connecting and at regular GOP intervals.\n- Non-binary (text) frames are ignored.\n\nThe engine does not encode or decode pixels; the client must produce and\nconsume H.264.\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `GET /call/{call_id}/video/stream`\n**Tags:** Call",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/{{call_id}}/video/stream",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "{call_id}",
+                "video",
+                "stream"
+              ],
+              "variable": [
+                {
+                  "key": "call_id",
+                  "value": "call_17B3F2A1C9D04E8F",
+                  "description": "ID of a live call"
+                }
+              ]
+            }
+          },
+          "response": [],
           "event": []
         },
         {
@@ -8975,6 +9321,97 @@
                 }
               ],
               "body": "{\n  \"error\": \"make_call_not_implemented\",\n  \"reason\": \"originating a call requires a WebRTC media stack not available in this build\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Peer video state SSE",
+          "description": "Server-Sent Events stream for peer video state changes on a live call:\ncamera on/off, audio→video upgrade, and device orientation. The response\nis `text/event-stream` with one JSON object per line.\n\nExample event line:\n```json\n{ \"active\": true, \"upgrade\": false, \"orientation\": 0, \"raw\": 1 }\n```\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `GET /call/{call_id}/video/state`\n**Tags:** Call",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/event-stream",
+                "type": "text",
+                "description": "📡 Expect Server-Sent Events stream"
+              },
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/{{call_id}}/video/state",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "{call_id}",
+                "video",
+                "state"
+              ],
+              "variable": [
+                {
+                  "key": "call_id",
+                  "value": "call_17B3F2A1C9D04E8F",
+                  "description": "ID of a live call"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 SSE stream started (SSE)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "text/event-stream",
+                    "type": "text",
+                    "description": "📡 Expect Server-Sent Events stream"
+                  },
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/{{call_id}}/video/state",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "{call_id}",
+                    "video",
+                    "state"
+                  ],
+                  "variable": [
+                    {
+                      "key": "call_id",
+                      "value": "call_17B3F2A1C9D04E8F",
+                      "description": "ID of a live call"
+                    }
+                  ]
+                }
+              },
+              "status": "SSE stream started",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/event-stream"
+                }
+              ],
+              "body": "{ \"active\": true, \"upgrade\": false, \"orientation\": 0, \"raw\": 1 }\n"
             }
           ],
           "event": []
