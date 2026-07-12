@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "d32e2700-02ae-450e-9f48-52b23bff27c7",
-    "name": "ZUCKZAPGO v1.14.0",
-    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n<h2>📞 Calls — LLM build guide</h2><p>Building a WhatsApp <b>voice or video call</b> integration? Open <a href=\"/api/llm.txt\" target=\"_blank\" rel=\"noopener\"><b>llm.txt</b></a> — a complete, self-contained spec you can paste into any LLM (Claude, GPT, Gemini, …) to generate a perfect calls integration (REST control + bidirectional PCM audio over WebSocket + bidirectional H.264 video over WebSocket + passkey pairing appendix). It also surfaces as the external-docs link on the <code>Call</code> tag below.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 7/3/2026, 3:16:55 AM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
+    "_postman_id": "05b43e38-1579-4e28-925b-5937f73d7bdd",
+    "name": "ZUCKZAPGO v1.15.0",
+    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n<h2>📞 Calls — LLM build guide</h2><p>Building a WhatsApp <b>voice or video call</b> integration? Open <a href=\"/api/llm.txt\" target=\"_blank\" rel=\"noopener\"><b>llm.txt</b></a> — a complete, self-contained spec you can paste into any LLM (Claude, GPT, Gemini, …) to generate a perfect calls integration (REST control + bidirectional PCM audio over WebSocket + bidirectional H.264 video over WebSocket + passkey pairing appendix). It also surfaces as the external-docs link on the <code>Call</code> tag below.</p>\n\n<h2>🔌 Connector — embeddable pairing widget</h2><p>Embed WhatsApp pairing (QR, phone code, or passkey) in any app with one <code>&lt;script&gt;</code> — without ever exposing the real instance token to the browser. Your backend mints a short-lived ephemeral token via <code>POST /session/connector/token</code>; the browser runs <code>ZZ.connector.open({ token })</code> against the <b>Connector</b> tag's <code>/connector/*</code> routes. Paste-into-any-LLM guide: <a href=\"/api/connector-llm.txt\" target=\"_blank\" rel=\"noopener\"><b>connector-llm.txt</b></a>. Full docs hub for API users &amp; LLMs: <a href=\"/docs\" target=\"_blank\" rel=\"noopener\">/docs</a>.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 7/12/2026, 4:16:16 AM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -1405,8 +1405,8 @@
       ]
     },
     {
-      "name": "🔗 Session (12 endpoints)",
-      "description": "Session related endpoints - 12 requests available",
+      "name": "🔗 Session (13 endpoints)",
+      "description": "Session related endpoints - 13 requests available",
       "item": [
         {
           "name": "Complete session refresh with full synchronization",
@@ -1942,6 +1942,69 @@
           "event": []
         },
         {
+          "name": "Probe the passkey challenge on demand",
+          "description": "Proactively fetches the WebAuthn request options from WhatsApp and stores\nthem, so `GET /session/passkey/status` becomes deterministic without\nwaiting for the reactive `PasskeyRequest` event. The instance must be\n**connected** first. Accounts outside the passkey cohort (normal QR/phone\naccounts) get `503 passkey_unavailable`.\n\n\n**Endpoint:** `POST /session/passkey/challenge`\n**Tags:** Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/passkey/challenge",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "passkey",
+                "challenge"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Challenge stored; returns required=true and the WebAuthn publicKey",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/session/passkey/challenge",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "session",
+                    "passkey",
+                    "challenge"
+                  ]
+                }
+              },
+              "status": "Challenge stored; returns required=true and the WebAuthn publicKey",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"required\": true,\n  \"challenge\": {\n    \"rpId\": \"whatsapp.com\",\n    \"allowCredentials\": [],\n    \"userVerification\": \"required\",\n    \"timeout\": 600000\n  }\n}"
+            }
+          ],
+          "event": []
+        },
+        {
           "name": "Set Proxy Configuration",
           "description": "Sets or disables the proxy configuration for the user.\nProvide a JSON payload with \"proxy_url\" (e.g. \"http://host:port\" or \"socks5://user:pass@host:port\") and \"enable\" (boolean).\n\n\n**Endpoint:** `POST /session/proxy`\n**Tags:** Session",
           "request": {
@@ -2072,6 +2135,337 @@
                 }
               ],
               "body": "{\n  \"status\": \"submitted\",\n  \"details\": \"Passkey response sent to WhatsApp. Await confirmation.\"\n}"
+            }
+          ],
+          "event": []
+        }
+      ]
+    },
+    {
+      "name": "📋 Connector (10 endpoints)",
+      "description": "Connector related endpoints - 10 requests available",
+      "item": [
+        {
+          "name": "[Connector] Confirm passkey pairing",
+          "description": "Browser-facing mirror of `POST /session/passkey/confirm`, gated by the ephemeral Connector token.\n\n**Endpoint:** `POST /connector/passkey/confirm`\n**Tags:** Connector",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/connector/passkey/confirm",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "passkey",
+                "confirm"
+              ]
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        {
+          "name": "[Connector] Connect the instance",
+          "description": "Browser-facing mirror of `POST /session/connect`, gated by the **ephemeral**\nConnector token (`token` header or `?token=`). Used by the embeddable widget.\n\n\n**Endpoint:** `POST /connector/connect`\n**Tags:** Connector",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/connector/connect",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "connect"
+              ]
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        {
+          "name": "[Connector] Connection status snapshot",
+          "description": "Browser-facing mirror of `GET /session/status`, gated by the ephemeral Connector token. Includes loggedIn, qrcode, and passkey fields for the widget's poll loop.\n\n**Endpoint:** `GET /connector/status`\n**Tags:** Connector",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/connector/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "status"
+              ]
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        {
+          "name": "[Connector] Current QR code",
+          "description": "Browser-facing mirror of `GET /session/qr` (base64 PNG), gated by the ephemeral Connector token.\n\n**Endpoint:** `GET /connector/qr`\n**Tags:** Connector",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/connector/qr",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "qr"
+              ]
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        {
+          "name": "[Connector] Disconnect the instance",
+          "description": "Browser-facing mirror of `POST /session/disconnect`, gated by the ephemeral Connector token.\n\n**Endpoint:** `POST /connector/disconnect`\n**Tags:** Connector",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/connector/disconnect",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "disconnect"
+              ]
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        {
+          "name": "[Connector] Get a phone pairing code",
+          "description": "Browser-facing mirror of `POST /session/pairphone`, gated by the ephemeral Connector token.\n\n**Endpoint:** `POST /connector/pairphone`\n**Tags:** Connector",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/connector/pairphone",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "pairphone"
+              ]
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        {
+          "name": "[Connector] Passkey status",
+          "description": "Browser-facing mirror of `GET /session/passkey/status`, gated by the ephemeral Connector token.\n\n**Endpoint:** `GET /connector/passkey/status`\n**Tags:** Connector",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/connector/passkey/status",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "passkey",
+                "status"
+              ]
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        {
+          "name": "[Connector] Probe the passkey challenge",
+          "description": "Browser-facing mirror of `POST /session/passkey/challenge`, gated by the ephemeral Connector token. Makes the passkey status deterministic. 503 when the account is not in the passkey cohort.\n\n**Endpoint:** `POST /connector/passkey/challenge`\n**Tags:** Connector",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/connector/passkey/challenge",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "passkey",
+                "challenge"
+              ]
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        {
+          "name": "[Connector] Submit passkey response",
+          "description": "Browser-facing mirror of `POST /session/passkey/response`, gated by the ephemeral Connector token. The assertion is produced by the ZuckZapGo passkey extension on web.whatsapp.com.\n\n**Endpoint:** `POST /connector/passkey/response`\n**Tags:** Connector",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/connector/passkey/response",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "connector",
+                "passkey",
+                "response"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "// 📝 [Connector] Submit passkey response\n// 🔗 POST /connector/passkey/response\n// 💡 All optional fields included for complete reference\n\n{\n  \"id\": \"credential-id\",\n  \"rawId\": \"base64url-encoded-raw-id\",\n  \"type\": \"public-key\",\n  \"response\": {\n    \"clientDataJSON\": \"base64url-encoded-client-data\",\n    \"authenticatorData\": \"base64url-encoded-authenticator-data\",\n    \"signature\": \"base64url-encoded-signature\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        {
+          "name": "Mint an ephemeral Connector token",
+          "description": "Issues a short-lived (default 10 min, `CONNECTOR_TOKEN_TTL`) ephemeral\ntoken bound to the authenticated instance. **Only** this ephemeral token\nis handed to the embeddable Connector widget in the browser; the real\ninstance token never leaves the backend. The ephemeral token is accepted\nexclusively on the `/connector/*` routes. Rate-limited per real token via\n`CONNECTOR_TOKEN_RATE_PER_MIN` (default 60/min). Call this from your\n**backend** with the real instance token, then pass only the returned\n`token` to `ZZ.connector.open({ token })` in the browser.\n\n\n**Endpoint:** `POST /session/connector/token`\n**Tags:** Connector",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/connector/token",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "connector",
+                "token"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Ephemeral token, TTL and type",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/session/connector/token",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "session",
+                    "connector",
+                    "token"
+                  ]
+                }
+              },
+              "status": "Ephemeral token, TTL and type",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"token\": \"ct_AbC123...\",\n  \"expiresIn\": 600,\n  \"tokenType\": \"connector\"\n}"
             }
           ],
           "event": []
@@ -4074,6 +4468,48 @@
           "event": []
         },
         {
+          "name": "Delete a message (revoke — \"delete for everyone\")",
+          "description": "Revokes a message so every participant sees \"This message was deleted\".\n\n- **Own messages** (any chat): send `Phone` + `Id` only.\n- **Group admin revoke**: when the connected number is a GROUP admin, it can also\n  delete OTHER participants' messages — pass the optional `Sender` field with the\n  original author's JID (e.g. `5521999999999@s.whatsapp.net` or `123456789@lid`).\n  WhatsApp rejects the revoke if the session is not an admin of that group.\n\nWhatsApp may enforce a time window for deletion.\n\n\n**Endpoint:** `POST /chat/delete`\n**Tags:** Chat",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/chat/delete",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "chat",
+                "delete"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"Phone\": \"5521971532700\",\n  \"Id\": \"1234-abcd-21234\",\n  \"Sender\": \"5521999999999@s.whatsapp.net\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        {
           "name": "Delete chat from chat list",
           "description": "Delete a chat entirely from the chat list. This is different from clearing chat history - it removes the chat from your chat list completely.\n\n**Important differences:**\n- **Delete Chat**: Removes chat from list (this endpoint)\n- **Clear Chat**: Only clears message history but keeps chat in list\n\nThe chat will reappear in your list if you receive a new message from this contact.\n\nOptionally provide last message details for more precise deletion and better synchronization across devices.\n\n\n**Endpoint:** `POST /chat/delete-chat`\n**Tags:** Chat",
           "request": {
@@ -4105,48 +4541,6 @@
             "body": {
               "mode": "raw",
               "raw": "// 📝 Delete chat from chat list\n// 🔗 POST /chat/delete-chat\n// 💡 All optional fields included for complete reference\n\n{\n  \"phone\": \"5521979232690\",\n  \"last_message_timestamp\": 1703123456,\n  \"last_message_id\": \"3EB0794DCEFA60ABC123\",\n  \"last_message_from_me\": false,\n  \"last_message_sender_jid\": \"5521988887777@s.whatsapp.net\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            }
-          },
-          "response": [],
-          "event": []
-        },
-        {
-          "name": "Deletes a message sent by user",
-          "description": "Deletes a messages sent by the same user\n\n**Endpoint:** `POST /chat/delete`\n**Tags:** Chat",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "token",
-                "value": "{{api_token}}",
-                "type": "text",
-                "description": "🔑 User authentication token"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json",
-                "type": "text",
-                "description": "📦 JSON request payload"
-              }
-            ],
-            "url": {
-              "raw": "{{base_url}}/chat/delete",
-              "host": [
-                "{{base_url}}"
-              ],
-              "path": [
-                "chat",
-                "delete"
-              ]
-            },
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"Phone\": \"5521971532700\",\n  \"Id\": \"1234-abcd-21234\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -4877,7 +5271,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1783135015,  // Tomorrow at current time\n  \"end_time\": 1783140415,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1783048615\n// +1 hour: 1783052215\n// +1 day: 1783135015\n// +1 week: 1783653415",
+              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1783916176,  // Tomorrow at current time\n  \"end_time\": 1783921576,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1783829776\n// +1 hour: 1783833376\n// +1 day: 1783916176\n// +1 week: 1784434576",
               "options": {
                 "raw": {
                   "language": "json"
