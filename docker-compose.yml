@@ -38,8 +38,17 @@ services:
       - ZUCKZAPGO_ADMIN_TOKEN=SEU_ADMIN_TOKEN_AQUI_ADMIN_TOKEN_AQUI
 
       # =================== IDENTIDADE DA SESSÃO ===================
-      # SESSION_DEVICE_NAME: Nome apresentado ao WhatsApp para identificar o dispositivo da sessão global.
-      - SESSION_DEVICE_NAME=zuckzapgo
+      # SESSION_DEVICE_NAME (opcional, NÃO definido por padrão): sobrescreve o osName da
+      # whatsmeow e é literalmente a string que o WhatsApp exibe em "Aparelhos conectados".
+      # ANTI-BAN: NUNCA anuncie aqui o nome do produto — isso identifica a frota inteira de
+      # uma só vez e serve de gatilho para banimento em massa.
+      # Deixando VAZIO (recomendado), a whatsmeow usa o próprio default NATIVO
+      # (Os="Mac OS 10", PlatformType=DESKTOP): um WhatsApp Desktop no macOS, aparelho
+      # vinculado legítimo. Não injetamos nada e herdamos o upstream automaticamente.
+      # Só defina se souber o que está fazendo, e sempre com cara de aparelho real:
+      # - SESSION_DEVICE_NAME=
+      # ATENÇÃO: DeviceProps só valem em um NOVO pareamento. Sessões já pareadas continuam
+      # exibindo o nome antigo até desconectar e parear novamente (novo QR / pair code).
       # TZ: Timezone padrão utilizado por logs, agendadores e conversões de horário.
       - TZ=America/Sao_Paulo
 
@@ -115,7 +124,7 @@ services:
       # WA_OS_NAME=Mac OS
       # WA_OS_VERSION=10.15.7
 
-      # Informações do dispositivo
+      # Informações do dispositivo (opcional — nunca use o nome do produto aqui)
       # WA_DEVICE_NAME=SAFARI
       # WA_MANUFACTURER=Apple
       # WA_DEVICE_BOARD=
@@ -132,8 +141,8 @@ services:
       # Opções: WIFI_UNKNOWN, CELLULAR_UNKNOWN, CELLULAR_LTE, etc.
       # WA_CONNECT_TYPE=WIFI_UNKNOWN
 
-      # Tipo de plataforma para DeviceProps
-      # Opções: DESKTOP, CHROME, FIREFOX, SAFARI, EDGE, IPAD, etc.
+      # Tipo de plataforma para DeviceProps (vazio = DESKTOP, default nativo da whatsmeow)
+      # Opções: UNKNOWN, CHROME, FIREFOX, SAFARI, EDGE, DESKTOP, IPAD, ANDROID_TABLET, IOS_PHONE, ANDROID_PHONE
       # WA_PLATFORM_TYPE=SAFARI
 
       # =================== CONFIGURAÇÕES DE WEBHOOK INDIVIDUAL ===================
@@ -438,7 +447,7 @@ services:
       # TRACING_SERVICE_NAME: Nome lógico do serviço reportado ao tracer.
       - TRACING_SERVICE_NAME=zuckzapgo
       # TRACING_SERVICE_VERSION: Versão reportada nas tags de tracing.
-      - TRACING_SERVICE_VERSION=v1.15.0
+      - TRACING_SERVICE_VERSION=v1.17.0
       # TRACING_ENVIRONMENT: Identificador do ambiente (development, staging, production).
       - TRACING_ENVIRONMENT=development
 

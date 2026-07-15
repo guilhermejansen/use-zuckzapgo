@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "05b43e38-1579-4e28-925b-5937f73d7bdd",
-    "name": "ZUCKZAPGO v1.15.0",
-    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n<h2>📞 Calls — LLM build guide</h2><p>Building a WhatsApp <b>voice or video call</b> integration? Open <a href=\"/api/llm.txt\" target=\"_blank\" rel=\"noopener\"><b>llm.txt</b></a> — a complete, self-contained spec you can paste into any LLM (Claude, GPT, Gemini, …) to generate a perfect calls integration (REST control + bidirectional PCM audio over WebSocket + bidirectional H.264 video over WebSocket + passkey pairing appendix). It also surfaces as the external-docs link on the <code>Call</code> tag below.</p>\n\n<h2>🔌 Connector — embeddable pairing widget</h2><p>Embed WhatsApp pairing (QR, phone code, or passkey) in any app with one <code>&lt;script&gt;</code> — without ever exposing the real instance token to the browser. Your backend mints a short-lived ephemeral token via <code>POST /session/connector/token</code>; the browser runs <code>ZZ.connector.open({ token })</code> against the <b>Connector</b> tag's <code>/connector/*</code> routes. Paste-into-any-LLM guide: <a href=\"/api/connector-llm.txt\" target=\"_blank\" rel=\"noopener\"><b>connector-llm.txt</b></a>. Full docs hub for API users &amp; LLMs: <a href=\"/docs\" target=\"_blank\" rel=\"noopener\">/docs</a>.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 7/12/2026, 4:16:16 AM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
+    "_postman_id": "ca62839a-c89e-4a65-a983-ae746c62f0e9",
+    "name": "ZUCKZAPGO v1.17.0",
+    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n<h2>📞 Calls — LLM build guide</h2><p>Building a WhatsApp <b>voice or video call</b> integration? Open <a href=\"/api/llm.txt\" target=\"_blank\" rel=\"noopener\"><b>llm.txt</b></a> — a complete, self-contained spec you can paste into any LLM (Claude, GPT, Gemini, …) to generate a perfect calls integration (REST control + bidirectional PCM audio over WebSocket + bidirectional H.264 video over WebSocket + passkey pairing appendix). It also surfaces as the external-docs link on the <code>Call</code> tag below.</p>\n\n<h2>🔌 Connector — embeddable pairing widget</h2><p>Embed WhatsApp pairing (QR, phone code, or passkey) in any app with one <code>&lt;script&gt;</code> — without ever exposing the real instance token to the browser. Your backend mints a short-lived ephemeral token via <code>POST /session/connector/token</code>; the browser runs <code>ZZ.connector.open({ token })</code> against the <b>Connector</b> tag's <code>/connector/*</code> routes. Paste-into-any-LLM guide: <a href=\"/api/connector-llm.txt\" target=\"_blank\" rel=\"noopener\"><b>connector-llm.txt</b></a>. Full docs hub for API users &amp; LLMs: <a href=\"/docs\" target=\"_blank\" rel=\"noopener\">/docs</a>.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 7/15/2026, 6:01:59 AM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -3500,7 +3500,7 @@
         },
         {
           "name": "Checks if user has WhatsApp",
-          "description": "Checks if users have an account with WhatsApp\n\n**Endpoint:** `POST /user/check`\n**Tags:** User",
+          "description": "Checks if users have an account with WhatsApp. Each entry reports the phone-shaped JID, the contact's LID (when WhatsApp reports one), business verification (name and level), the WhatsApp username and the contact's default disappearing-message setting. `Username`, `VerifiedLevel` and `DisappearingMode` are omitted when WhatsApp does not report them — usernames in particular are still being rolled out, so that field is usually absent.\n\n\n**Endpoint:** `POST /user/check`\n**Tags:** User",
           "request": {
             "method": "POST",
             "header": [
@@ -5107,12 +5107,12 @@
       ]
     },
     {
-      "name": "📤 Send (17 endpoints)",
-      "description": "Send related endpoints - 17 requests available",
+      "name": "📤 Send (19 endpoints)",
+      "description": "Send related endpoints - 19 requests available",
       "item": [
         {
-          "name": "Edit an existing message",
-          "description": "Edits the content of a previously sent message.\nOnly text messages can be edited and only within 15 minutes of sending.\n\n\n**Endpoint:** `POST /chat/send/edit`\n**Tags:** Send",
+          "name": "Edit an existing message (text or media caption)",
+          "description": "Edits the content of a previously sent message, within 15 minutes of sending.\n\nEdits the **text** of a text message, or the **caption** of an image, video or\ndocument. The request body is the same in both cases — the target's type is\ndetected automatically from its message `Id`, so there is nothing extra to send:\n`Body` carries the new text or the new caption.\n\nCaptions can be edited on media sent through this API **and** on media the\noperator sent from their own phone. If the `Id` is unknown to this instance the\nedit is sent as a text edit (previous behaviour).\n\n\n**Endpoint:** `POST /chat/send/edit`\n**Tags:** Send",
           "request": {
             "method": "POST",
             "header": [
@@ -5142,7 +5142,50 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📝 Edit an existing message\n// 🔗 POST /chat/send/edit\n// 💡 All optional fields included for complete reference\n\n{\n  \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n  \"Phone\": \"5521971532700\",\n  \"Body\": \"This is the updated message\",\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"5521971532700@s.whatsapp.net\",\n    \"IsForwarded\": true,\n    \"MentionedJID\": [\n      \"5521971532700@s.whatsapp.net\",\n      \"5491155553934@s.whatsapp.net\"\n    ],\n    \"MentionAll\": true\n  }\n}",
+              "raw": "// 📝 Edit an existing message (text or media caption)\n// 🔗 POST /chat/send/edit\n// 💡 All optional fields included for complete reference\n\n{\n  \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n  \"Phone\": \"5521971532700\",\n  \"Body\": \"This is the updated message\",\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"5521971532700@s.whatsapp.net\",\n    \"IsForwarded\": true,\n    \"MentionedJID\": [\n      \"5521971532700@s.whatsapp.net\",\n      \"5491155553934@s.whatsapp.net\"\n    ],\n    \"MentionAll\": true\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        {
+          "name": "Respond (RSVP) to a calendar event",
+          "description": "RSVPs to a calendar event.\n\nThe event is identified by the **message id of its creation message**\n(`event_message_id`). `response` is one of `GOING`, `NOT_GOING`, `MAYBE` or `UNKNOWN` —\nanything else is rejected with 400.\n\n`extra_guest_count` is WhatsApp's \"going with guests\": a `GOING` response carrying a\ncount >= 1 is what the app renders as **\"Going +N\"**.\n\nThe RSVP is encrypted with the event's message secret, so the event must have been sent\nor received by this session. An event created before this instance began recording event\ncreator info cannot be answered and returns **409**.\n\n\n**Endpoint:** `POST /chat/send/eventresponse`\n**Tags:** Send",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/chat/send/eventresponse",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "chat",
+                "send",
+                "eventresponse"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "// 📝 Respond (RSVP) to a calendar event\n// 🔗 POST /chat/send/eventresponse\n// 💡 All optional fields included for complete reference\n\n{\n  \"phone\": \"5521971532700\",\n  \"event_message_id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n  \"response\": \"GOING\",\n  \"extra_guest_count\": 2\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -5271,7 +5314,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1783916176,  // Tomorrow at current time\n  \"end_time\": 1783921576,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1783829776\n// +1 hour: 1783833376\n// +1 day: 1783916176\n// +1 week: 1784434576",
+              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1784181719,  // Tomorrow at current time\n  \"end_time\": 1784187119,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1784095319\n// +1 hour: 1784098919\n// +1 day: 1784181719\n// +1 week: 1784700119",
               "options": {
                 "raw": {
                   "language": "json"
@@ -5831,6 +5874,49 @@
             "body": {
               "mode": "raw",
               "raw": "// 📝 Sends an image/picture message\n// 🔗 POST /chat/send/image\n// 💡 All optional fields included for complete reference\n\n{\n  \"Phone\": \"5521971532700\",\n  \"Image\": \"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==\",\n  \"Caption\": \"Image Description\",\n  \"Id\": \"ABCDABCD1234\",\n  \"MimeType\": \"image/jpeg\",\n  \"Presence\": 3000,\n  \"ViewOnce\": true,\n  \"Duration\": 86400,\n  \"NumberCheck\": true,\n  \"EchoApi\": true,\n  \"ContextInfo\": {\n    \"StanzaId\": \"3EB06F9067F80BAB89FF\",\n    \"Participant\": \"{{test_phone}}@s.whatsapp.net\",\n    \"IsForwarded\": false,\n    \"MentionedJID\": [\n      \"{{test_phone}}@s.whatsapp.net\"\n    ],\n    \"MentionAll\": false\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": []
+        },
+        {
+          "name": "Vote on a poll",
+          "description": "Casts (or retracts) this session's vote on a poll.\n\nThe poll is identified by the **message id of its creation message** (`poll_message_id`),\nand the option names must match the poll's own options **exactly** — an unknown option is\nrejected with 400 rather than sent as a vote for nothing. Multi-select polls accept more\nthan one option, up to the poll's own limit.\n\nAn empty `options: []` array is a legitimate **retraction** of the vote, not an error.\n\nThe vote is encrypted with the poll's message secret, so the poll must have been sent or\nreceived by this session. A poll created before this instance began recording poll\ncreator info cannot be voted on and returns **409** — it is never sent with a guessed\nidentity, which WhatsApp would silently drop.\n\n\n**Endpoint:** `POST /chat/send/pollvote`\n**Tags:** Send",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/chat/send/pollvote",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "chat",
+                "send",
+                "pollvote"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"5521971532700\",\n  \"poll_message_id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n  \"options\": [\n    \"09:00\"\n  ]\n}",
               "options": {
                 "raw": {
                   "language": "json"
