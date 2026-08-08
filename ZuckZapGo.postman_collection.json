@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "3399a66e-f817-4cf0-a8d3-4318ef00ddc9",
-    "name": "ZUCKZAPGO v1.17.1",
-    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n<h2>📞 Calls — LLM build guide</h2><p>Building a WhatsApp <b>voice or video call</b> integration? Open <a href=\"/api/llm.txt\" target=\"_blank\" rel=\"noopener\"><b>llm.txt</b></a> — a complete, self-contained spec you can paste into any LLM (Claude, GPT, Gemini, …) to generate a perfect calls integration (REST control + bidirectional PCM audio over WebSocket + bidirectional H.264 video over WebSocket + passkey pairing appendix). It also surfaces as the external-docs link on the <code>Call</code> tag below.</p>\n\n<h2>🔌 Connector — embeddable pairing widget</h2><p>Embed WhatsApp pairing (QR, phone code, or passkey) in any app with one <code>&lt;script&gt;</code> — without ever exposing the real instance token to the browser. Your backend mints a short-lived ephemeral token via <code>POST /session/connector/token</code>; the browser runs <code>ZZ.connector.open({ token })</code> against the <b>Connector</b> tag's <code>/connector/*</code> routes. Paste-into-any-LLM guide: <a href=\"/api/connector-llm.txt\" target=\"_blank\" rel=\"noopener\"><b>connector-llm.txt</b></a>. Full docs hub for API users &amp; LLMs: <a href=\"/docs\" target=\"_blank\" rel=\"noopener\">/docs</a>.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 7/16/2026, 12:40:07 PM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
+    "_postman_id": "90b71dc3-787b-4b35-8095-ecf070317561",
+    "name": "ZUCKZAPGO v1.18.0",
+    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n<h2>📞 Calls — LLM build guide</h2><p>Building a WhatsApp <b>voice or video call</b> integration? Open <a href=\"/api/llm.txt\" target=\"_blank\" rel=\"noopener\"><b>llm.txt</b></a> — a complete, self-contained spec you can paste into any LLM (Claude, GPT, Gemini, …) to generate a perfect calls integration (REST control + bidirectional PCM audio over WebSocket + bidirectional H.264 video over WebSocket + passkey pairing appendix). It also surfaces as the external-docs link on the <code>Call</code> tag below.</p>\n\n<h2>🔌 Connector — embeddable pairing widget</h2><p>Embed WhatsApp pairing (QR, phone code, or passkey) in any app with one <code>&lt;script&gt;</code> — without ever exposing the real instance token to the browser. Your backend mints a short-lived ephemeral token via <code>POST /session/connector/token</code>; the browser runs <code>ZZ.connector.open({ token })</code> against the <b>Connector</b> tag's <code>/connector/*</code> routes. Paste-into-any-LLM guide: <a href=\"/api/connector-llm.txt\" target=\"_blank\" rel=\"noopener\"><b>connector-llm.txt</b></a>. Full docs hub for API users &amp; LLMs: <a href=\"/docs\" target=\"_blank\" rel=\"noopener\">/docs</a>.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 8/8/2026, 11:50:34 PM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -5314,7 +5314,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1784292007,  // Tomorrow at current time\n  \"end_time\": 1784297407,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1784205607\n// +1 hour: 1784209207\n// +1 day: 1784292007\n// +1 week: 1784810407",
+              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1786319434,  // Tomorrow at current time\n  \"end_time\": 1786324834,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1786233034\n// +1 hour: 1786236634\n// +1 day: 1786319434\n// +1 week: 1786837834",
               "options": {
                 "raw": {
                   "language": "json"
@@ -9060,8 +9060,8 @@
       ]
     },
     {
-      "name": "📞 Call (18 endpoints)",
-      "description": "Call related endpoints - 18 requests available",
+      "name": "📞 Call (36 endpoints)",
+      "description": "Call related endpoints - 36 requests available",
       "item": [
         {
           "name": "Accept an incoming call",
@@ -9150,6 +9150,290 @@
                 }
               ],
               "body": "{\n  \"success\": true,\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\",\n  \"action\": \"accepted\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Add participants to a call",
+          "description": "Invites one or more people to a **live** call. Each target may be a phone\nin E.164 **digits only** (no leading `+`), a phone JID or an `@lid` JID.\n\nFailures are reported **per target** in `failed` instead of collapsing\ninto a single error, so a partial success is a **200** with a non-empty\n`failed` array and `ok: false`. Each entry is formatted\n`\"<target>: <reason>\"`. When every target was invited, `failed` is empty\nand `ok` is true.\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `POST /call/participants/add`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/participants/add",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "participants",
+                "add"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"targets\": [\n    \"5521979232690\",\n    \"5521988887777@s.whatsapp.net\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "400 Bad request - callId and targets are required",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/participants/add",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "participants",
+                    "add"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"targets\": [\n    \"5521979232690\",\n    \"5521988887777@s.whatsapp.net\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad request - callId and targets are required",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"callId and targets are required\"\n}"
+            },
+            {
+              "name": "404 Call not found",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/participants/add",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "participants",
+                    "add"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"targets\": [\n    \"5521979232690\",\n    \"5521988887777@s.whatsapp.net\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Call not found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"call not found\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Admit a waiting participant",
+          "description": "Admits one user out of a call link's waiting room and into the call.\n**Admin only** — the instance must be the link's admin (`isAdmin: true`\nin `/call/link/preview` or `/call/{call_id}/waiting-room`).\n\n`user` may be a phone in E.164 **digits only** (no leading `+`), a phone\nJID or an `@lid` JID; read the pending roster from\n`/call/{call_id}/waiting-room`.\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `POST /call/waiting-room/admit`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/waiting-room/admit",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "waiting-room",
+                "admit"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"user\": \"5521979232690\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 User admitted",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/waiting-room/admit",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "waiting-room",
+                    "admit"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"user\": \"5521979232690\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "User admitted",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true\n}"
+            },
+            {
+              "name": "400 Bad request - callId and user are required, or the instance is not the link admin",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/waiting-room/admit",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "waiting-room",
+                    "admit"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"user\": \"5521979232690\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad request - callId and user are required, or the instance is not the link admin",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"callId and user are required\"\n}"
             }
           ],
           "event": []
@@ -9343,7 +9627,7 @@
         },
         {
           "name": "Bidirectional H.264 video WebSocket",
-          "description": "Upgrades the HTTP connection to a **WebSocket** that carries encoded\n**H.264 Annex-B** video for a live call. Open this socket in addition to\n`/call/{call_id}/stream` when the call was placed or answered with video.\n\n**Protocol (binary frames only):**\n- **Server → client**: peer video as H.264 Annex-B access units. Each\n  binary message is one access unit (NALUs prefixed with start code\n  `0x00 0x00 0x00 0x01`). Feed directly to an H.264 decoder.\n- **Client → server**: your camera video as H.264 Annex-B access units.\n  The engine forwards them to the peer. Send an IDR/keyframe immediately\n  after connecting and at regular GOP intervals.\n- Non-binary (text) frames are ignored.\n\nThe engine does not encode or decode pixels; the client must produce and\nconsume H.264.\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `GET /call/{call_id}/video/stream`\n**Tags:** Call",
+          "description": "Upgrades the HTTP connection to a **WebSocket** that carries encoded\n**H.264 Annex-B** video for a live call. Open this socket in addition to\n`/call/{call_id}/stream` when the call was placed or answered with video.\n\n**Binary frames — the media:**\n- **Server → client**: peer video as H.264 Annex-B access units. Each\n  binary message is one access unit (NALUs prefixed with start code\n  `0x00 0x00 0x00 0x01`). Feed directly to an H.264 decoder.\n- **Client → server**: your camera (or screen) video as H.264 Annex-B\n  access units. The engine forwards them to the peer. Send an\n  IDR/keyframe immediately after connecting and at regular GOP intervals.\n\nThe engine does not encode or decode pixels; the client must produce and\nconsume H.264.\n\n**`?fmt=participant` — required for group calls.** By default every\ncamera in the call is muxed into ONE stream of access units, so a second\nparticipant turning their camera on stops the first from decoding: one\ndecoder cannot follow two senders. With `fmt=participant` each inbound\nbinary message is instead framed with the participant it came from:\n\n```\n[1 byte version = 2][1 byte idLen][idLen bytes participant id, UTF-8][Annex-B access unit]\n```\n\n`idLen` counts **bytes**, not characters. A message that is not a valid\nparticipant frame — including a bare access unit, which starts with the\n`0x00` start code and so can never be mistaken for version 2 — is the\nlegacy single-stream framing and should be handled as such. Run one\ndecoder and one tile per participant id.\n\nOutbound frames are never participant-framed: send bare Annex-B.\n\n**Text frames — the control channel (JSON, both directions):**\n\n| Direction | `type` | Meaning |\n|---|---|---|\n| server → client | `participant` | A camera's `id`, `sender`, `device`, `ssrc` and, when known, `orientation` |\n| server → client | `orientation` | That participant's rotation changed (0–3, ×90°) |\n| server → client | `video-ready` | Outbound media is live; start sending at full rate |\n| server → client | `keyframe` | The peer lost packets and asked for an IDR — send one now |\n| client → server | `hello` | `{\"type\":\"hello\",\"fmt\":\"participant\"}`, belt-and-braces alongside the query parameter |\n| client → server | `client-log` | Report a browser-only failure (codec/capture) to the server log |\n\nA **missing** `orientation` means the server does not know that camera's\nrotation — it is not the same as `0`. Recording a default would shadow\nthe call-level fallback and leave a peer upside down for the whole call.\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `GET /call/{call_id}/video/stream`\n**Tags:** Call",
           "request": {
             "method": "GET",
             "header": [
@@ -9370,6 +9654,14 @@
                   "key": "call_id",
                   "value": "call_17B3F2A1C9D04E8F",
                   "description": "ID of a live call"
+                }
+              ],
+              "query": [
+                {
+                  "key": "fmt",
+                  "value": "participant",
+                  "description": "Set to \"participant\" to receive per-participant framed access units.\nREQUIRED for group calls — without it every camera is muxed into one\nstream and only the first one decodes.\n",
+                  "disabled": true
                 }
               ]
             }
@@ -9455,6 +9747,449 @@
           "event": []
         },
         {
+          "name": "Call waiting room",
+          "description": "Returns the **pending-approval roster** of a call link: whether approval\nis currently required, whether this instance is the link's admin, whether\n*you* are the one sitting in the waiting room, and the users awaiting\nadmission.\n\nPoll this after `/call/link/join` — when `inWaitingRoom` is true your own\nmedia is gated until an admin admits you. When `isAdmin` is true, feed the\n`users` entries to `/call/waiting-room/admit` or\n`/call/waiting-room/deny`.\n\n`transactionId` is WhatsApp's monotonic roster counter — a higher value\nmeans a fresher snapshot.\n\nReturns **404** when the `callId` is not a live call, **400** when the\ncall has no waiting room (it is not a link call), **409** when the engine\nis not enabled for the instance.\n\n\n**Endpoint:** `GET /call/{call_id}/waiting-room`\n**Tags:** Call",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/{{call_id}}/waiting-room",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "{call_id}",
+                "waiting-room"
+              ],
+              "variable": [
+                {
+                  "key": "call_id",
+                  "value": "call_22A9E1B7D3F84C10",
+                  "description": "ID of a live call-link call (from /call/link/join)"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Waiting room snapshot",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/{{call_id}}/waiting-room",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "{call_id}",
+                    "waiting-room"
+                  ],
+                  "variable": [
+                    {
+                      "key": "call_id",
+                      "value": "call_22A9E1B7D3F84C10",
+                      "description": "ID of a live call-link call (from /call/link/join)"
+                    }
+                  ]
+                }
+              },
+              "status": "Waiting room snapshot",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"enabled\": true,\n  \"isAdmin\": true,\n  \"inWaitingRoom\": false,\n  \"transactionId\": 3,\n  \"users\": [\n    {\n      \"jid\": \"5521979232690@s.whatsapp.net\",\n      \"phone\": \"5521979232690\"\n    },\n    {\n      \"jid\": \"227294266302623@lid\"\n    }\n  ]\n}"
+            },
+            {
+              "name": "400 Bad request - this call has no waiting room",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/{{call_id}}/waiting-room",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "{call_id}",
+                    "waiting-room"
+                  ],
+                  "variable": [
+                    {
+                      "key": "call_id",
+                      "value": "call_22A9E1B7D3F84C10",
+                      "description": "ID of a live call-link call (from /call/link/join)"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad request - this call has no waiting room",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"voip: this call has no waiting room\"\n}"
+            },
+            {
+              "name": "404 Call not found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/{{call_id}}/waiting-room",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "{call_id}",
+                    "waiting-room"
+                  ],
+                  "variable": [
+                    {
+                      "key": "call_id",
+                      "value": "call_22A9E1B7D3F84C10",
+                      "description": "ID of a live call-link call (from /call/link/join)"
+                    }
+                  ]
+                }
+              },
+              "status": "Call not found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"call not found\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Create a call link",
+          "description": "Creates a reusable public **call link**. Anyone holding the token or the\nURL can join through `/call/link/join`, subject to the waiting room (see\n`/call/waiting-room/approval`).\n\nThe request **body is optional** — posting no body creates an audio link.\nSend `video: true` for a video link.\n\nThe returned `url` has the shape\n`https://call.whatsapp.com/{audio|video}/{token}`; both the bare `token`\nand the full URL are accepted everywhere a link is referenced.\n\nReturns **409** when the engine is not enabled for the instance.\n\n\n**Endpoint:** `POST /call/link/create`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/link/create",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "link",
+                "create"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"video\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Call link created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/link/create",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "link",
+                    "create"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"video\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Call link created",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"token\": \"BqE9kZ2rTn4WxPvL7cHm3d\",\n  \"url\": \"https://call.whatsapp.com/audio/BqE9kZ2rTn4WxPvL7cHm3d\",\n  \"video\": false\n}"
+            },
+            {
+              "name": "400 Bad request - WhatsApp refused to mint the link",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/link/create",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "link",
+                    "create"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"video\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad request - WhatsApp refused to mint the link",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"meowcaller: call link creation failed\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Deny a waiting participant",
+          "description": "Rejects one user waiting for admission to a call link. **Admin only** —\nthe instance must be the link's admin.\n\n`user` may be a phone in E.164 **digits only** (no leading `+`), a phone\nJID or an `@lid` JID; read the pending roster from\n`/call/{call_id}/waiting-room`.\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `POST /call/waiting-room/deny`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/waiting-room/deny",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "waiting-room",
+                "deny"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"user\": \"5521979232690\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 User denied",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/waiting-room/deny",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "waiting-room",
+                    "deny"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"user\": \"5521979232690\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "User denied",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true\n}"
+            },
+            {
+              "name": "400 Bad request - callId and user are required, or the instance is not the link admin",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/waiting-room/deny",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "waiting-room",
+                    "deny"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"user\": \"5521979232690\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad request - callId and user are required, or the instance is not the link admin",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"callId and user are required\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
           "name": "Get the native calls engine configuration",
           "description": "Returns the per-instance native VoIP calls engine configuration. The\nengine is a native WebRTC/Opus media stack (no external sidecar) that\ncan answer, originate, record, play audio into, and bidirectionally\nstream raw PCM for WhatsApp calls.\n\n**`callInboundMode`** controls how inbound calls are handled by the engine:\n- `manual` — the engine answers and your app drives the call via the\n  control API (`/call/answer`, `/call/play`, `/call/hangup`) and the\n  `/call/{call_id}/stream` WebSocket. Full programmatic control.\n- `webhook` — the engine answers automatically; call lifecycle events\n  (and recordings, when `callRecord` is on) are delivered via your\n  configured webhooks. This is the default when `callInboundMode` is empty.\n- `bot` — the engine answers, speaks `callGreeting` via your TTS provider,\n  then hangs up. One-shot announcement.\n- `ivr` — the engine answers, plays `callGreeting`, listens for one\n  utterance, transcribes it via your STT provider, and emits a\n  `transcript` event. Single-turn capture.\n- `ai` — full conversation loop: STT → LLM → TTS using your BYO provider\n  endpoints and `callSystemPrompt`. No AI SDK is embedded in the engine.\n- `reject` — the engine is off for inbound; legacy auto-reject behavior.\n\nOutbound dialing (`/call/dial`) works whenever `callsEnabled` is true,\nindependent of `callInboundMode`. Configuration changes apply on the\ninstance's NEXT reconnect.\n\n\n**Endpoint:** `GET /call/config`\n**Tags:** Call",
           "request": {
@@ -9479,6 +10214,169 @@
             }
           },
           "response": [],
+          "event": []
+        },
+        {
+          "name": "Group call roster",
+          "description": "Returns the **authoritative participant roster** of a live group call, as\nreported by WhatsApp: one entry per participant with its JID, phone (when\nWhatsApp discloses it) and current state.\n\n`transactionId` is WhatsApp's monotonic roster counter — a higher value\nmeans a fresher snapshot, which is what to compare when polling.\n\nWorks for calls placed with `/call/group/dial`,\n`/call/group/dial-by-id` and for links joined via `/call/link/join`.\n\nReturns **404** when the `callId` is not a live call, **400** when the\ncall has no group state yet (for example a 1:1 call, or a group call that\nhas not been acknowledged by WhatsApp), **409** when the engine is not\nenabled for the instance.\n\n\n**Endpoint:** `GET /call/{call_id}/group/state`\n**Tags:** Call",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/{{call_id}}/group/state",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "{call_id}",
+                "group",
+                "state"
+              ],
+              "variable": [
+                {
+                  "key": "call_id",
+                  "value": "call_22A9E1B7D3F84C10",
+                  "description": "ID of a live group call (from /call/group/dial, /call/group/dial-by-id or /call/link/join)"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Group roster snapshot",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/{{call_id}}/group/state",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "{call_id}",
+                    "group",
+                    "state"
+                  ],
+                  "variable": [
+                    {
+                      "key": "call_id",
+                      "value": "call_22A9E1B7D3F84C10",
+                      "description": "ID of a live group call (from /call/group/dial, /call/group/dial-by-id or /call/link/join)"
+                    }
+                  ]
+                }
+              },
+              "status": "Group roster snapshot",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"transactionId\": 7,\n  \"participants\": [\n    {\n      \"jid\": \"5521979232690@s.whatsapp.net\",\n      \"phone\": \"5521979232690\",\n      \"state\": \"connected\"\n    },\n    {\n      \"jid\": \"5521988887777@s.whatsapp.net\",\n      \"phone\": \"5521988887777\",\n      \"state\": \"ringing\"\n    },\n    {\n      \"jid\": \"227294266302623@lid\",\n      \"state\": \"outgoing\"\n    }\n  ]\n}"
+            },
+            {
+              "name": "400 Bad request - this call has no group state yet",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/{{call_id}}/group/state",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "{call_id}",
+                    "group",
+                    "state"
+                  ],
+                  "variable": [
+                    {
+                      "key": "call_id",
+                      "value": "call_22A9E1B7D3F84C10",
+                      "description": "ID of a live group call (from /call/group/dial, /call/group/dial-by-id or /call/link/join)"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad request - this call has no group state yet",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"voip: this call has no group state yet\"\n}"
+            },
+            {
+              "name": "404 Call not found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/{{call_id}}/group/state",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "{call_id}",
+                    "group",
+                    "state"
+                  ],
+                  "variable": [
+                    {
+                      "key": "call_id",
+                      "value": "call_22A9E1B7D3F84C10",
+                      "description": "ID of a live group call (from /call/group/dial, /call/group/dial-by-id or /call/link/join)"
+                    }
+                  ]
+                }
+              },
+              "status": "Call not found",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"call not found\"\n}"
+            }
+          ],
           "event": []
         },
         {
@@ -9621,6 +10519,253 @@
           "event": []
         },
         {
+          "name": "In-call event stream (SSE)",
+          "description": "Server-Sent Events for everything peers **do** during a call: reactions,\nhand raise, mute state, screen share, group roster changes,\nwaiting-room requests and call phase. The response is\n`text/event-stream` with one JSON object per event.\n\nThis is a stream rather than a poll because a reaction has **no\nserver-side residency** — it is transient, so a client that is not\nlistening when it happens can never learn that it happened. Hand raise,\nmute and screen share are state and can also be read from\n`/call/{call_id}/group/state`, but arrive here first.\n\nAuthentication accepts `?token=` in the query string in addition to the\nheader, because `EventSource` cannot set headers.\n\nEvent shape:\n```json\n{ \"type\": \"reaction\", \"participantId\": \"1402...:0@lid\", \"emoji\": \"👍\" }\n{ \"type\": \"screenshare\", \"participant\": \"1402...@lid\", \"active\": true }\n{ \"type\": \"hand\", \"participant\": \"1402...@lid\", \"raised\": true }\n{ \"type\": \"phase\", \"phase\": \"active\" }\n```\n\nNote the two identity spellings: `participantId` is the E2E-SRTP\nparticipant id (device-qualified, `...:0@lid`) used to key video tiles,\nwhile `participant` is a plain JID. Reconcile them on the numeric user\npart when correlating an event with a video stream.\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `GET /call/{call_id}/events`\n**Tags:** Call",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "text/event-stream",
+                "type": "text",
+                "description": "📡 Expect Server-Sent Events stream"
+              },
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/{{call_id}}/events",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "{call_id}",
+                "events"
+              ],
+              "variable": [
+                {
+                  "key": "call_id",
+                  "value": "call_17B3F2A1C9D04E8F",
+                  "description": "ID of a live call"
+                }
+              ],
+              "query": [
+                {
+                  "key": "token",
+                  "value": "",
+                  "description": "User token, for EventSource clients that cannot set headers",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 SSE stream started (SSE)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "text/event-stream",
+                    "type": "text",
+                    "description": "📡 Expect Server-Sent Events stream"
+                  },
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/{{call_id}}/events",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "{call_id}",
+                    "events"
+                  ],
+                  "variable": [
+                    {
+                      "key": "call_id",
+                      "value": "call_17B3F2A1C9D04E8F",
+                      "description": "ID of a live call"
+                    }
+                  ],
+                  "query": [
+                    {
+                      "key": "token",
+                      "value": "",
+                      "description": "User token, for EventSource clients that cannot set headers",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "status": "SSE stream started",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/event-stream"
+                }
+              ],
+              "body": "{ \"type\": \"reaction\", \"participantId\": \"140712372899859:0@lid\", \"emoji\": \"👍\" }\n"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Join a call link",
+          "description": "Joins an active call-link session, or **enters its waiting room** when the\nlink requires approval. Either way the resulting call is tracked like any\nother, so `/call/status`, `/call/hangup`, the media-stream WebSocket and\nthe in-call controls all work with the returned `callId`.\n\nWhen the link requires approval, poll `/call/{call_id}/waiting-room` — an\nadmin has to `/call/waiting-room/admit` you before media flows.\n\n`token` accepts either the bare token or a full\n`https://call.whatsapp.com/{audio|video}/{token}` URL. `video: true`\njoins with video; frames still go through the\n`/call/{call_id}/video/stream` WebSocket.\n\nReturns **400** when the token is missing or the link is not joinable,\n**409** when the engine is not enabled for the instance.\n\n\n**Endpoint:** `POST /call/link/join`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/link/join",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "link",
+                "join"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"BqE9kZ2rTn4WxPvL7cHm3d\",\n  \"video\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Joined the link (or placed in its waiting room)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/link/join",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "link",
+                    "join"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"token\": \"BqE9kZ2rTn4WxPvL7cHm3d\",\n  \"video\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Joined the link (or placed in its waiting room)",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\"\n}"
+            },
+            {
+              "name": "400 Bad request - token is required, or the link is not joinable",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/link/join",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "link",
+                    "join"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"token\": \"BqE9kZ2rTn4WxPvL7cHm3d\",\n  \"video\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad request - token is required, or the link is not joinable",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"token is required\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
           "name": "List live calls",
           "description": "Returns the engine's currently tracked calls for the instance, with the\nlive state machine, direction, media flags and start time of each call.\nRequires the calls engine to be enabled for the instance (otherwise 409).\n\n\n**Endpoint:** `GET /call/status`\n**Tags:** Call",
           "request": {
@@ -9712,6 +10857,42 @@
               "body": "{\n  \"error\": \"calls engine not enabled for this instance (set calls_enabled and reconnect)\"\n}"
             }
           ],
+          "event": []
+        },
+        {
+          "name": "Live video telemetry for a call",
+          "description": "Per-call video statistics while the call is running: which participants\nare sending video, how many frames were received versus delivered, what\nthe server shed under backpressure, backlog bytes, and the outbound\nframe counters.\n\nUse it to answer the question a frozen tile cannot: is video lag\n**server-side backpressure** or a **browser that cannot keep up**? Pair\nit with the client's own counters — frames received versus frames\nactually painted is what separates the two. `shed` climbing means the\nserver dropped frames rather than blocking the media loop.\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `GET /call/{call_id}/video/stats`\n**Tags:** Call",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/{{call_id}}/video/stats",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "{call_id}",
+                "video",
+                "stats"
+              ],
+              "variable": [
+                {
+                  "key": "call_id",
+                  "value": "call_17B3F2A1C9D04E8F",
+                  "description": "ID of a live call"
+                }
+              ]
+            }
+          },
+          "response": [],
           "event": []
         },
         {
@@ -9897,8 +11078,243 @@
           "event": []
         },
         {
+          "name": "Place a group call",
+          "description": "Originates an outbound **group call** to an explicit roster, using the\nsame WebRTC/Opus media stack as `/call/dial`. The returned `callId`\nbehaves exactly like a 1:1 call id — use it with `/call/hangup`,\n`/call/status`, the media-stream WebSocket and every in-call control.\n\n`targets` needs **at least two** entries: WhatsApp rejects a group call\nwith fewer than two remote participants, so the engine refuses it up\nfront instead of surfacing a wire error. Each entry may be a phone in\nE.164 **digits only** (no leading `+`), a phone JID\n(`5521979232690@s.whatsapp.net`) or an `@lid` JID.\n\n`video: true` negotiates video, but the H.264 access units still have to\nbe pushed through the `/call/{call_id}/video/stream` WebSocket — this\nendpoint only negotiates the media.\n\n**`groupJid` (optional) keeps the call BOUND to a WhatsApp group while\ncalling only some of its members.** This is the only way to call a group\nlarger than WhatsApp's participant limit: `/call/group/dial-by-id`\nderives the whole roster and refuses once it exceeds the cap\n(*\"105 remote members; at most 31 can be called\"*). The cap is\nWhatsApp's own — the server declares it as `connected-limit`, a\n**required** attribute of the group-control stanza, and it is dynamic\n(32 including you on a group, 8 on a call link). It only arrives once\nthe call is established, which is why the pre-flight check uses a static\n31.\n\nSo pick up to 31 members, send them in `targets`, and pass `groupJid` —\nwithout it the result is an unrelated ad-hoc call that merely happens to\nhold the same people.\n\nReturns **400** when the payload is invalid or WhatsApp refuses the\ncall, **409** when the engine is not enabled for the instance.\n\n\n**Endpoint:** `POST /call/group/dial`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/group/dial",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "group",
+                "dial"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"targets\": [\n    \"5521979232690\",\n    \"5521988887777\"\n  ],\n  \"video\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Group call placed",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/group/dial",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "group",
+                    "dial"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"targets\": [\n    \"5521979232690\",\n    \"5521988887777\"\n  ],\n  \"video\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Group call placed",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Place a group call by group JID",
+          "description": "Resolves an existing WhatsApp group's roster and calls every remote\nmember. The call stays bound to the group, so no target list is needed —\nthe roster comes from the group itself and is readable afterwards via\n`/call/{call_id}/group/state`.\n\n`groupJid` is the group's JID (`120363312246943103@g.us`). `video: true`\nnegotiates video; frames still go through the\n`/call/{call_id}/video/stream` WebSocket.\n\nReturns **400** when `groupJid` is missing or WhatsApp refuses the call,\n**409** when the engine is not enabled for the instance.\n\n\n**Endpoint:** `POST /call/group/dial-by-id`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/group/dial-by-id",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "group",
+                "dial-by-id"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"groupJid\": \"120363312246943103@g.us\",\n  \"video\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Group call placed",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/group/dial-by-id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "group",
+                    "dial-by-id"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"groupJid\": \"120363312246943103@g.us\",\n  \"video\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Group call placed",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\"\n}"
+            },
+            {
+              "name": "400 Bad request - groupJid is required",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/group/dial-by-id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "group",
+                    "dial-by-id"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"groupJid\": \"120363312246943103@g.us\",\n  \"video\": false\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad request - groupJid is required",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"groupJid is required\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
           "name": "Place an outbound call",
-          "description": "Originates an outbound native call to a phone number using the engine's\nWebRTC/Opus media stack. Works whenever `callsEnabled` is true,\nindependent of `callInboundMode`. The returned `callId` is used by every\nother control endpoint and by the media-stream WebSocket.\n\n`phone` must be the destination in E.164 **digits only** (no leading `+`).\nReturns **502** when the peer is unreachable, **409** when the engine is\nnot enabled for the instance.\n\n\n**Endpoint:** `POST /call/dial`\n**Tags:** Call",
+          "description": "Originates an outbound native call to a phone number using the engine's\nWebRTC/Opus media stack. Works whenever `callsEnabled` is true,\nindependent of `callInboundMode`. The returned `callId` is used by every\nother control endpoint and by the media-stream WebSocket.\n\n`phone` accepts three forms, and anything carrying an explicit `@` is\nused **as given**:\n\n| Form | Example |\n|---|---|\n| E.164 digits, no leading `+` | `5521999999999` |\n| Phone JID | `557192856732@s.whatsapp.net` |\n| LID | `47588875227343@lid` |\n\nA plain number is first resolved to the callee's **LID**, because a\ntyped number is not always the canonical one: WhatsApp keeps many\nBrazilian mobiles WITHOUT the ninth digit, so `5571992856732` is not the\nJID `557192856732`. Querying the typed form returns an *empty* user\nrecord — no lid, no devices — which would otherwise surface as \"peer\nunreachable or not on WhatsApp\" for a contact sitting in the chat list.\nBoth spellings therefore work.\n\nA group JID (`120363…@g.us`) is **not** valid here — use\n`/call/group/dial-by-id` or `/call/group/dial`.\n\nReturns **502** when the peer is unreachable, **409** when the engine is\nnot enabled for the instance.\n\n\n**Endpoint:** `POST /call/dial`\n**Tags:** Call",
           "request": {
             "method": "POST",
             "header": [
@@ -10266,6 +11682,330 @@
           "event": []
         },
         {
+          "name": "Preview a call link",
+          "description": "Reads call-link metadata **without joining**: whether the link requires\napproval (waiting room), whether this instance is the link's admin, and\nwho created it.\n\n`token` accepts either the bare token or a full\n`https://call.whatsapp.com/{audio|video}/{token}` URL. Pass\n`video=true` to preview the link as a video link.\n\n`creator` / `creatorPhone` are omitted when WhatsApp does not disclose\nthem.\n\nReturns **400** when the token is missing or malformed, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `GET /call/link/preview`\n**Tags:** Call",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/link/preview",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "link",
+                "preview"
+              ],
+              "query": [
+                {
+                  "key": "token",
+                  "value": "BqE9kZ2rTn4WxPvL7cHm3d",
+                  "description": "Call link token, or the full call.whatsapp.com URL",
+                  "disabled": false
+                },
+                {
+                  "key": "video",
+                  "value": "",
+                  "description": "Preview the link as a video link (\"true\" enables it)",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Call link metadata",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/link/preview",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "link",
+                    "preview"
+                  ],
+                  "query": [
+                    {
+                      "key": "token",
+                      "value": "BqE9kZ2rTn4WxPvL7cHm3d",
+                      "description": "Call link token, or the full call.whatsapp.com URL",
+                      "disabled": false
+                    },
+                    {
+                      "key": "video",
+                      "value": "",
+                      "description": "Preview the link as a video link (\"true\" enables it)",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "status": "Call link metadata",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"token\": \"BqE9kZ2rTn4WxPvL7cHm3d\",\n  \"video\": false,\n  \"approvalRequired\": true,\n  \"isAdmin\": true,\n  \"creator\": \"5521979232690@s.whatsapp.net\",\n  \"creatorPhone\": \"5521979232690\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Raise or lower hand",
+          "description": "Raises or lowers the **local hand** on a live call, mirroring WhatsApp's\n\"raise hand\" control.\n\n`raised` is **optional and defaults to `true`** — an absent flag reads as\n\"raise the hand\". A non-boolean value is rejected with **400**. The\nresponse echoes the flag that was applied.\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `POST /call/hand`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/hand",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "hand"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"raised\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Hand state updated",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/hand",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "hand"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"raised\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Hand state updated",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true,\n  \"raised\": true\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Re-ring a participant",
+          "description": "Re-rings one participant who is **already on the roster** of a live call —\nuseful when someone missed the first ring. Use\n`/call/{call_id}/group/state` to read the roster and pick the target.\n\n`target` may be a phone in E.164 **digits only** (no leading `+`), a phone\nJID or an `@lid` JID.\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `POST /call/participants/ring`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/participants/ring",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "participants",
+                "ring"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"target\": \"5521979232690\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Participant re-rung",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/participants/ring",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "participants",
+                    "ring"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"target\": \"5521979232690\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Participant re-rung",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true\n}"
+            },
+            {
+              "name": "400 Bad request - callId and target are required",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/participants/ring",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "participants",
+                    "ring"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"target\": \"5521979232690\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad request - callId and target are required",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"callId and target are required\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
           "name": "Reject a call and send custom message",
           "description": "Rejects an incoming call with a specific rejection type and optionally sends a custom message to the caller\n\n**Endpoint:** `POST /call/reject/send`\n**Tags:** Call",
           "request": {
@@ -10395,6 +12135,145 @@
                 }
               ],
               "body": "{\n  \"success\": true,\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\",\n  \"reject_type\": \"declined\",\n  \"action\": \"rejected\",\n  \"message_sent\": true\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Send an in-call reaction",
+          "description": "Sends an in-call **emoji reaction** to everyone on a live call — the same\nfloating emoji WhatsApp shows during a group call.\n\n`emoji` is the literal emoji character(s) and is required.\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `POST /call/reaction`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/reaction",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "reaction"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"emoji\": \"👍\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Reaction sent",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/reaction",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "reaction"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"emoji\": \"👍\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Reaction sent",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true\n}"
+            },
+            {
+              "name": "400 Bad request - callId and emoji are required",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/reaction",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "reaction"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"emoji\": \"👍\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad request - callId and emoji are required",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"error\": \"callId and emoji are required\"\n}"
             }
           ],
           "event": []
@@ -10672,6 +12551,281 @@
                 }
               ],
               "body": "{\n  \"success\": true,\n  \"call_id\": \"call_17B3F2A1C9D04E8F\",\n  \"call_from\": \"5521979232690@s.whatsapp.net\",\n  \"reason\": \"hangup\",\n  \"action\": \"terminated\"\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Toggle call-link approval",
+          "description": "Turns the **waiting room** on or off for a call link. While it is on,\neveryone joining via `/call/link/join` lands in the waiting room until an\nadmin admits them. **Admin only.**\n\n`enabled` is **optional and defaults to `true`** — an absent flag reads as\n\"turn it on\". A non-boolean value is rejected with **400**. The response\nechoes the flag that was applied.\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `POST /call/waiting-room/approval`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/waiting-room/approval",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "waiting-room",
+                "approval"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"enabled\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Approval requirement updated",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/waiting-room/approval",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "waiting-room",
+                    "approval"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"enabled\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Approval requirement updated",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true,\n  \"enabled\": true\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Toggle outbound video",
+          "description": "Starts or stops sending **local video** on a live call, including a call\nthat started as audio-only. This endpoint only negotiates the media — the\nH.264 Annex-B access units are still pushed through the\n`/call/{call_id}/video/stream` WebSocket, and the peer's own camera state\nis observed on `/call/{call_id}/video/state`.\n\n`enabled` is **optional and defaults to `true`** — an absent flag reads as\n\"start video\". A non-boolean value is rejected with **400**. The response\nechoes the flag that was applied.\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `POST /call/video`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/video",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "video"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"enabled\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Outbound video state updated",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/video",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "video"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"enabled\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Outbound video state updated",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true,\n  \"enabled\": true\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Toggle screen share",
+          "description": "Starts or stops the **local screen share** on a live call. Like\n`/call/video`, this only negotiates the media — the shared frames are\npushed as H.264 Annex-B access units through the\n`/call/{call_id}/video/stream` WebSocket.\n\n`enabled` is **optional and defaults to `true`** — an absent flag reads as\n\"start sharing\". A non-boolean value is rejected with **400**. The\nresponse echoes the flag that was applied.\n\nReturns **404** when the `callId` is not a live call, **409** when the\nengine is not enabled for the instance.\n\n\n**Endpoint:** `POST /call/screenshare`\n**Tags:** Call",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/call/screenshare",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "call",
+                "screenshare"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"enabled\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Screen share state updated",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/screenshare",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "screenshare"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"callId\": \"call_22A9E1B7D3F84C10\",\n  \"enabled\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Screen share state updated",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"ok\": true,\n  \"enabled\": true\n}"
             }
           ],
           "event": []
