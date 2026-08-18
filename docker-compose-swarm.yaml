@@ -39,7 +39,7 @@ services:
 
       # =================== AUTENTICAÇÃO INTERNA ===================
       # ZUCKZAPGO_ADMIN_TOKEN: Token estático exigido em endpoints administrativos protegidos da API.
-      - ZUCKZAPGO_ADMIN_TOKEN=SEU_ADMIN_TOKEN_AQUI_ADMIN_TOKEN_AQUI
+      - ZUCKZAPGO_ADMIN_TOKEN=SEU_ADMIN_TOKEN_AQUI
 
       # =================== IDENTIDADE DA SESSÃO ===================
       # SESSION_DEVICE_NAME (opcional, NÃO definido por padrão): sobrescreve o osName da
@@ -455,7 +455,7 @@ services:
       # TRACING_SERVICE_NAME: Nome lógico do serviço reportado ao tracer.
       - TRACING_SERVICE_NAME=zuckzapgo
       # TRACING_SERVICE_VERSION: Versão reportada nas tags de tracing.
-      - TRACING_SERVICE_VERSION=v1.19.0 # x-release-please-version
+      - TRACING_SERVICE_VERSION=v1.19.1 # x-release-please-version
       # TRACING_ENVIRONMENT: Identificador do ambiente (development, staging, production).
       - TRACING_ENVIRONMENT=development
 
