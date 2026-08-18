@@ -52,6 +52,10 @@ services:
       # TZ: Timezone padrão utilizado por logs, agendadores e conversões de horário.
       - TZ=America/Sao_Paulo
 
+      # Estado persistente dos nós tsnet por sessão. Sem este volume, uma
+      # recriação do container exige nova auth key JIT e mantém a rota bloqueada.
+      - NETWORK_ROUTE_STATE_DIR=/app/network-routes
+
       # ========== CONFIGURAÇÕES PADRÃO DE DISPOSITIVO WHATSAPP ==========
       # ========================================
       # NOTAS IMPORTANTES
@@ -447,7 +451,7 @@ services:
       # TRACING_SERVICE_NAME: Nome lógico do serviço reportado ao tracer.
       - TRACING_SERVICE_NAME=zuckzapgo
       # TRACING_SERVICE_VERSION: Versão reportada nas tags de tracing.
-      - TRACING_SERVICE_VERSION=v1.18.1
+      - TRACING_SERVICE_VERSION=v1.19.0 # x-release-please-version
       # TRACING_ENVIRONMENT: Identificador do ambiente (development, staging, production).
       - TRACING_ENVIRONMENT=development
 
@@ -548,6 +552,8 @@ services:
       - MONITORING_PRUNE_INTERVAL=24h
       # Absolute base URL returned in stream_url (leave empty to fall back to ZUCKZAPGO_ADDRESS or http://localhost:<port>)
       - MONITORING_STREAM_BASE_URL=http://localhost:8080
+    volumes:
+      - network_route_state_zuckzapgo:/app/network-routes
     networks:
       - zuckzapgo-network
     restart: on-failure
@@ -675,6 +681,7 @@ networks:
 
 volumes:
   postgres_data_zuckzapgo:
+  network_route_state_zuckzapgo:
   # rabbitmq_data_zuckzapgo:
   # redis_data_zuckzapgo:
   # mysql_data_zuckzapgo:

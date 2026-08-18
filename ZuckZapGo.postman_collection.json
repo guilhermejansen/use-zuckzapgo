@@ -1,8 +1,8 @@
 {
   "info": {
-    "_postman_id": "0d93229f-469b-413f-b16c-5c91ad31ecb9",
-    "name": "ZUCKZAPGO v1.18.1",
-    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n<h2>📞 Calls — LLM build guide</h2><p>Building a WhatsApp <b>voice or video call</b> integration? Open <a href=\"/api/llm.txt\" target=\"_blank\" rel=\"noopener\"><b>llm.txt</b></a> — a complete, self-contained spec you can paste into any LLM (Claude, GPT, Gemini, …) to generate a perfect calls integration (REST control + bidirectional PCM audio over WebSocket + bidirectional H.264 video over WebSocket + passkey pairing appendix). It also surfaces as the external-docs link on the <code>Call</code> tag below.</p>\n\n<h2>🔌 Connector — embeddable pairing widget</h2><p>Embed WhatsApp pairing (QR, phone code, or passkey) in any app with one <code>&lt;script&gt;</code> — without ever exposing the real instance token to the browser. Your backend mints a short-lived ephemeral token via <code>POST /session/connector/token</code>; the browser runs <code>ZZ.connector.open({ token })</code> against the <b>Connector</b> tag's <code>/connector/*</code> routes. Paste-into-any-LLM guide: <a href=\"/api/connector-llm.txt\" target=\"_blank\" rel=\"noopener\"><b>connector-llm.txt</b></a>. Full docs hub for API users &amp; LLMs: <a href=\"/docs\" target=\"_blank\" rel=\"noopener\">/docs</a>.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 8/10/2026, 12:42:39 PM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
+    "_postman_id": "64682c8d-ec03-4faf-9191-c6e1046be7ef",
+    "name": "ZUCKZAPGO v1.19.0",
+    "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n<h2>📞 Calls — LLM build guide</h2><p>Building a WhatsApp <b>voice or video call</b> integration? Open <a href=\"/api/llm.txt\" target=\"_blank\" rel=\"noopener\"><b>llm.txt</b></a> — a complete, self-contained spec you can paste into any LLM (Claude, GPT, Gemini, …) to generate a perfect calls integration (REST control + bidirectional PCM audio over WebSocket + bidirectional H.264 video over WebSocket + passkey pairing appendix). It also surfaces as the external-docs link on the <code>Call</code> tag below.</p>\n\n<h2>📱 Native mobile egress — operator and LLM guides</h2><p>Provision a fail-closed, TCP-only Tailscale exit route per session with <code>POST /session/network-route</code> and inspect it with <code>GET /session/network-route</code>. Read the <a href=\"/docs/network-route.md\" target=\"_blank\" rel=\"noopener\">operator guide</a> or paste <a href=\"/api/network-route-llm.txt\" target=\"_blank\" rel=\"noopener\"><b>network-route-llm.txt</b></a> into an LLM for the complete integration contract. Auth keys are write-only and must never be persisted, returned, or logged.</p>\n\n<h2>🔌 Connector — embeddable pairing widget</h2><p>Embed WhatsApp pairing (QR, phone code, or passkey) in any app with one <code>&lt;script&gt;</code> — without ever exposing the real instance token to the browser. Your backend mints a short-lived ephemeral token via <code>POST /session/connector/token</code>; the browser runs <code>ZZ.connector.open({ token })</code> against the <b>Connector</b> tag's <code>/connector/*</code> routes. Paste-into-any-LLM guide: <a href=\"/api/connector-llm.txt\" target=\"_blank\" rel=\"noopener\"><b>connector-llm.txt</b></a>. Full docs hub for API users &amp; LLMs: <a href=\"/docs\" target=\"_blank\" rel=\"noopener\">/docs</a>.</p>\n\n🔗 **Generated from OpenAPI 3.0 Specification**\n📅 Generated: 8/18/2026, 4:25:01 AM\n🚀 Complete API collection with all endpoints\n\n**Authentication:**\n- Standard Endpoints: Use {{api_token}} header\n- Admin Endpoints: Use {{admin_token}} header\n\n**Variables:**\n- {{base_url}} - API base URL\n- {{api_token}} - Your user authentication token\n- {{admin_token}} - Admin authentication token",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "auth": {
@@ -141,7 +141,7 @@
       "item": [
         {
           "name": "Create a new ZuckZapGo user account",
-          "description": "Create a new ZuckZapGo user account with complete configuration options including webhook URL, proxy settings, S3 storage configuration, RabbitMQ messaging setup, WhatsApp client configuration, and event filtering settings. The user will receive a unique ID and authentication token upon successful creation. All configuration options are optional and will use sensible defaults if not provided. Admin authentication required. `s3Config` accepts both `snake_case` and `camelCase` keys for compatibility.\n\n**Endpoint:** `POST /admin/users`\n**Tags:** Admin",
+          "description": "Creates a ZuckZapGo user with optional webhook, S3, RabbitMQ, WhatsApp,\nevent-filtering, and networking configuration. Admin authentication is\nrequired. `s3Config` accepts both snake_case and camelCase keys.\n\n`networkRoute` optionally provisions the same native mobile route as\n`POST /session/network-route` before pairing. It must not be combined\nwith `proxyConfig`. The one-use `authKey` is consumed in memory and is\nabsent from every response and persisted row. The new user is stored\nbefore route preparation; if native provisioning fails, the response\nreturns the user ID and safe blocked route state so an operator can\nsubmit a higher `routeVersion` with a new one-use key. The blocked user\ncannot connect directly. See `/docs/network-route.md` and\n`/api/network-route-llm.txt` for the complete orchestration contract.\n\n\n**Endpoint:** `POST /admin/users`\n**Tags:** Admin",
           "request": {
             "method": "POST",
             "header": [
@@ -170,7 +170,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📝 Create a new ZuckZapGo user account\n// 🔗 POST /admin/users\n// 💡 All optional fields included for complete reference\n\n{\n  \"name\": \"John Doe\",\n  \"token\": \"1234ABCD\",\n  \"webhook\": \"https://webhook.site/1234567890\",\n  \"events\": \"All\",\n  \"echoApiMessages\": false,\n  \"skipMedia\": false,\n  \"skipGroups\": false,\n  \"skipNewsletters\": false,\n  \"skipBroadcasts\": false,\n  \"skipOwnMessages\": false,\n  \"skipCalls\": false,\n  \"callRejectMessage\": \"Sorry, I cannot take calls at the moment.\",\n  \"callRejectType\": \"busy\",\n  \"globalTransportSkips\": {\n    \"skipGlobalWebhook\": false,\n    \"skipGlobalRabbitMQ\": false,\n    \"skipGlobalSQS\": false,\n    \"skipGlobalRedis\": false,\n    \"skipGlobalWebSocket\": false,\n    \"skipGlobalS3\": false\n  },\n  \"proxyConfig\": {\n    \"enabled\": true,\n    \"proxyURL\": \"https://serverproxy.com:9080\"\n  },\n  \"s3Config\": {\n    \"enabled\": true,\n    \"endpoint\": \"https://s3.amazonaws.com\",\n    \"region\": \"us-east-1\",\n    \"bucket\": \"my-whatsapp-media\",\n    \"access_key\": \"AKIAIOSFODNN7EXAMPLE\",\n    \"secret_key\": \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLE\",\n    \"path_style\": false,\n    \"public_url\": \"https://cdn.example.com\",\n    \"media_delivery\": \"both\",\n    \"retention_days\": 30,\n    \"disable_acl\": true\n  },\n  \"rabbitmqConfig\": {\n    \"enabled\": true,\n    \"url\": \"amqp://guest:guest@localhost:5672/\",\n    \"exchange\": \"whatsapp.events\",\n    \"exchange_type\": \"topic\",\n    \"queue\": \"whatsapp.user.{user_id}\",\n    \"queue_type\": \"classic\",\n    \"routing_key\": \"whatsapp.{event_type}\",\n    \"events\": \"All\",\n    \"durable\": true,\n    \"auto_delete\": false,\n    \"exclusive\": false,\n    \"no_wait\": false,\n    \"delivery_mode\": 2\n  },\n  \"whatsappConfig\": {\n    \"waVersion\": \"2.3000.1027949008\",\n    \"waPlatform\": \"WEB\",\n    \"waReleaseChannel\": \"RELEASE\",\n    \"waWebSubPlatform\": \"WEB_BROWSER\",\n    \"waOSName\": \"Mac OS 10\",\n    \"waOSVersion\": \"10.15.7\",\n    \"waDeviceName\": \"Desktop\",\n    \"waManufacturer\": \"Apple\",\n    \"waDeviceBoard\": \"Mac-123456\",\n    \"waLocaleLanguage\": \"en\",\n    \"waLocaleCountry\": \"US\",\n    \"waMCC\": \"000\",\n    \"waMNC\": \"000\",\n    \"waConnectType\": \"WIFI_UNKNOWN\",\n    \"waPlatformType\": \"DESKTOP\"\n  }\n}",
+              "raw": "// 📝 Create a new ZuckZapGo user account\n// 🔗 POST /admin/users\n// 💡 All optional fields included for complete reference\n\n{\n  \"name\": \"John Doe\",\n  \"token\": \"1234ABCD\",\n  \"webhook\": \"https://webhook.site/1234567890\",\n  \"events\": \"All\",\n  \"echoApiMessages\": false,\n  \"skipMedia\": false,\n  \"skipGroups\": false,\n  \"skipNewsletters\": false,\n  \"skipBroadcasts\": false,\n  \"skipOwnMessages\": false,\n  \"skipCalls\": false,\n  \"callRejectMessage\": \"Sorry, I cannot take calls at the moment.\",\n  \"callRejectType\": \"busy\",\n  \"globalTransportSkips\": {\n    \"skipGlobalWebhook\": false,\n    \"skipGlobalRabbitMQ\": false,\n    \"skipGlobalSQS\": false,\n    \"skipGlobalRedis\": false,\n    \"skipGlobalWebSocket\": false,\n    \"skipGlobalS3\": false\n  },\n  \"networkRoute\": {\n    \"mode\": \"mobile\",\n    \"authKey\": \"tskey-auth-REDACTED\",\n    \"exitNodeId\": \"nStableMobileExit01\",\n    \"routeVersion\": 1,\n    \"idempotencyKey\": \"route-2026-08-15-0001\",\n    \"failClosed\": true,\n    \"tcpOnly\": true\n  },\n  \"proxyConfig\": {\n    \"enabled\": true,\n    \"proxyURL\": \"https://serverproxy.com:9080\"\n  },\n  \"s3Config\": {\n    \"enabled\": true,\n    \"endpoint\": \"https://s3.amazonaws.com\",\n    \"region\": \"us-east-1\",\n    \"bucket\": \"my-whatsapp-media\",\n    \"access_key\": \"AKIAIOSFODNN7EXAMPLE\",\n    \"secret_key\": \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLE\",\n    \"path_style\": false,\n    \"public_url\": \"https://cdn.example.com\",\n    \"media_delivery\": \"both\",\n    \"retention_days\": 30,\n    \"disable_acl\": true\n  },\n  \"rabbitmqConfig\": {\n    \"enabled\": true,\n    \"url\": \"amqp://guest:guest@localhost:5672/\",\n    \"exchange\": \"whatsapp.events\",\n    \"exchange_type\": \"topic\",\n    \"queue\": \"whatsapp.user.{user_id}\",\n    \"queue_type\": \"classic\",\n    \"routing_key\": \"whatsapp.{event_type}\",\n    \"events\": \"All\",\n    \"durable\": true,\n    \"auto_delete\": false,\n    \"exclusive\": false,\n    \"no_wait\": false,\n    \"delivery_mode\": 2\n  },\n  \"whatsappConfig\": {\n    \"waVersion\": \"2.3000.1027949008\",\n    \"waPlatform\": \"WEB\",\n    \"waReleaseChannel\": \"RELEASE\",\n    \"waWebSubPlatform\": \"WEB_BROWSER\",\n    \"waOSName\": \"Mac OS 10\",\n    \"waOSVersion\": \"10.15.7\",\n    \"waDeviceName\": \"Desktop\",\n    \"waManufacturer\": \"Apple\",\n    \"waDeviceBoard\": \"Mac-123456\",\n    \"waLocaleLanguage\": \"en\",\n    \"waLocaleCountry\": \"US\",\n    \"waMCC\": \"000\",\n    \"waMNC\": \"000\",\n    \"waConnectType\": \"WIFI_UNKNOWN\",\n    \"waPlatformType\": \"DESKTOP\"\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -209,7 +209,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "// 📝 Create a new ZuckZapGo user account\n// 🔗 POST /admin/users\n// 💡 All optional fields included for complete reference\n\n{\n  \"name\": \"John Doe\",\n  \"token\": \"1234ABCD\",\n  \"webhook\": \"https://webhook.site/1234567890\",\n  \"events\": \"All\",\n  \"echoApiMessages\": false,\n  \"skipMedia\": false,\n  \"skipGroups\": false,\n  \"skipNewsletters\": false,\n  \"skipBroadcasts\": false,\n  \"skipOwnMessages\": false,\n  \"skipCalls\": false,\n  \"callRejectMessage\": \"Sorry, I cannot take calls at the moment.\",\n  \"callRejectType\": \"busy\",\n  \"globalTransportSkips\": {\n    \"skipGlobalWebhook\": false,\n    \"skipGlobalRabbitMQ\": false,\n    \"skipGlobalSQS\": false,\n    \"skipGlobalRedis\": false,\n    \"skipGlobalWebSocket\": false,\n    \"skipGlobalS3\": false\n  },\n  \"proxyConfig\": {\n    \"enabled\": true,\n    \"proxyURL\": \"https://serverproxy.com:9080\"\n  },\n  \"s3Config\": {\n    \"enabled\": true,\n    \"endpoint\": \"https://s3.amazonaws.com\",\n    \"region\": \"us-east-1\",\n    \"bucket\": \"my-whatsapp-media\",\n    \"access_key\": \"AKIAIOSFODNN7EXAMPLE\",\n    \"secret_key\": \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLE\",\n    \"path_style\": false,\n    \"public_url\": \"https://cdn.example.com\",\n    \"media_delivery\": \"both\",\n    \"retention_days\": 30,\n    \"disable_acl\": true\n  },\n  \"rabbitmqConfig\": {\n    \"enabled\": true,\n    \"url\": \"amqp://guest:guest@localhost:5672/\",\n    \"exchange\": \"whatsapp.events\",\n    \"exchange_type\": \"topic\",\n    \"queue\": \"whatsapp.user.{user_id}\",\n    \"queue_type\": \"classic\",\n    \"routing_key\": \"whatsapp.{event_type}\",\n    \"events\": \"All\",\n    \"durable\": true,\n    \"auto_delete\": false,\n    \"exclusive\": false,\n    \"no_wait\": false,\n    \"delivery_mode\": 2\n  },\n  \"whatsappConfig\": {\n    \"waVersion\": \"2.3000.1027949008\",\n    \"waPlatform\": \"WEB\",\n    \"waReleaseChannel\": \"RELEASE\",\n    \"waWebSubPlatform\": \"WEB_BROWSER\",\n    \"waOSName\": \"Mac OS 10\",\n    \"waOSVersion\": \"10.15.7\",\n    \"waDeviceName\": \"Desktop\",\n    \"waManufacturer\": \"Apple\",\n    \"waDeviceBoard\": \"Mac-123456\",\n    \"waLocaleLanguage\": \"en\",\n    \"waLocaleCountry\": \"US\",\n    \"waMCC\": \"000\",\n    \"waMNC\": \"000\",\n    \"waConnectType\": \"WIFI_UNKNOWN\",\n    \"waPlatformType\": \"DESKTOP\"\n  }\n}",
+                  "raw": "// 📝 Create a new ZuckZapGo user account\n// 🔗 POST /admin/users\n// 💡 All optional fields included for complete reference\n\n{\n  \"name\": \"John Doe\",\n  \"token\": \"1234ABCD\",\n  \"webhook\": \"https://webhook.site/1234567890\",\n  \"events\": \"All\",\n  \"echoApiMessages\": false,\n  \"skipMedia\": false,\n  \"skipGroups\": false,\n  \"skipNewsletters\": false,\n  \"skipBroadcasts\": false,\n  \"skipOwnMessages\": false,\n  \"skipCalls\": false,\n  \"callRejectMessage\": \"Sorry, I cannot take calls at the moment.\",\n  \"callRejectType\": \"busy\",\n  \"globalTransportSkips\": {\n    \"skipGlobalWebhook\": false,\n    \"skipGlobalRabbitMQ\": false,\n    \"skipGlobalSQS\": false,\n    \"skipGlobalRedis\": false,\n    \"skipGlobalWebSocket\": false,\n    \"skipGlobalS3\": false\n  },\n  \"networkRoute\": {\n    \"mode\": \"mobile\",\n    \"authKey\": \"tskey-auth-REDACTED\",\n    \"exitNodeId\": \"nStableMobileExit01\",\n    \"routeVersion\": 1,\n    \"idempotencyKey\": \"route-2026-08-15-0001\",\n    \"failClosed\": true,\n    \"tcpOnly\": true\n  },\n  \"proxyConfig\": {\n    \"enabled\": true,\n    \"proxyURL\": \"https://serverproxy.com:9080\"\n  },\n  \"s3Config\": {\n    \"enabled\": true,\n    \"endpoint\": \"https://s3.amazonaws.com\",\n    \"region\": \"us-east-1\",\n    \"bucket\": \"my-whatsapp-media\",\n    \"access_key\": \"AKIAIOSFODNN7EXAMPLE\",\n    \"secret_key\": \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLE\",\n    \"path_style\": false,\n    \"public_url\": \"https://cdn.example.com\",\n    \"media_delivery\": \"both\",\n    \"retention_days\": 30,\n    \"disable_acl\": true\n  },\n  \"rabbitmqConfig\": {\n    \"enabled\": true,\n    \"url\": \"amqp://guest:guest@localhost:5672/\",\n    \"exchange\": \"whatsapp.events\",\n    \"exchange_type\": \"topic\",\n    \"queue\": \"whatsapp.user.{user_id}\",\n    \"queue_type\": \"classic\",\n    \"routing_key\": \"whatsapp.{event_type}\",\n    \"events\": \"All\",\n    \"durable\": true,\n    \"auto_delete\": false,\n    \"exclusive\": false,\n    \"no_wait\": false,\n    \"delivery_mode\": 2\n  },\n  \"whatsappConfig\": {\n    \"waVersion\": \"2.3000.1027949008\",\n    \"waPlatform\": \"WEB\",\n    \"waReleaseChannel\": \"RELEASE\",\n    \"waWebSubPlatform\": \"WEB_BROWSER\",\n    \"waOSName\": \"Mac OS 10\",\n    \"waOSVersion\": \"10.15.7\",\n    \"waDeviceName\": \"Desktop\",\n    \"waManufacturer\": \"Apple\",\n    \"waDeviceBoard\": \"Mac-123456\",\n    \"waLocaleLanguage\": \"en\",\n    \"waLocaleCountry\": \"US\",\n    \"waMCC\": \"000\",\n    \"waMNC\": \"000\",\n    \"waConnectType\": \"WIFI_UNKNOWN\",\n    \"waPlatformType\": \"DESKTOP\"\n  }\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -225,7 +225,103 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"code\": 201,\n  \"data\": {\n    \"id\": \"5663e0c52063ec35d0ba45f7c2011c06\",\n    \"name\": \"John Doe\",\n    \"token\": \"1234ABCD\",\n    \"echoApiMessages\": false,\n    \"skipMediaDownload\": false,\n    \"skipGroups\": false,\n    \"skipNewsletters\": false,\n    \"skipBroadcasts\": false,\n    \"skipOwnMessages\": false,\n    \"globalTransportSkips\": {\n      \"skipGlobalWebhook\": false,\n      \"skipGlobalRabbitMQ\": false,\n      \"skipGlobalSQS\": false,\n      \"skipGlobalRedis\": false,\n      \"skipGlobalWebSocket\": false,\n      \"skipGlobalS3\": false\n    },\n    \"isFromAPI\": false,\n    \"skipCalls\": false,\n    \"callRejectMessage\": \"Sorry, I cannot take calls at the moment.\",\n    \"callRejectType\": \"busy\",\n    \"webhook\": \"https://webhook.site/1234567890\",\n    \"events\": \"All\",\n    \"proxyConfig\": {\n      \"enabled\": true,\n      \"proxyURL\": \"https://serverproxy.com:9080\"\n    },\n    \"s3Config\": {\n      \"enabled\": true,\n      \"endpoint\": \"https://s3.amazonaws.com\",\n      \"region\": \"us-east-1\",\n      \"bucket\": \"my-bucket\",\n      \"access_key\": \"***\",\n      \"secret_key\": \"***\",\n      \"path_style\": true,\n      \"public_url\": \"https://s3.amazonaws.com\",\n      \"media_delivery\": \"both\",\n      \"retention_days\": 30,\n      \"disable_acl\": true\n    },\n    \"rabbitmqConfig\": {\n      \"enabled\": true,\n      \"url\": \"amqp://guest:guest@localhost:5672/\",\n      \"events\": \"All\",\n      \"exchange\": \"whatsapp.events\",\n      \"exchange_type\": \"topic\",\n      \"queue\": \"whatsapp.user.{user_id}\",\n      \"queue_type\": \"classic\",\n      \"routing_key\": \"whatsapp.{event_type}\",\n      \"durable\": true,\n      \"auto_delete\": false,\n      \"exclusive\": false,\n      \"no_wait\": false,\n      \"delivery_mode\": 2,\n      \"dead_letter_exchange\": \"dlx.whatsapp\",\n      \"dead_letter_routing_key\": \"dlq.events\",\n      \"message_ttl\": 86400000,\n      \"max_length\": 100000,\n      \"max_length_bytes\": 104857600,\n      \"queue_arguments\": {\n        \"x-overflow\": \"reject-publish\"\n      },\n      \"exchange_arguments\": {}\n    },\n    \"whatsappConfig\": {\n      \"waVersion\": \"2.3000.1026436087\",\n      \"waPlatform\": \"WEB\",\n      \"waReleaseChannel\": \"RELEASE\",\n      \"waWebSubPlatform\": \"WEB_BROWSER\",\n      \"waOsName\": \"Mac OS 10\",\n      \"waOsVersion\": \"10.15.7\",\n      \"waDeviceName\": \"Desktop\",\n      \"waManufacturer\": \"Apple\",\n      \"waDeviceBoard\": \"\",\n      \"waLocaleLanguage\": \"en\",\n      \"waLocaleCountry\": \"US\",\n      \"waMcc\": \"000\",\n      \"waMnc\": \"000\",\n      \"waConnectType\": \"WIFI_UNKNOWN\",\n      \"waPlatformType\": \"DESKTOP\"\n    }\n  }\n}"
+              "body": "{\n  \"code\": 201,\n  \"data\": {\n    \"id\": \"5663e0c52063ec35d0ba45f7c2011c06\",\n    \"name\": \"John Doe\",\n    \"token\": \"1234ABCD\",\n    \"echoApiMessages\": false,\n    \"skipMediaDownload\": false,\n    \"skipGroups\": false,\n    \"skipNewsletters\": false,\n    \"skipBroadcasts\": false,\n    \"skipOwnMessages\": false,\n    \"globalTransportSkips\": {\n      \"skipGlobalWebhook\": false,\n      \"skipGlobalRabbitMQ\": false,\n      \"skipGlobalSQS\": false,\n      \"skipGlobalRedis\": false,\n      \"skipGlobalWebSocket\": false,\n      \"skipGlobalS3\": false\n    },\n    \"isFromAPI\": false,\n    \"skipCalls\": false,\n    \"callRejectMessage\": \"Sorry, I cannot take calls at the moment.\",\n    \"callRejectType\": \"busy\",\n    \"webhook\": \"https://webhook.site/1234567890\",\n    \"events\": \"All\",\n    \"proxyConfig\": {\n      \"enabled\": false,\n      \"proxyURL\": \"\"\n    },\n    \"network_route\": {\n      \"mode\": \"mobile\",\n      \"exitNodeId\": \"nStableMobileExit01\",\n      \"desiredVersion\": 1,\n      \"appliedVersion\": 1,\n      \"failClosed\": true,\n      \"tcpOnly\": true,\n      \"status\": \"ready\",\n      \"ready\": true\n    },\n    \"s3Config\": {\n      \"enabled\": true,\n      \"endpoint\": \"https://s3.amazonaws.com\",\n      \"region\": \"us-east-1\",\n      \"bucket\": \"my-bucket\",\n      \"access_key\": \"***\",\n      \"secret_key\": \"***\",\n      \"path_style\": true,\n      \"public_url\": \"https://s3.amazonaws.com\",\n      \"media_delivery\": \"both\",\n      \"retention_days\": 30,\n      \"disable_acl\": true\n    },\n    \"rabbitmqConfig\": {\n      \"enabled\": true,\n      \"url\": \"amqp://guest:guest@localhost:5672/\",\n      \"events\": \"All\",\n      \"exchange\": \"whatsapp.events\",\n      \"exchange_type\": \"topic\",\n      \"queue\": \"whatsapp.user.{user_id}\",\n      \"queue_type\": \"classic\",\n      \"routing_key\": \"whatsapp.{event_type}\",\n      \"durable\": true,\n      \"auto_delete\": false,\n      \"exclusive\": false,\n      \"no_wait\": false,\n      \"delivery_mode\": 2,\n      \"dead_letter_exchange\": \"dlx.whatsapp\",\n      \"dead_letter_routing_key\": \"dlq.events\",\n      \"message_ttl\": 86400000,\n      \"max_length\": 100000,\n      \"max_length_bytes\": 104857600,\n      \"queue_arguments\": {\n        \"x-overflow\": \"reject-publish\"\n      },\n      \"exchange_arguments\": {}\n    },\n    \"whatsappConfig\": {\n      \"waVersion\": \"2.3000.1026436087\",\n      \"waPlatform\": \"WEB\",\n      \"waReleaseChannel\": \"RELEASE\",\n      \"waWebSubPlatform\": \"WEB_BROWSER\",\n      \"waOsName\": \"Mac OS 10\",\n      \"waOsVersion\": \"10.15.7\",\n      \"waDeviceName\": \"Desktop\",\n      \"waManufacturer\": \"Apple\",\n      \"waDeviceBoard\": \"\",\n      \"waLocaleLanguage\": \"en\",\n      \"waLocaleCountry\": \"US\",\n      \"waMcc\": \"000\",\n      \"waMnc\": \"000\",\n      \"waConnectType\": \"WIFI_UNKNOWN\",\n      \"waPlatformType\": \"DESKTOP\"\n    }\n  },\n  \"success\": true\n}"
+            },
+            {
+              "name": "400 Invalid user payload or networkRoute; also returned when networkRoute conflicts with proxyConfig",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{admin_token}}",
+                    "type": "text",
+                    "description": "🔐 Admin authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/users",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "// 📝 Create a new ZuckZapGo user account\n// 🔗 POST /admin/users\n// 💡 All optional fields included for complete reference\n\n{\n  \"name\": \"John Doe\",\n  \"token\": \"1234ABCD\",\n  \"webhook\": \"https://webhook.site/1234567890\",\n  \"events\": \"All\",\n  \"echoApiMessages\": false,\n  \"skipMedia\": false,\n  \"skipGroups\": false,\n  \"skipNewsletters\": false,\n  \"skipBroadcasts\": false,\n  \"skipOwnMessages\": false,\n  \"skipCalls\": false,\n  \"callRejectMessage\": \"Sorry, I cannot take calls at the moment.\",\n  \"callRejectType\": \"busy\",\n  \"globalTransportSkips\": {\n    \"skipGlobalWebhook\": false,\n    \"skipGlobalRabbitMQ\": false,\n    \"skipGlobalSQS\": false,\n    \"skipGlobalRedis\": false,\n    \"skipGlobalWebSocket\": false,\n    \"skipGlobalS3\": false\n  },\n  \"networkRoute\": {\n    \"mode\": \"mobile\",\n    \"authKey\": \"tskey-auth-REDACTED\",\n    \"exitNodeId\": \"nStableMobileExit01\",\n    \"routeVersion\": 1,\n    \"idempotencyKey\": \"route-2026-08-15-0001\",\n    \"failClosed\": true,\n    \"tcpOnly\": true\n  },\n  \"proxyConfig\": {\n    \"enabled\": true,\n    \"proxyURL\": \"https://serverproxy.com:9080\"\n  },\n  \"s3Config\": {\n    \"enabled\": true,\n    \"endpoint\": \"https://s3.amazonaws.com\",\n    \"region\": \"us-east-1\",\n    \"bucket\": \"my-whatsapp-media\",\n    \"access_key\": \"AKIAIOSFODNN7EXAMPLE\",\n    \"secret_key\": \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLE\",\n    \"path_style\": false,\n    \"public_url\": \"https://cdn.example.com\",\n    \"media_delivery\": \"both\",\n    \"retention_days\": 30,\n    \"disable_acl\": true\n  },\n  \"rabbitmqConfig\": {\n    \"enabled\": true,\n    \"url\": \"amqp://guest:guest@localhost:5672/\",\n    \"exchange\": \"whatsapp.events\",\n    \"exchange_type\": \"topic\",\n    \"queue\": \"whatsapp.user.{user_id}\",\n    \"queue_type\": \"classic\",\n    \"routing_key\": \"whatsapp.{event_type}\",\n    \"events\": \"All\",\n    \"durable\": true,\n    \"auto_delete\": false,\n    \"exclusive\": false,\n    \"no_wait\": false,\n    \"delivery_mode\": 2\n  },\n  \"whatsappConfig\": {\n    \"waVersion\": \"2.3000.1027949008\",\n    \"waPlatform\": \"WEB\",\n    \"waReleaseChannel\": \"RELEASE\",\n    \"waWebSubPlatform\": \"WEB_BROWSER\",\n    \"waOSName\": \"Mac OS 10\",\n    \"waOSVersion\": \"10.15.7\",\n    \"waDeviceName\": \"Desktop\",\n    \"waManufacturer\": \"Apple\",\n    \"waDeviceBoard\": \"Mac-123456\",\n    \"waLocaleLanguage\": \"en\",\n    \"waLocaleCountry\": \"US\",\n    \"waMCC\": \"000\",\n    \"waMNC\": \"000\",\n    \"waConnectType\": \"WIFI_UNKNOWN\",\n    \"waPlatformType\": \"DESKTOP\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Invalid user payload or networkRoute; also returned when networkRoute conflicts with proxyConfig",
+              "code": 400,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 400,\n  \"error\": \"network_route_conflicts_with_proxy\",\n  \"success\": false\n}"
+            },
+            {
+              "name": "503 Before persistence the route manager may be unavailable; after persistence a failed native route leaves the user fail-closed and returns stable data.userId for rollback",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{admin_token}}",
+                    "type": "text",
+                    "description": "🔐 Admin authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/users",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "// 📝 Create a new ZuckZapGo user account\n// 🔗 POST /admin/users\n// 💡 All optional fields included for complete reference\n\n{\n  \"name\": \"John Doe\",\n  \"token\": \"1234ABCD\",\n  \"webhook\": \"https://webhook.site/1234567890\",\n  \"events\": \"All\",\n  \"echoApiMessages\": false,\n  \"skipMedia\": false,\n  \"skipGroups\": false,\n  \"skipNewsletters\": false,\n  \"skipBroadcasts\": false,\n  \"skipOwnMessages\": false,\n  \"skipCalls\": false,\n  \"callRejectMessage\": \"Sorry, I cannot take calls at the moment.\",\n  \"callRejectType\": \"busy\",\n  \"globalTransportSkips\": {\n    \"skipGlobalWebhook\": false,\n    \"skipGlobalRabbitMQ\": false,\n    \"skipGlobalSQS\": false,\n    \"skipGlobalRedis\": false,\n    \"skipGlobalWebSocket\": false,\n    \"skipGlobalS3\": false\n  },\n  \"networkRoute\": {\n    \"mode\": \"mobile\",\n    \"authKey\": \"tskey-auth-REDACTED\",\n    \"exitNodeId\": \"nStableMobileExit01\",\n    \"routeVersion\": 1,\n    \"idempotencyKey\": \"route-2026-08-15-0001\",\n    \"failClosed\": true,\n    \"tcpOnly\": true\n  },\n  \"proxyConfig\": {\n    \"enabled\": true,\n    \"proxyURL\": \"https://serverproxy.com:9080\"\n  },\n  \"s3Config\": {\n    \"enabled\": true,\n    \"endpoint\": \"https://s3.amazonaws.com\",\n    \"region\": \"us-east-1\",\n    \"bucket\": \"my-whatsapp-media\",\n    \"access_key\": \"AKIAIOSFODNN7EXAMPLE\",\n    \"secret_key\": \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLE\",\n    \"path_style\": false,\n    \"public_url\": \"https://cdn.example.com\",\n    \"media_delivery\": \"both\",\n    \"retention_days\": 30,\n    \"disable_acl\": true\n  },\n  \"rabbitmqConfig\": {\n    \"enabled\": true,\n    \"url\": \"amqp://guest:guest@localhost:5672/\",\n    \"exchange\": \"whatsapp.events\",\n    \"exchange_type\": \"topic\",\n    \"queue\": \"whatsapp.user.{user_id}\",\n    \"queue_type\": \"classic\",\n    \"routing_key\": \"whatsapp.{event_type}\",\n    \"events\": \"All\",\n    \"durable\": true,\n    \"auto_delete\": false,\n    \"exclusive\": false,\n    \"no_wait\": false,\n    \"delivery_mode\": 2\n  },\n  \"whatsappConfig\": {\n    \"waVersion\": \"2.3000.1027949008\",\n    \"waPlatform\": \"WEB\",\n    \"waReleaseChannel\": \"RELEASE\",\n    \"waWebSubPlatform\": \"WEB_BROWSER\",\n    \"waOSName\": \"Mac OS 10\",\n    \"waOSVersion\": \"10.15.7\",\n    \"waDeviceName\": \"Desktop\",\n    \"waManufacturer\": \"Apple\",\n    \"waDeviceBoard\": \"Mac-123456\",\n    \"waLocaleLanguage\": \"en\",\n    \"waLocaleCountry\": \"US\",\n    \"waMCC\": \"000\",\n    \"waMNC\": \"000\",\n    \"waConnectType\": \"WIFI_UNKNOWN\",\n    \"waPlatformType\": \"DESKTOP\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Before persistence the route manager may be unavailable; after persistence a failed native route leaves the user fail-closed and returns stable data.userId for rollback",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 503,\n  \"data\": {\n    \"userId\": \"5663e0c52063ec35d0ba45f7c2011c06\",\n    \"network_route\": {\n      \"mode\": \"mobile\",\n      \"exitNodeId\": \"nStableMobileExit01\",\n      \"desiredVersion\": 1,\n      \"appliedVersion\": 0,\n      \"failClosed\": true,\n      \"tcpOnly\": true,\n      \"status\": \"blocked\",\n      \"ready\": false,\n      \"errorCode\": \"network_route_prepare_failed\"\n    }\n  },\n  \"error\": \"network_route_prepare_failed\",\n  \"details\": \"user persisted in blocked state; submit a higher routeVersion with a new one-use auth key or delete this user\",\n  \"success\": false\n}"
             }
           ],
           "event": []
@@ -2466,6 +2562,278 @@
                 }
               ],
               "body": "{\n  \"token\": \"ct_AbC123...\",\n  \"expiresIn\": 600,\n  \"tokenType\": \"connector\"\n}"
+            }
+          ],
+          "event": []
+        }
+      ]
+    },
+    {
+      "name": "📋 Session Network Route (2 endpoints)",
+      "description": "Session Network Route related endpoints - 2 requests available",
+      "item": [
+        {
+          "name": "Provision or update a fail-closed mobile route",
+          "description": "Atomically provisions an isolated native `tsnet` node for this session,\nselects the stable Tailscale exit-node ID, starts an authenticated SOCKS5\nlistener on `127.0.0.1`, and completes a SOCKS/TLS preflight before the\nWhatsApp client may reconnect.\n\nThe current client is blocked/disconnected before route preparation.\nA failed apply remains `blocked` and can never fall back to `proxy_url`\nor direct egress. Mobile routing requires `failClosed=true` and\n`tcpOnly=true`; native Calls/UDP is disabled while the route is desired.\n\n`routeVersion` is a monotonically increasing fencing token. An exact\nretry with the same version, configuration digest and `idempotencyKey`\nreturns the current state without starting a second node. A lower\nversion, or reuse of the same version for different desired state,\nreturns 409. After a blocked apply, submit a higher version with a new\none-use auth key.\n\n`authKey` is a write-only, just-in-time, one-use enrollment credential.\nIt is used only during `tsnet.Server.Start`; it is never persisted,\nreturned, logged, placed in the proxy URL, or available through GET.\nSee `/docs/network-route.md` and `/api/network-route-llm.txt`.\n\n\n**Endpoint:** `POST /session/network-route`\n**Tags:** Session Network Route",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text",
+                "description": "📦 JSON request payload"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/network-route",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "network-route"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "// 📝 Provision or update a fail-closed mobile route\n// 🔗 POST /session/network-route\n// 💡 All optional fields included for complete reference\n\n{\n  \"mode\": \"mobile\",\n  \"authKey\": \"tskey-auth-REDACTED\",\n  \"exitNodeId\": \"nStableMobileExit01\",\n  \"routeVersion\": 1,\n  \"idempotencyKey\": \"route-2026-08-15-0001\",\n  \"failClosed\": true,\n  \"tcpOnly\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "name": "200 Route is ready, or this was an exact idempotent retry of an already-ready current version",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/session/network-route",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "session",
+                    "network-route"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "// 📝 Provision or update a fail-closed mobile route\n// 🔗 POST /session/network-route\n// 💡 All optional fields included for complete reference\n\n{\n  \"mode\": \"mobile\",\n  \"authKey\": \"tskey-auth-REDACTED\",\n  \"exitNodeId\": \"nStableMobileExit01\",\n  \"routeVersion\": 1,\n  \"idempotencyKey\": \"route-2026-08-15-0001\",\n  \"failClosed\": true,\n  \"tcpOnly\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Route is ready, or this was an exact idempotent retry of an already-ready current version",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"mode\": \"mobile\",\n    \"exitNodeId\": \"nStableMobileExit01\",\n    \"desiredVersion\": 1,\n    \"appliedVersion\": 1,\n    \"failClosed\": true,\n    \"tcpOnly\": true,\n    \"status\": \"ready\",\n    \"ready\": true\n  },\n  \"details\": \"network route ready\",\n  \"reconnectScheduled\": false,\n  \"success\": true\n}"
+            },
+            {
+              "name": "503 Route manager, state store, tsnet startup, exit selection, local SOCKS, or TLS preflight unavailable; route remains blocked and direct dialing is forbidden",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text",
+                    "description": "📦 JSON request payload"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/session/network-route",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "session",
+                    "network-route"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "// 📝 Provision or update a fail-closed mobile route\n// 🔗 POST /session/network-route\n// 💡 All optional fields included for complete reference\n\n{\n  \"mode\": \"mobile\",\n  \"authKey\": \"tskey-auth-REDACTED\",\n  \"exitNodeId\": \"nStableMobileExit01\",\n  \"routeVersion\": 1,\n  \"idempotencyKey\": \"route-2026-08-15-0001\",\n  \"failClosed\": true,\n  \"tcpOnly\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Route manager, state store, tsnet startup, exit selection, local SOCKS, or TLS preflight unavailable; route remains blocked and direct dialing is forbidden",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 503,\n  \"data\": {\n    \"mode\": \"mobile\",\n    \"exitNodeId\": \"nStableMobileExit01\",\n    \"desiredVersion\": 2,\n    \"appliedVersion\": 1,\n    \"failClosed\": true,\n    \"tcpOnly\": true,\n    \"status\": \"blocked\",\n    \"ready\": false,\n    \"errorCode\": \"network_route_prepare_failed\"\n  },\n  \"error\": \"network_route_prepare_failed\",\n  \"success\": false\n}"
+            }
+          ],
+          "event": []
+        },
+        {
+          "name": "Read the desired, applied, and runtime mobile-route status",
+          "description": "Returns only non-secret route metadata. It never returns the enrollment\nauth key, loopback SOCKS credentials, proxy URL, Tailscale state path, or\ncontrol-plane payloads. `ready=true` requires persisted `status=ready`,\n`desiredVersion == appliedVersion`, and a live in-process node for that\nsame version. After process restart, readiness stays false until native\ntsnet state restoration and preflight have succeeded.\n\n\n**Endpoint:** `GET /session/network-route`\n**Tags:** Session Network Route",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "🔑 User authentication token"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/session/network-route",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "session",
+                "network-route"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "200 Non-secret desired/applied route state",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/session/network-route",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "session",
+                    "network-route"
+                  ]
+                }
+              },
+              "status": "Non-secret desired/applied route state",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"mode\": \"mobile\",\n    \"exitNodeId\": \"nStableMobileExit01\",\n    \"desiredVersion\": 3,\n    \"appliedVersion\": 3,\n    \"failClosed\": true,\n    \"tcpOnly\": true,\n    \"status\": \"ready\",\n    \"ready\": true\n  },\n  \"success\": true\n}"
+            },
+            {
+              "name": "404 No native route is configured for this session",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/session/network-route",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "session",
+                    "network-route"
+                  ]
+                }
+              },
+              "status": "No native route is configured for this session",
+              "code": 404,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 404,\n  \"error\": \"network_route_not_configured\",\n  \"success\": false\n}"
+            },
+            {
+              "name": "503 Route manager or metadata store unavailable",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "🔑 User authentication token"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/session/network-route",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "session",
+                    "network-route"
+                  ]
+                }
+              },
+              "status": "Route manager or metadata store unavailable",
+              "code": 503,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 503,\n  \"error\": \"network_route_store_unavailable\",\n  \"success\": false\n}"
             }
           ],
           "event": []
@@ -5314,7 +5682,7 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1786452159,  // Tomorrow at current time\n  \"end_time\": 1786457559,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1786365759\n// +1 hour: 1786369359\n// +1 day: 1786452159\n// +1 week: 1786970559",
+              "raw": "// 📅 MESSAGE EVENT - Calendar Event Invitation\n// 💡 Sends a structured calendar event that can be added to calendar\n// ✅ Available in ALL license types (Basic, Standard, Enterprise)\n//\n// Use Cases:\n// - Meeting invitations (team meetings, client calls)\n// - Event promotions (webinars, conferences, workshops)\n// - Appointment reminders (doctor, salon, delivery)\n// - Class schedules (courses, training sessions)\n//\n// Field Guide:\n// - phone: Recipient phone number\n// - name: Event title/name (max 80 chars)\n// - description: Event details and agenda (supports markdown)\n// - location: Event location (name, address, or coordinates)\n//   - Name: Location name (e.g., \"Conference Room A\")\n//   - DegreesLatitude: GPS latitude (-90 to 90)\n//   - DegreesLongitude: GPS longitude (-180 to 180)\n// - start_time: Event start (Unix timestamp in seconds)\n// - end_time: Event end (Unix timestamp in seconds)\n// - call_type: Type of call/meeting (\"voice\" | \"video\")\n\n{\n  \"phone\": \"{{test_phone}}\",\n  \"name\": \"🚀 Product Launch Strategy Meeting\",\n  \"description\": \"**Agenda:**\\n\\n1. Q4 Product Roadmap Review (20min)\\n2. Marketing Campaign Strategy (30min)\\n3. Budget Allocation Discussion (20min)\\n4. Action Items & Next Steps (10min)\\n\\n**Required:**\\nPlease review the attached deck before the meeting.\\n\\n**Meeting Link:**\\nhttps://meet.company.com/launch-strategy\",\n  \"location\": {\n    \"Name\": \"Conference Room A, Main Office - 5th Floor\",\n    \"DegreesLatitude\": -23.5505,\n    \"DegreesLongitude\": -46.6333\n  },\n  \"start_time\": 1787113501,  // Tomorrow at current time\n  \"end_time\": 1787118901,     // 1.5 hours duration\n  \"call_type\": \"video\",\n\n  // Optional fields (uncomment to use):\n  // \"quoted\": \"MESSAGE_ID_HERE\",     // Reply to specific message\n  // \"ContextInfo\": {                 // Advanced context\n  //   \"MentionedJID\": [               // Mention participants\n  //     \"{{test_phone}}@s.whatsapp.net\",\n  //     \"5521979232690@s.whatsapp.net\"\n  //   ]\n  // }\n}\n\n// 💡 Timestamp Helper:\n// Current time: 1787027101\n// +1 hour: 1787030701\n// +1 day: 1787113501\n// +1 week: 1787631901",
               "options": {
                 "raw": {
                   "language": "json"
