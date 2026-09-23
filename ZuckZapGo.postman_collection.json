@@ -1,7 +1,7 @@
 {
   "info": {
-    "_postman_id": "f401f7e7-eb11-580a-bf4f-e9c7c9c2f846",
-    "name": "ZUCKZAPGO v2.0.0",
+    "_postman_id": "ce47b146-f755-5827-8b22-594d0ac079b8",
+    "name": "ZUCKZAPGO v2.1.0",
     "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n<h2>📞 Calls — LLM build guide</h2><p>Building a WhatsApp <b>voice or video call</b> integration? Open <a href=\"/api/llm.txt\" target=\"_blank\" rel=\"noopener\"><b>llm.txt</b></a> — a complete, self-contained spec you can paste into any LLM (Claude, GPT, Gemini, …) to generate a perfect calls integration (REST control + bidirectional PCM audio over WebSocket + bidirectional H.264 video over WebSocket + passkey pairing appendix). It also surfaces as the external-docs link on the <code>Call</code> tag below.</p>\n\n<h2>📱 Native mobile egress — operator and LLM guides</h2><p>Provision a fail-closed, TCP-only Tailscale exit route per session with <code>POST /session/network-route</code>, inspect it with <code>GET /session/network-route</code>, and — when a route cannot converge and is holding the session offline — remove it with <code>DELETE /session/network-route</code>, an explicit operator action that returns the session to legacy proxy or direct egress. Read the <a href=\"/docs/network-route.md\" target=\"_blank\" rel=\"noopener\">operator guide</a> or paste <a href=\"/api/network-route-llm.txt\" target=\"_blank\" rel=\"noopener\"><b>network-route-llm.txt</b></a> into an LLM for the complete integration contract. Auth keys are write-only and must never be persisted, returned, or logged.</p>\n\n<h2>🔌 Connector — embeddable pairing widget</h2><p>Embed WhatsApp pairing (QR, phone code, or passkey) in any app with one <code>&lt;script&gt;</code> — without ever exposing the real instance token to the browser. Your backend mints a short-lived ephemeral token via <code>POST /session/connector/token</code>; the browser runs <code>ZZ.connector.open({ token })</code> against the <b>Connector</b> tag's <code>/connector/*</code> routes. Paste-into-any-LLM guide: <a href=\"/api/connector-llm.txt\" target=\"_blank\" rel=\"noopener\"><b>connector-llm.txt</b></a>. Full docs hub for API users &amp; LLMs: <a href=\"/docs\" target=\"_blank\" rel=\"noopener\">/docs</a>.</p>\n\nGenerated from static/api/spec.yml (OpenAPI 3.0.0).\n\n**Variables:** set `base_url`, `api_token` (user token, sent as the `token` header) and `admin_token` (sent as the `Authorization` header on admin routes). Path variables are prefilled with documentation examples.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -12119,7 +12119,7 @@
                 "webhook"
               ]
             },
-            "description": "Returns the individual webhook URL of this instance and the event types it is subscribed to.\n\n**Rules:**\n- `webhook` is empty when no individual webhook is configured.\n- `subscribe` is the stored comma-separated list split into an array. When nothing is stored the array contains one empty string (`[\"\"]`).\n- The server-wide global webhook is configured by environment variables and is not part of this response.\n\n**Event types:**\n- **Messages:** `Message`, `UndecryptableMessage`, `FBMessage`, `Receipt`, `MediaRetry`, `ReadReceipt`\n- **Chat management:** `Star`, `Pin`, `Archive`, `Mute`, `MarkChatAsRead`, `ClearChat`, `DeleteChat`, `DeleteForMe`, `LabelAssociationChat`, `LabelAssociationMessage`, `LabelEdit`\n- **Groups and contacts:** `GroupInfo`, `JoinedGroup`, `Contact`, `Picture`, `PushName`, `BusinessName`, `UserAbout`\n- **Privacy:** `PrivacySettings`, `IdentityChange`, `Blocklist`, `BlocklistChange`, `UserStatusMute`\n- **Connection:** `Connected`, `Disconnected`, `QR`, `PairSuccess`, `PairError`, `QRScannedWithoutMultidevice`, `LoggedOut`, `StreamReplaced`, `StreamError`, `ConnectFailure`, `KeepAliveTimeout`, `KeepAliveRestored`, `ManualLoginReconnect`, `TemporaryBan`, `ClientOutdated`, `CATRefreshError`, `PasskeyRequest`, `PasskeyConfirmation`\n- **Calls:** `CallOffer`, `CallAccept`, `CallAcceptEngine`, `CallPreAccept`, `CallTransport`, `CallTerminate`, `CallTerminateEngine`, `CallRecordingReady`, `CallReject`, `CallOfferNotice`, `CallRelayLatency`, `CallReminder`, `UnknownCallEvent`\n- **Presence:** `Presence`, `ChatPresence`\n- **Newsletters:** `NewsletterJoin`, `NewsletterLeave`, `NewsletterMuteChange`, `NewsletterLiveUpdate`\n- **Sync:** `AppState`, `AppStateSyncComplete`, `AppStateSyncError`, `HistorySync`, `OfflineSyncPreview`, `OfflineSyncCompleted`, `PushNameSetting`, `UnarchiveChatsSetting`\n- **Special:** `All` subscribes to every event type\n"
+            "description": "Returns the individual webhook URL of this instance and the event types it is subscribed to.\n\n**Rules:**\n- `webhook` is empty when no individual webhook is configured.\n- `subscribe` is the stored comma-separated list split into an array. When nothing is stored the array contains one empty string (`[\"\"]`).\n- The server-wide global webhook is configured by environment variables and is not part of this response.\n\n**Event types:**\n- **Messages:** `Message`, `UndecryptableMessage`, `FBMessage`, `Receipt`, `MediaRetry`, `ReadReceipt`\n- **Chat management:** `Star`, `Pin`, `Archive`, `Mute`, `MarkChatAsRead`, `ClearChat`, `DeleteChat`, `DeleteForMe`, `LabelAssociationChat`, `LabelAssociationMessage`, `LabelEdit`\n- **Groups and contacts:** `GroupInfo`, `JoinedGroup`, `Contact`, `Picture`, `PushName`, `BusinessName`, `UserAbout`\n- **Privacy:** `PrivacySettings`, `IdentityChange`, `Blocklist`, `BlocklistChange`, `UserStatusMute`\n- **Connection:** `Connected`, `Disconnected`, `QR`, `PairSuccess`, `PairError`, `QRScannedWithoutMultidevice`, `LoggedOut`, `StreamReplaced`, `StreamError`, `ConnectFailure`, `KeepAliveTimeout`, `KeepAliveRestored`, `ManualLoginReconnect`, `TemporaryBan`, `ClientOutdated`, `CATRefreshError`, `PasskeyRequest`, `PasskeyConfirmation`\n- **Calls:** `CallOffer`, `CallAccept`, `CallAcceptEngine`, `CallPreAccept`, `CallTransport`, `CallTerminate`, `CallTerminateEngine`, `CallRecordingReady`, `CallReject`, `CallOfferNotice`, `CallRelayLatency`, `CallReminder`, `UnknownCallEvent`\n- **Business:** `OrderState` (gateway-kept order state changed)\n- **Presence:** `Presence`, `ChatPresence`\n- **Newsletters:** `NewsletterJoin`, `NewsletterLeave`, `NewsletterMuteChange`, `NewsletterLiveUpdate`\n- **Sync:** `AppState`, `AppStateSyncComplete`, `AppStateSyncError`, `HistorySync`, `OfflineSyncPreview`, `OfflineSyncCompleted`, `PushNameSetting`, `UnarchiveChatsSetting`\n- **Special:** `All` subscribes to every event type\n"
           },
           "response": [
             {
@@ -26855,7 +26855,7 @@
                 "avatar"
               ]
             },
-            "description": "Returns the profile picture URL and metadata of a contact, group or community, either the full image or the small preview thumbnail. The image itself is not downloaded by the gateway.\n\n**Features:**\n- `Preview: true` returns the thumbnail; `false` returns the full-resolution image.\n- `CommonGID` fetches a member's picture through a group you share, which can succeed when the contact restricts the picture to contacts.\n- `InviteCode` fetches a group picture before joining, using the invite code.\n- `PersonaID` fetches the picture of a Meta AI persona; `IsCommunity` marks a community JID.\n\n**Rules:**\n- `Phone` is required: phone number, user JID, group JID or community JID. Field names are matched case-insensitively.\n- `CommonGID`, when present, must be a valid JID (**400** otherwise).\n- WhatsApp errors, including \"no profile picture\" and \"hidden by privacy\", return **500** with the reason in the message.\n- The returned `url` expires; download it promptly.\n",
+            "description": "Returns the profile picture URL and metadata of a contact, group or community, either the full image or the small preview thumbnail. The image itself is not downloaded by the gateway.\n\n**Features:**\n- `Preview: true` returns the thumbnail; `false` returns the full-resolution image.\n- `CommonGID` fetches a member's picture through a group you share, which can succeed when the contact restricts the picture to contacts.\n- `InviteCode` fetches a group picture before joining, using the invite code.\n- `PersonaID` fetches the picture of a Meta AI persona; `IsCommunity` marks a community JID.\n\n**Rules:**\n- `Phone` is required: phone number, user JID, group JID or community JID. Field names are matched case-insensitively.\n- `CommonGID`, when present, must be a valid JID (**400** otherwise).\n- A contact or group **without a profile photo** returns **500** `no avatar found` (some WhatsApp answers surface instead as `failed to get avatar: that user or group does not have a profile picture`).\n- Other WhatsApp errors, such as \"hidden by privacy\", return **500** with the reason in the message.\n- The returned `url` expires; download it promptly.\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"Phone\": \"5511999999999\",\n  \"Preview\": true\n}",
@@ -26898,6 +26898,55 @@
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"Phone\": \"5511999999999@s.whatsapp.net\",\n  \"Preview\": false,\n  \"CommonGID\": \"120363000000000011@g.us\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"url\": \"https://pps.whatsapp.net/v/t61.24694-24/123456789_1234567890123456_1234567890123456789_n.jpg?ccb=11-4&oh=01_Q5AaIExample&oe=68E0A1B2\",\n    \"id\": \"1700000000\",\n    \"type\": \"preview\",\n    \"direct_path\": \"/v/t61.24694-24/123456789_1234567890123456_1234567890123456789_n.jpg?ccb=11-4&oh=01_Q5AaIExample&oe=68E0A1B2\",\n    \"hash\": null\n  },\n  \"success\": true\n}"
+            },
+            {
+              "id": "7606e451-04d5-5f3c-8587-586e436005a6",
+              "name": "Request example: Picture of a group you belong to",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/user/avatar",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "avatar"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"Phone\": \"120363000000000011@g.us\",\n  \"Preview\": false\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -27295,8 +27344,8 @@
               "body": "{\n  \"code\": 500,\n  \"error\": \"no session\",\n  \"success\": false\n}"
             },
             {
-              "id": "823e3ee1-b93c-5be3-9816-2e0a6a581ad3",
-              "name": "500 The account has no profile picture",
+              "id": "1418caa1-c719-516f-9752-ba54bead4e74",
+              "name": "500 No profile picture (alternate WhatsApp answer)",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -27375,8 +27424,8 @@
               "body": "{\n  \"code\": 500,\n  \"error\": \"failed to get avatar: the user has hidden their profile picture from you\",\n  \"success\": false\n}"
             },
             {
-              "id": "f616277a-a208-5c2e-8edc-0d6d9db09471",
-              "name": "500 WhatsApp returned no picture information",
+              "id": "120f89ba-4fb1-5771-b885-1a78b318b927",
+              "name": "500 The contact or group has no profile photo",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -32252,6 +32301,46 @@
                 }
               ],
               "body": "{\n  \"code\": 500,\n  \"error\": \"no session\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "b9cedf40-4ee6-53e0-9e40-bb4367c3960f",
+              "name": "500 Device has no push name yet",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/user/presence",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "presence"
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 500,\n  \"error\": \"failure sending presence to Whatsapp servers: push name not set on this device yet; set it with POST /user/pushname\",\n  \"success\": false\n}"
             },
             {
               "id": "9a48705e-769c-530f-800c-6f171624bba4",
@@ -42494,6 +42583,55 @@
                 "body": {
                   "mode": "raw",
                   "raw": "{\n  \"phone\": \"120363000000000011@g.us\",\n  \"message_id\": \"3EB0C767D26A1D6B8A9E\",\n  \"from_me\": false,\n  \"sender_jid\": \"5511888888888@s.whatsapp.net\",\n  \"pin\": true,\n  \"duration_seconds\": 86400\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"success\": true,\n    \"id\": \"3EB0B1C2D3E4F5A6B7C8\",\n    \"chat\": \"123456789012345@lid\",\n    \"message_id\": \"3EB0C767D26A1D6B8A9F\",\n    \"pinned\": true,\n    \"timestamp\": 1757862000,\n    \"duration_seconds\": 604800\n  },\n  \"success\": true\n}"
+            },
+            {
+              "id": "ea96c614-9f50-5527-af4a-cbb122e23d22",
+              "name": "Request example: Pin a message received in a 1:1 chat",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/pin-message",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "pin-message"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"5511999999999\",\n  \"message_id\": \"3EB0C767D26A1D6B8A9D\",\n  \"from_me\": false,\n  \"pin\": true\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -54841,7 +54979,7 @@
                 "link"
               ]
             },
-            "description": "Sends a text message containing a link, with an automatic, customized or disabled preview card.\n\n**Features:**\n- Default: the preview (title, description, image) is scraped from the URL's OpenGraph tags\n- `DisablePreview: true` sends the link as plain text without a card\n- `Preview` with `fetch_missing` omitted/false: REPLACE mode, only the fields you set are used and nothing is scraped\n- `Preview` with `fetch_missing: true`: MERGE mode, the URL is scraped first and non-empty override fields win\n- Captions, mentions, replies and forwarding via `ContextInfo`\n\n**Custom thumbnail (`Preview.image`):**\n- Base64 data URL (≤ 5 MB) or http(s) URL (≤ 8 MB); PNG, WebP and GIF are re-encoded to JPEG (transparency flattened on white)\n- For identical cards on mobile and Web/Desktop use a 1.91:1 landscape JPEG, ideally 1200 × 630 px (at least ~400 px on the long edge)\n- The server uploads a high-res JPEG (downscaled to 800 px) and embeds a small inline JPEG (~200 px); Web paints the inline one first\n- Square images of 200 px or less are treated as favicons (smaller card)\n",
+            "description": "Sends a text message containing a link, with an automatic, customized or disabled preview card.\n\n**Features:**\n- Default: the preview (title, description, image) is scraped from the URL's OpenGraph tags\n- `DisablePreview: true` sends the link as plain text without a card\n- `Preview` with `fetch_missing` omitted/false: REPLACE mode, only the fields you set are used and nothing is scraped\n- `Preview` with `fetch_missing: true`: MERGE mode, the URL is scraped first and non-empty override fields win\n- Captions, mentions, replies and forwarding via `ContextInfo`\n- `AppendLink: false` (alias `append_link`) sends `Caption` exactly as supplied, preserving spaces, line breaks and the link's position; omitted/true keeps the existing append behavior\n- With `AppendLink: false`, a nonblank `Caption` is required. When the preview is enabled, it must contain `Link` or `Preview.matched_text` literally. `Preview.matched_text` counts only when it is an http(s) URL present in the text (WhatsApp ignores plain words such as \"click here\" and drops the card); otherwise `Link` is used, and a caption without `Link` is rejected before sending\n- For an image-only card, set `Preview.image`, omit `title`/`description`, and keep `fetch_missing: false` so the website's metadata is not scraped. WhatsApp does not render a thumbnail card without a title, so whenever an image is sent without one the title falls back to the domain (without `www.`) of the effective match: `Preview.matched_text` when it is a URL found in the text, otherwise `Link`. The response's `Metadata.Title` reports the title actually sent\n\n**Custom thumbnail (`Preview.image`):**\n- Base64 data URL (≤ 5 MB) or http(s) URL (≤ 8 MB); PNG, WebP and GIF are re-encoded to JPEG (transparency flattened on white)\n- For identical cards on mobile and Web/Desktop use a 1.91:1 landscape JPEG, ideally 1200 × 630 px (at least ~400 px on the long edge)\n- The server uploads a high-res JPEG (downscaled to 800 px) and embeds a small inline JPEG (~200 px); Web paints the inline one first\n- Square images of 200 px or less are treated as favicons (smaller card)\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"Phone\": \"5511999999999\",\n  \"Link\": \"https://github.com/tulir/whatsmeow\",\n  \"Caption\": \"Check out this WhatsApp library\",\n  \"Id\": \"ABCDABCD1234\"\n}",
@@ -54884,7 +55022,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"Phone\": \"5511999999999\",\n  \"Link\": \"https://example.com/promo\",\n  \"Caption\": \"Check out this deal\",\n  \"Id\": \"ABCDABCD1234\",\n  \"Preview\": {\n    \"title\": \"Coupon: 50% off everything\",\n    \"description\": \"Use code SAVE50 at checkout\",\n    \"image\": \"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==\",\n    \"matched_text\": \"https://example.com/promo\",\n    \"type\": \"image\"\n  }\n}",
+                  "raw": "{\n  \"Phone\": \"5511999999999\",\n  \"Link\": \"https://example.com/promo\",\n  \"Caption\": \"Check out this deal\",\n  \"Id\": \"ABCDABCD1234\",\n  \"Preview\": {\n    \"title\": \"Coupon: 50% off everything\",\n    \"description\": \"Use code SAVE50 at checkout\",\n    \"image\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==\",\n    \"matched_text\": \"https://example.com/promo\",\n    \"type\": \"image\"\n  }\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -54901,7 +55039,57 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Sent\",\n    \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n    \"Timestamp\": \"2022-04-20T12:49:08-03:00\"\n  },\n  \"success\": true\n}"
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Link message sent successfully\",\n    \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n    \"Timestamp\": \"2026-09-22T12:49:08-03:00\",\n    \"Link\": \"https://github.com/tulir/whatsmeow\",\n    \"Metadata\": {\n      \"Title\": \"GitHub - tulir/whatsmeow: Go library for the WhatsApp web multidevice API\",\n      \"Description\": \"Go library for the WhatsApp web multidevice API\",\n      \"Image\": \"https://opengraph.githubassets.com/1/tulir/whatsmeow\",\n      \"MatchedText\": \"https://github.com/tulir/whatsmeow\",\n      \"PreviewType\": \"NONE\",\n      \"PreviewMode\": \"fetch\"\n    }\n  },\n  \"success\": true\n}"
+            },
+            {
+              "id": "6472a5ff-c313-5e6e-a43f-5ebf303c1b8b",
+              "name": "Request example: Keep the template unchanged with an image-only preview",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/link",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "link"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"Phone\": \"5511999999999\",\n  \"Link\": \"https://example.com/promo\",\n  \"Caption\": \"Confira a oferta!\\nhttps://example.com/promo\\nUse o cupom SAVE50.\",\n  \"AppendLink\": false,\n  \"Preview\": {\n    \"image\": \"https://example.com/promo.jpg\",\n    \"matched_text\": \"https://example.com/promo\",\n    \"type\": \"image\",\n    \"fetch_missing\": false\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Link message sent successfully\",\n    \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n    \"Timestamp\": \"2026-09-22T12:49:08-03:00\",\n    \"Link\": \"https://github.com/tulir/whatsmeow\",\n    \"Metadata\": {\n      \"Title\": \"GitHub - tulir/whatsmeow: Go library for the WhatsApp web multidevice API\",\n      \"Description\": \"Go library for the WhatsApp web multidevice API\",\n      \"Image\": \"https://opengraph.githubassets.com/1/tulir/whatsmeow\",\n      \"MatchedText\": \"https://github.com/tulir/whatsmeow\",\n      \"PreviewType\": \"NONE\",\n      \"PreviewMode\": \"fetch\"\n    }\n  },\n  \"success\": true\n}"
             },
             {
               "id": "f1218729-87b9-598d-b29b-56c51b6e4a40",
@@ -54951,7 +55139,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Sent\",\n    \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n    \"Timestamp\": \"2022-04-20T12:49:08-03:00\"\n  },\n  \"success\": true\n}"
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Link message sent successfully\",\n    \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n    \"Timestamp\": \"2026-09-22T12:49:08-03:00\",\n    \"Link\": \"https://github.com/tulir/whatsmeow\",\n    \"Metadata\": {\n      \"Title\": \"GitHub - tulir/whatsmeow: Go library for the WhatsApp web multidevice API\",\n      \"Description\": \"Go library for the WhatsApp web multidevice API\",\n      \"Image\": \"https://opengraph.githubassets.com/1/tulir/whatsmeow\",\n      \"MatchedText\": \"https://github.com/tulir/whatsmeow\",\n      \"PreviewType\": \"NONE\",\n      \"PreviewMode\": \"fetch\"\n    }\n  },\n  \"success\": true\n}"
             },
             {
               "id": "895cf1d2-8143-5762-a889-ada353526479",
@@ -55001,7 +55189,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Sent\",\n    \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n    \"Timestamp\": \"2022-04-20T12:49:08-03:00\"\n  },\n  \"success\": true\n}"
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Link message sent successfully\",\n    \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n    \"Timestamp\": \"2026-09-22T12:49:08-03:00\",\n    \"Link\": \"https://github.com/tulir/whatsmeow\",\n    \"Metadata\": {\n      \"Title\": \"GitHub - tulir/whatsmeow: Go library for the WhatsApp web multidevice API\",\n      \"Description\": \"Go library for the WhatsApp web multidevice API\",\n      \"Image\": \"https://opengraph.githubassets.com/1/tulir/whatsmeow\",\n      \"MatchedText\": \"https://github.com/tulir/whatsmeow\",\n      \"PreviewType\": \"NONE\",\n      \"PreviewMode\": \"fetch\"\n    }\n  },\n  \"success\": true\n}"
             },
             {
               "id": "f88f99a9-1367-59ad-b083-168ad2cb63c5",
@@ -55034,7 +55222,7 @@
                 },
                 "body": {
                   "mode": "raw",
-                  "raw": "{\n  \"Phone\": \"5511999999999\",\n  \"Link\": \"https://www.youtube.com/watch?v=dQw4w9WgXcQ\",\n  \"Caption\": \"🎬\",\n  \"Id\": \"ABCDABCD1234\",\n  \"Preview\": {\n    \"title\": \"Never Gonna Give You Up\",\n    \"description\": \"Rick Astley — official video\",\n    \"image\": \"data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==\",\n    \"type\": \"video\",\n    \"do_not_play_inline\": false\n  }\n}",
+                  "raw": "{\n  \"Phone\": \"5511999999999\",\n  \"Link\": \"https://www.youtube.com/watch?v=dQw4w9WgXcQ\",\n  \"Caption\": \"🎬\",\n  \"Id\": \"ABCDABCD1234\",\n  \"Preview\": {\n    \"title\": \"Never Gonna Give You Up\",\n    \"description\": \"Rick Astley — official video\",\n    \"image\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==\",\n    \"type\": \"video\",\n    \"do_not_play_inline\": false\n  }\n}",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -55051,7 +55239,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Sent\",\n    \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n    \"Timestamp\": \"2022-04-20T12:49:08-03:00\"\n  },\n  \"success\": true\n}"
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Link message sent successfully\",\n    \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n    \"Timestamp\": \"2026-09-22T12:49:08-03:00\",\n    \"Link\": \"https://github.com/tulir/whatsmeow\",\n    \"Metadata\": {\n      \"Title\": \"GitHub - tulir/whatsmeow: Go library for the WhatsApp web multidevice API\",\n      \"Description\": \"Go library for the WhatsApp web multidevice API\",\n      \"Image\": \"https://opengraph.githubassets.com/1/tulir/whatsmeow\",\n      \"MatchedText\": \"https://github.com/tulir/whatsmeow\",\n      \"PreviewType\": \"NONE\",\n      \"PreviewMode\": \"fetch\"\n    }\n  },\n  \"success\": true\n}"
             },
             {
               "id": "89e3235c-c318-5f8a-b2dd-228474573763",
@@ -55101,7 +55289,7 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Sent\",\n    \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n    \"Timestamp\": \"2022-04-20T12:49:08-03:00\"\n  },\n  \"success\": true\n}"
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Link message sent successfully\",\n    \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n    \"Timestamp\": \"2026-09-22T12:49:08-03:00\",\n    \"Link\": \"https://github.com/tulir/whatsmeow\",\n    \"Metadata\": {\n      \"Title\": \"GitHub - tulir/whatsmeow: Go library for the WhatsApp web multidevice API\",\n      \"Description\": \"Go library for the WhatsApp web multidevice API\",\n      \"Image\": \"https://opengraph.githubassets.com/1/tulir/whatsmeow\",\n      \"MatchedText\": \"https://github.com/tulir/whatsmeow\",\n      \"PreviewType\": \"NONE\",\n      \"PreviewMode\": \"fetch\"\n    }\n  },\n  \"success\": true\n}"
             },
             {
               "id": "3242e851-03b5-5b19-96d4-ce3449b737a1",
@@ -55151,11 +55339,11 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Sent\",\n    \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n    \"Timestamp\": \"2022-04-20T12:49:08-03:00\"\n  },\n  \"success\": true\n}"
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Link message sent successfully\",\n    \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n    \"Timestamp\": \"2026-09-22T12:49:08-03:00\",\n    \"Link\": \"https://github.com/tulir/whatsmeow\",\n    \"Metadata\": {\n      \"Title\": \"GitHub - tulir/whatsmeow: Go library for the WhatsApp web multidevice API\",\n      \"Description\": \"Go library for the WhatsApp web multidevice API\",\n      \"Image\": \"https://opengraph.githubassets.com/1/tulir/whatsmeow\",\n      \"MatchedText\": \"https://github.com/tulir/whatsmeow\",\n      \"PreviewType\": \"NONE\",\n      \"PreviewMode\": \"fetch\"\n    }\n  },\n  \"success\": true\n}"
             },
             {
-              "id": "1a19133b-c8ec-59e9-9d46-3be4d81ffa01",
-              "name": "200 Message acknowledged",
+              "id": "9aed32e4-f3f7-54ac-af5c-a4ba68120699",
+              "name": "200 Link sent with a scraped preview",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -55192,7 +55380,89 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Sent\",\n    \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n    \"Timestamp\": \"2022-04-20T12:49:08-03:00\"\n  },\n  \"success\": true\n}"
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Link message sent successfully\",\n    \"Id\": \"90B2F8B13FAC8A9CF6B06E99C7834DC5\",\n    \"Timestamp\": \"2026-09-22T12:49:08-03:00\",\n    \"Link\": \"https://github.com/tulir/whatsmeow\",\n    \"Metadata\": {\n      \"Title\": \"GitHub - tulir/whatsmeow: Go library for the WhatsApp web multidevice API\",\n      \"Description\": \"Go library for the WhatsApp web multidevice API\",\n      \"Image\": \"https://opengraph.githubassets.com/1/tulir/whatsmeow\",\n      \"MatchedText\": \"https://github.com/tulir/whatsmeow\",\n      \"PreviewType\": \"NONE\",\n      \"PreviewMode\": \"fetch\"\n    }\n  },\n  \"success\": true\n}"
+            },
+            {
+              "id": "7231694f-6ac8-5754-955f-f267f446d247",
+              "name": "200 Image-only preview (domain used as title)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/link",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "link"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Link message sent successfully\",\n    \"Id\": \"3EB0C767D26A1D6B8A9F\",\n    \"Timestamp\": \"2026-09-22T12:49:08-03:00\",\n    \"Link\": \"https://example.com/promo\",\n    \"Metadata\": {\n      \"Title\": \"example.com\",\n      \"Description\": \"\",\n      \"Image\": \"https://example.com/promo.jpg\",\n      \"MatchedText\": \"https://example.com/promo\",\n      \"PreviewType\": \"NONE\",\n      \"PreviewMode\": \"replace\"\n    }\n  },\n  \"success\": true\n}"
+            },
+            {
+              "id": "e7da2198-919d-5bf0-be69-4e7e02c9010e",
+              "name": "200 Preview disabled",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/link",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "link"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Link message sent successfully\",\n    \"Id\": \"3EB0C767D26A1D6B8A9F\",\n    \"Timestamp\": \"2026-09-22T12:49:08-03:00\",\n    \"Link\": \"https://internal.example.com/sensitive-tracker?uid=abc123\",\n    \"Metadata\": {\n      \"Title\": \"\",\n      \"Description\": \"\",\n      \"Image\": \"\",\n      \"MatchedText\": \"https://internal.example.com/sensitive-tracker?uid=abc123\",\n      \"PreviewType\": \"\",\n      \"PreviewMode\": \"disabled\"\n    }\n  },\n  \"success\": true\n}"
             },
             {
               "id": "588a1087-b3b3-51c9-bcb8-9c22e0b8c376",
@@ -55439,6 +55709,88 @@
                 }
               ],
               "body": "{\n  \"code\": 400,\n  \"error\": \"invalid preview.type: must be 'image', 'video', 'none', or 'placeholder'\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "7566d57a-ea6c-5db3-a790-e12a93d2c949",
+              "name": "400 AppendLink: false with an empty Caption",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/link",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "link"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 400,\n  \"error\": \"caption must not be empty when AppendLink is false\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "ebaec36a-8a9c-5b16-9594-82718b8ba374",
+              "name": "400 AppendLink: false and Caption does not contain the link",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/link",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "link"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 400,\n  \"error\": \"caption must contain Link or preview.matched_text when AppendLink is false and preview is enabled\",\n  \"success\": false\n}"
             },
             {
               "id": "fa299d01-55c2-5840-b01f-0851267ce875",
@@ -65971,7 +66323,7 @@
                 "inviteinfo"
               ]
             },
-            "description": "Returns the `GroupInfo` of a group from an invite code or link **without joining it**, so the name, description,\nsize and settings can be checked first.\n\n**Rules:**\n- `Code` is required. The `https://chat.whatsapp.com/` prefix and any query string are stripped by the library.\n- Fields WhatsApp does not share with non-members come back empty, zero or `null` (the participant list is often `null`).\n- Revoked or malformed links return **500** in the legacy envelope with the WhatsApp reason.\n",
+            "description": "Returns the `GroupInfo` of a group from an invite code or link **without joining it**, so the name, description,\nsize and settings can be checked first.\n\n**Rules:**\n- `Code` is required. The `https://chat.whatsapp.com/` prefix and any query string are stripped by the library.\n- Fields WhatsApp does not share with non-members come back empty, zero or `null` (the participant list is often `null`).\n- `IsJoinApprovalRequired: true` means `POST /group/join` will only create a pending request that an admin must approve.\n- Revoked or malformed links return **500** in the legacy envelope with the WhatsApp reason.\n- A participant **removed by an admin** can neither preview nor rejoin through the invite link: WhatsApp answers 401 `not-authorized` (**500** legacy envelope). An admin must re-add them with `POST /group/updateparticipants`.\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"Code\": \"AbCdEfGhIjKlMnOpQrStUv\"\n}",
@@ -66271,6 +66623,46 @@
                 }
               ],
               "body": "{\n  \"code\": 500,\n  \"data\": \"failed to get group invite info: that group invite link is not valid\",\n  \"success\": true\n}"
+            },
+            {
+              "id": "5d71915b-5666-5050-96c4-92780072e037",
+              "name": "500 Session was removed from the group by an admin (legacy envelope)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/group/inviteinfo",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "group",
+                    "inviteinfo"
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 500,\n  \"data\": \"failed to get group invite info: info query returned status 401: not-authorized\",\n  \"success\": true\n}"
             }
           ]
         },
@@ -66687,7 +67079,7 @@
                 "join"
               ]
             },
-            "description": "Joins a group using an invite code or a full `https://chat.whatsapp.com/...` link. Preview the group first with\n`POST /group/inviteinfo` if needed.\n\n**Rules:**\n- `Code` is required. The `https://chat.whatsapp.com/` prefix and any query string are stripped by the library.\n- The response only confirms the join; it does not include the group JID. Use `POST /group/inviteinfo` or `GET /group/list` to obtain it.\n- When the group requires admin approval, WhatsApp registers a join request instead of adding the session immediately.\n- Revoked or malformed links return **500** in the legacy envelope with the WhatsApp reason.\n",
+            "description": "Joins a group using an invite code or a full `https://chat.whatsapp.com/...` link. Preview the group first with\n`POST /group/inviteinfo` if needed.\n\n**Rules:**\n- `Code` is required. The `https://chat.whatsapp.com/` prefix and any query string are stripped by the library.\n- The response only confirms the join; it does not include the group JID. Use `POST /group/inviteinfo` or `GET /group/list` to obtain it.\n- When the group requires admin approval, WhatsApp only registers a **pending join request** instead of adding the session, and the response is identical (`{\"Details\":\"Group joined successfully\"}`). Check `IsJoinApprovalRequired` via `POST /group/inviteinfo` before joining, and confirm membership afterwards with `GET /group/list` (the group only appears once an admin approves).\n- Revoked or malformed links return **500** in the legacy envelope with the WhatsApp reason.\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"Code\": \"AbCdEfGhIjKlMnOpQrStUv\"\n}",
@@ -66749,8 +67141,8 @@
               "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Group joined successfully\"\n  },\n  \"success\": true\n}"
             },
             {
-              "id": "a965f7ce-8d50-5999-b0ed-8ba3d7801d3e",
-              "name": "200 WhatsApp accepted the join.",
+              "id": "3af0c6c0-ad8b-5a93-9455-4cb312e712d8",
+              "name": "200 WhatsApp accepted the join, or registered a pending join request when the group requires admin approval (same body in both cases; confirm with `GET /group/list`).",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -68955,7 +69347,7 @@
                 "photo"
               ]
             },
-            "description": "Uploads a new profile photo for a group and returns the WhatsApp picture ID. The image is sent as a base64 data URL\nand must contain JPEG bytes, because WhatsApp only accepts JPEG group photos.\n\n**Rules:**\n- `GroupJID` and `Image` are required.\n- `Image` must start with `data:image` and decode as a data URL; otherwise **400**.\n- The decoded bytes must be JPEG (start with `FF D8 FF`). PNG, GIF or WebP data URLs pass the prefix check but are rejected with **400**, even though the prefix error message lists them.\n- WhatsApp may reject images that are not square or are too small; that failure comes back as **500** in the legacy envelope.\n- When the group is locked (`POST /group/locked`), only admins can change the photo.\n\n**Use Cases:**\n- Brand customer groups with the company logo\n- Refresh an event group's cover image\n",
+            "description": "Uploads a new profile photo for a group and returns the WhatsApp picture ID. The image is sent as a base64 data URL\nand must contain JPEG bytes, because WhatsApp only accepts JPEG group photos.\n\n**Rules:**\n- `GroupJID` and `Image` are required.\n- `Image` must start with `data:image` and decode as a data URL; otherwise **400**.\n- The decoded bytes must be JPEG (start with `FF D8 FF`). PNG, GIF or WebP data URLs pass the prefix check but are rejected with **400**, even though the prefix error message lists them.\n- WhatsApp rejects some images with IQ error 406, returned as **500** in the legacy envelope: `failed to set group photo: the given data is not a valid image`. Only JPEG is accepted (despite the list in the prefix error), and even valid JPEGs from some encoders (e.g. ffmpeg with optimized Huffman tables or progressive encoding) are rejected, as are images that are not square or are too small.\n- Recommended: a **baseline** (non-progressive) JPEG, square **640 × 640** px.\n- When the group is locked (`POST /group/locked`), only admins can change the photo.\n\n**Use Cases:**\n- Brand customer groups with the company logo\n- Refresh an event group's cover image\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"GroupJID\": \"120363000000000011@g.us\",\n  \"Image\": \"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/wAALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAACf/EABQQAQAAAAAAAAAAAAAAAAAAAAD/2gAIAQEAAD8AKp//2Q==\"\n}",
@@ -69368,8 +69760,8 @@
               "body": "{\n  \"code\": 500,\n  \"error\": \"no session\",\n  \"success\": false\n}"
             },
             {
-              "id": "1d59e6e6-078b-5a14-8d15-9bfeb7b75dc3",
-              "name": "500 Image rejected (legacy envelope)",
+              "id": "02397b55-a49b-51e2-a730-8153f5beb8a4",
+              "name": "500 Image rejected by WhatsApp with IQ 406 (legacy envelope)",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -70644,7 +71036,7 @@
                 "announcement"
               ]
             },
-            "description": "Sends a plain text message to the JID given in `community` and returns the WhatsApp message ID.\n\n**Rules:**\n- `community` and `message` are required.\n- The message goes to exactly that JID. To post in the community announcement group, pass the JID of the linked group with `is_default_sub: true` (see `POST /community/linked-groups`).\n- `linked_groups`, `background_color` and `font` are accepted but **ignored**: no per-group fan-out and no styling are applied.\n- A send failure returns the generic **500** `failed to send announcement`.\n",
+            "description": "Sends a plain text message to the community's announcement group and returns the WhatsApp message ID.\n\n**Rules:**\n- `community` and `message` are required.\n- With the parent community JID, the message goes to its default announcement sub-group (the parent JID itself is not a chat and WhatsApp rejects it with error 420). The resolved JID is returned in `announcement_group`.\n- Any other JID (for example the announcement group itself, the linked group with `is_default_sub: true` from `POST /community/linked-groups`) receives the message as-is; `announcement_group` then equals `community`.\n- If the sub-group lookup fails, the message is sent to the given JID as-is. For a parent community JID WhatsApp then answers 420 and the route returns **500** `failed to send announcement`; retry, or send to the announcement group JID directly.\n- `linked_groups`, `background_color` and `font` are accepted but **ignored**: no per-group fan-out and no styling are applied.\n- A send failure returns the generic **500** `failed to send announcement`.\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"community\": \"120363000000000034@g.us\",\n  \"message\": \"Office closed on Friday for maintenance.\"\n}",
@@ -70657,8 +71049,57 @@
           },
           "response": [
             {
-              "id": "2761336c-40fe-5a30-bda9-db9d9c031249",
-              "name": "200 Message accepted by WhatsApp.",
+              "id": "391dc0d1-ef8b-5739-9462-5ae85304a9c9",
+              "name": "Request example: Post in the announcement group directly",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/community/announcement",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "community",
+                    "announcement"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"community\": \"120363000000000035@g.us\",\n  \"message\": \"Office closed on Friday for maintenance.\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"success\": true,\n    \"message\": \"Announcement sent successfully\",\n    \"community\": \"120363000000000034@g.us\",\n    \"announcement_group\": \"120363000000000035@g.us\",\n    \"message_id\": \"3EB0C767D26A1D6B8A9F\",\n    \"timestamp\": \"2026-09-15T12:00:00Z\"\n  },\n  \"success\": true\n}"
+            },
+            {
+              "id": "8a925104-e254-56d8-bdb3-78fb13db303d",
+              "name": "200 Parent community JID resolved to its announcement sub-group",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -70694,7 +71135,47 @@
                   "value": "application/json"
                 }
               ],
-              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"success\": true,\n    \"message\": \"Announcement sent successfully\",\n    \"community\": \"120363000000000034@g.us\",\n    \"message_id\": \"3EB0C767D26A1D6B8A9F\",\n    \"timestamp\": \"2026-09-15T12:00:00Z\"\n  },\n  \"success\": true\n}"
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"success\": true,\n    \"message\": \"Announcement sent successfully\",\n    \"community\": \"120363000000000034@g.us\",\n    \"announcement_group\": \"120363000000000035@g.us\",\n    \"message_id\": \"3EB0C767D26A1D6B8A9F\",\n    \"timestamp\": \"2026-09-15T12:00:00Z\"\n  },\n  \"success\": true\n}"
+            },
+            {
+              "id": "bc7827da-4853-55c1-a2f8-3daa9adf91b0",
+              "name": "200 Announcement group JID sent as-is",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/community/announcement",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "community",
+                    "announcement"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"success\": true,\n    \"message\": \"Announcement sent successfully\",\n    \"community\": \"120363000000000035@g.us\",\n    \"announcement_group\": \"120363000000000035@g.us\",\n    \"message_id\": \"3EB0C767D26A1D6B8A9F\",\n    \"timestamp\": \"2026-09-15T12:00:00Z\"\n  },\n  \"success\": true\n}"
             },
             {
               "id": "2fddefbf-854e-5295-8dc1-21c4aa03b006",
@@ -85839,7 +86320,7 @@
                 "accept"
               ]
             },
-            "description": "Accepts an order received from a buyer by sending a billing message that quotes the original `OrderMessage`. No order enum is mutated.\n\n**Features:**\n- `billing.order_request_id` is derived from the verified incoming order\n- The header thumbnail is the order's own JPEG thumbnail (≤ 1 MiB); custom images are not allowed\n- The acknowledged billing is stored for later declarations (`X-Billing-Metadata-Status`)\n\n**Rules:**\n- `to`, `incoming_message_id` and `billing` are required; `body` and `id` are optional\n- `incoming_message_id` must be an `OrderMessage` received from this buyer and stored by this instance (`409 verified original message unavailable for this user, buyer and reference`)\n- Forbidden (`400`): `image`, `billing.order_request_id`, `billing_message_id`, `reference_id`, `status`, `order_status`, `payment_method`, `payment_timestamp`\n- `400 failed to attach verified original quote` when the quote cannot be built\n\n**Billing rules** (library validation, `400` with the builder error):\n- `reference_id` 1-256 bytes; `type` `physical-goods`; `currency` three uppercase letters; `order.order_type` `ORDER`; `order.status` `payment_requested`\n- 1-100 `order.items`, each with `name` (≤ 256), `quantity` 1-100, `product_id` or `retailer_id` and `amount`; custom items need `isCustomItem: true` and `retailer_id` starting with `custom-item` without `product_id`\n- Amounts are `{value, offset}` (`value/offset`); `order.subtotal` = Σ quantity × amount; `total_amount` = subtotal − discount + shipping + tax (discount ≤ subtotal)\n- At least one payment configuration: `payment_settings` (≤ 2, no repeated type) and/or `external_payment_configurations` (≤ 5)\n",
+            "description": "Accepts an order received from a buyer by sending a billing message that quotes the original `OrderMessage`. No order enum is mutated.\n\n**Features:**\n- `billing.order_request_id` is derived from the verified incoming order\n- The header thumbnail is the order's own JPEG thumbnail (≤ 1 MiB); custom images are not allowed\n- The acknowledged billing is stored for later declarations (`X-Billing-Metadata-Status`)\n\n**Rules:**\n- `to`, `incoming_message_id` and `billing` are required; `body` and `id` are optional\n- `incoming_message_id` must be an `OrderMessage` received from this buyer and stored by this instance (`409 verified original message unavailable for this user, buyer and reference`)\n- One decision per received order: after an accept or reject sent by this instance (or taken on the seller's phone and observed by the gateway), a second accept/reject for the same `incoming_message_id` returns `409 order already <accepted|rejected> by message <id>; nothing sent`\n- Order state: the gateway records the decision in its own order state (`GET /business/order/state/{messageID}`), emits the `OrderState` webhook event and adds `order_state` to the response\n- Seller devices: the official WhatsApp apps keep the order/billing card state (Accept/Decline buttons, \"Update status\" screen) only on the device that acted. No message or mutation updates the seller's other devices, so after a decision sent by the API the seller's phone keeps showing its local state; the buyer receives every message normally. Responses carry `seller_card_state: \"local_to_acting_device\"` (validated live 2026-09-22, including the official iPhone app, whose wire matches this route)\n- Recommended lifecycle: accept (`/business/order/accept`), then `/business/order/payment/status/send` with `status: captured` (the official app sends it without `order`), then `/business/order/status/send` with `completed`; each quotes the billing created by the accept\n- Forbidden (`400`): `image`, `billing.order_request_id`, `billing_message_id`, `reference_id`, `status`, `order_status`, `payment_method`, `payment_timestamp`\n- `400 failed to attach verified original quote` when the quote cannot be built\n\n**Billing rules** (library validation, `400` with the builder error):\n- `reference_id` 1-256 bytes; `type` `physical-goods`; `currency` three uppercase letters; `order.order_type` `ORDER`; `order.status` `payment_requested`\n- 1-100 `order.items`, each with `name` (≤ 256), `quantity` 1-100, `product_id` or `retailer_id` and `amount`; custom items need `isCustomItem: true` and `retailer_id` starting with `custom-item` without `product_id`\n- Amounts are `{value, offset}` (`value/offset`); `order.subtotal` = Σ quantity × amount; `total_amount` = subtotal − discount + shipping + tax (discount ≤ subtotal)\n- At least one payment configuration: `payment_settings` (≤ 2, no repeated type) and/or `external_payment_configurations` (≤ 5)\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"to\": \"5511999999999@s.whatsapp.net\",\n  \"incoming_message_id\": \"3EB0C767D26A1D6B8A9F\",\n  \"body\": \"Order accepted. Please review and pay.\",\n  \"billing\": {\n    \"reference_id\": \"REF-0003\",\n    \"type\": \"physical-goods\",\n    \"currency\": \"BRL\",\n    \"total_amount\": {\n      \"value\": 15000,\n      \"offset\": 100\n    },\n    \"order\": {\n      \"status\": \"payment_requested\",\n      \"order_type\": \"ORDER\",\n      \"items\": [\n        {\n          \"product_id\": \"7123456789012345\",\n          \"name\": \"Wooden chair\",\n          \"quantity\": 1,\n          \"amount\": {\n            \"value\": 15000,\n            \"offset\": 100\n          }\n        }\n      ],\n      \"subtotal\": {\n        \"value\": 15000,\n        \"offset\": 100\n      }\n    },\n    \"payment_settings\": [\n      {\n        \"type\": \"pix_static_code\",\n        \"pix_static_code\": {\n          \"key\": \"payments@example.com\",\n          \"key_type\": \"EMAIL\",\n          \"merchant_name\": \"Example Store\"\n        }\n      }\n    ]\n  }\n}",
@@ -87191,7 +87672,7 @@
                 "send"
               ]
             },
-            "description": "Sends a payment status declaration (`payment_status` native flow) quoting a billing message previously sent by this instance. It does not move money and does not verify any payment.\n\n**Rules:**\n- `to`, `billing_message_id`, `reference_id` and `status` are required; `status` is `pending`, `captured` or `failed`\n- At least one of `payment_method` (≤ 64 bytes) or `payment_timestamp` (positive integer) is required\n- `order_status` is optional and uses the order lifecycle values (`pending`, `processing`, `partially_shipped`, `shipped`, `completed`, `canceled`, `payment_requested`, `preparing_to_ship`, `delivered`, `confirmed`, `delayed`, `out_for_delivery`, `failed`, `refunded`)\n- Invalid combinations return `400 invalid payment lifecycle claim`\n- Forbidden: `image`, `billing`, `incoming_message_id` (`400 own billing_message_id and reference_id are required`)\n- The billing must be stored for this user, buyer and reference and contain one `review_and_pay` button (`409`)\n- Like the order status route, the billing is quoted unchanged. The declaration reaches the buyer as its own message\n  (a \"payment received\" bubble); it does not flip the \"Paid\" toggle on the billing card, which only the seller's app\n  controls.\n",
+            "description": "Sends a payment status declaration (`payment_status` native flow) quoting a billing message previously sent by this instance. It does not move money and does not verify any payment.\n\n**Rules:**\n- Seller devices keep the billing \"Update status\" screen state locally (official app behavior): the buyer sees the declaration, the seller's phone does not change its screen. Responses carry `seller_card_state: \"local_to_acting_device\"`\n- Order state: when the billing belongs to an order tracked by the gateway (accepted by `POST /business/order/accept` or on the phone), the order must be `accepted` — `409 order not accepted; nothing sent`, `409 order rejected; nothing sent`, and after `completed` or `canceled` `409 order already <completed|canceled>; nothing sent` — checked before sending. On success the state is updated (`GET /business/order/state/{messageID}`), the `OrderState` webhook event is emitted and `order_state` is added to the response. Standalone charges are not enforced\n- `to`, `billing_message_id`, `reference_id` and `status` are required; `status` is `pending`, `captured` or `failed`\n- At least one of `payment_method` (≤ 64 bytes) or `payment_timestamp` (positive integer) is required\n- `order_status` is optional and uses the order lifecycle values (`pending`, `processing`, `partially_shipped`, `shipped`, `completed`, `canceled`, `payment_requested`, `preparing_to_ship`, `delivered`, `confirmed`, `delayed`, `out_for_delivery`, `failed`, `refunded`)\n- Invalid combinations return `400 invalid payment lifecycle claim`\n- Forbidden: `image`, `billing`, `incoming_message_id` (`400 own billing_message_id and reference_id are required`)\n- The billing must be stored for this user, buyer and reference and contain one `review_and_pay` button (`409`)\n- Like the order status route, the billing is quoted unchanged. The declaration reaches the buyer as its own message\n  (a \"payment received\" bubble); it does not flip the \"Paid\" toggle on the billing card, which only the seller's app\n  controls.\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"to\": \"5511999999999@s.whatsapp.net\",\n  \"billing_message_id\": \"3EB0C767D26A1D6B8A9F\",\n  \"reference_id\": \"REF-0001\",\n  \"status\": \"captured\",\n  \"payment_method\": \"pix\",\n  \"payment_timestamp\": 1757937600,\n  \"order_status\": \"processing\",\n  \"body\": \"Payment received, thank you.\"\n}",
@@ -87729,6 +88210,135 @@
               "body": "{\n  \"code\": 409,\n  \"error\": \"verified billing quote cannot represent this declaration\",\n  \"success\": false\n}"
             },
             {
+              "id": "52e41d84-022f-52fc-b4f0-3045ab52308e",
+              "name": "409 Tracked order not accepted",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/payment/status/send",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "payment",
+                    "status",
+                    "send"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 409,\n  \"error\": \"order not accepted; nothing sent\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "1fa3894c-08bf-5428-a660-a0973450917c",
+              "name": "409 Tracked order rejected",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/payment/status/send",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "payment",
+                    "status",
+                    "send"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 409,\n  \"error\": \"order rejected; nothing sent\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "72e38301-bfb4-5207-a4f9-af646ce83abf",
+              "name": "409 Tracked order already completed",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/payment/status/send",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "payment",
+                    "status",
+                    "send"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 409,\n  \"error\": \"order already completed; nothing sent\",\n  \"success\": false\n}"
+            },
+            {
               "id": "9806bfb2-2d4a-5f45-bec0-e02f7bdb3ece",
               "name": "500 No session",
               "originalRequest": {
@@ -87931,7 +88541,7 @@
                 "reject"
               ]
             },
-            "description": "Refuses a received order by replying to the original `OrderMessage` with WhatsApp's official refusal text plus an optional note.\n\n**Features:**\n- The sent text is the fixed Portuguese sentence `Este pedido foi recusado.` (as written by the official app), followed by a line break and `body` when present\n- Quotes the verified incoming order\n\n**Rules:**\n- Requires an Enterprise license (`403`, checked first)\n- Body: exactly one JSON object, unknown fields rejected, maximum 16 KiB (`400 invalid order rejection request` / `only one JSON object is allowed`)\n- `to` must be an individual buyer JID (`@s.whatsapp.net` or `@lid`, no device); `incoming_message_id` 1-128 bytes; `id` ≤ 128 bytes; `body` ≤ 4096 bytes\n- The incoming order must be stored for this user and buyer (`409 verified incoming order unavailable for this user and buyer`)\n- Does not mutate an order enum and does not verify the remote order state (`remote_order_state_verified: false`)\n",
+            "description": "Refuses a received order by replying to the original `OrderMessage` with WhatsApp's official refusal text plus an optional note.\n\n**Features:**\n- The sent text is the fixed Portuguese sentence `Este pedido foi recusado.` (as written by the official app), followed by a line break and `body` when present\n- Quotes the verified incoming order\n\n**Rules:**\n- Requires an Enterprise license (`403`, checked first)\n- Body: exactly one JSON object, unknown fields rejected, maximum 16 KiB (`400 invalid order rejection request` / `only one JSON object is allowed`)\n- `to` must be an individual buyer JID (`@s.whatsapp.net` or `@lid`, no device); `incoming_message_id` 1-128 bytes; `id` ≤ 128 bytes; `body` ≤ 4096 bytes\n- The incoming order must be stored for this user and buyer (`409 verified incoming order unavailable for this user and buyer`)\n- Does not mutate an order enum and does not verify the remote order state (`remote_order_state_verified: false`)\n- One decision per received order: after an accept or reject sent by this instance (or taken on the seller's phone and observed by the gateway), a second accept/reject for the same `incoming_message_id` returns `409 order already <accepted|rejected> by message <id>; nothing sent`\n- Order state: the gateway records the decision in its own order state (`GET /business/order/state/{messageID}`), emits the `OrderState` webhook event and adds `order_state` to the response\n- Seller devices: the official WhatsApp apps keep the order/billing card state (Accept/Decline buttons, \"Update status\" screen) only on the device that acted. No message or mutation updates the seller's other devices, so after a decision sent by the API the seller's phone keeps showing its local state; the buyer receives every message normally. Responses carry `seller_card_state: \"local_to_acting_device\"` (validated live 2026-09-22, including the official iPhone app, whose wire matches this route)\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"to\": \"5511999999999@s.whatsapp.net\",\n  \"incoming_message_id\": \"3EB0C767D26A1D6B8A9F\"\n}",
@@ -89246,6 +89856,636 @@
           ]
         },
         {
+          "id": "af98a59c-797c-5d80-b322-8b8221f9e5e0",
+          "name": "Find the order state kept by the gateway",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "User token of the WhatsApp instance."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/order/state",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "order",
+                "state"
+              ],
+              "query": [
+                {
+                  "key": "reference_id",
+                  "value": "order-2026-0915-001",
+                  "description": "`reference_id` of the billing that accepted the order.",
+                  "disabled": true
+                },
+                {
+                  "key": "order_id",
+                  "value": "1976123456789012",
+                  "description": "Order ID from the received `OrderMessage`.",
+                  "disabled": true
+                },
+                {
+                  "key": "billing_message_id",
+                  "value": "3EB0B1C2D3E4F5A6B7C8",
+                  "description": "WhatsApp message ID of the billing that accepted the order.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Returns the same order state as `GET /business/order/state/{messageID}`, looked up by a secondary identifier instead of the received order message ID.\n\n**Features:**\n- `reference_id`: the `reference_id` of the billing that accepted the order (API or phone)\n- `order_id`: the order ID carried by the received `OrderMessage` (the `order_request_id` of the accepting billing)\n- `billing_message_id`: the WhatsApp message ID of the billing that accepted the order\n- Read-only and local: no WhatsApp request is made and no session connection is required\n\n**Rules:**\n- Exactly one of `reference_id`, `order_id` or `billing_message_id`, at most 256 bytes (`400 exactly one of messageID, reference_id, order_id or billing_message_id (at most 256 bytes) is required`)\n- `404 order state not found` when no tracked order matches for this user\n- The order lifecycle, transitions and `409` rules are described in `GET /business/order/state/{messageID}`\n"
+          },
+          "response": [
+            {
+              "id": "2b6d727e-cc33-5f67-872f-5e62850d223f",
+              "name": "200 Order accepted by the API and paid",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/state",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "state"
+                  ],
+                  "query": [
+                    {
+                      "key": "reference_id",
+                      "value": "order-2026-0915-001",
+                      "description": "`reference_id` of the billing that accepted the order.",
+                      "disabled": true
+                    },
+                    {
+                      "key": "order_id",
+                      "value": "1976123456789012",
+                      "description": "Order ID from the received `OrderMessage`.",
+                      "disabled": true
+                    },
+                    {
+                      "key": "billing_message_id",
+                      "value": "3EB0B1C2D3E4F5A6B7C8",
+                      "description": "WhatsApp message ID of the billing that accepted the order.",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"success\": true,\n    \"seller_card_state\": \"local_to_acting_device\",\n    \"state\": {\n      \"version\": 1,\n      \"incoming_message_id\": \"3EB0C767D26A1D6B8A9F\",\n      \"order_id\": \"1976123456789012\",\n      \"buyer\": \"5511999999999@s.whatsapp.net\",\n      \"state\": \"accepted\",\n      \"payment_status\": \"captured\",\n      \"order_status\": \"\",\n      \"billing_message_id\": \"3EB0B1C2D3E4F5A6B7C8\",\n      \"reference_id\": \"order-2026-0915-001\",\n      \"updated_at\": 1790000600,\n      \"history\": [\n        {\n          \"at\": 1790000000,\n          \"event\": \"received\",\n          \"value\": \"1976123456789012\",\n          \"source\": \"device\",\n          \"message_id\": \"3EB0C767D26A1D6B8A9F\"\n        },\n        {\n          \"at\": 1790000300,\n          \"event\": \"accepted\",\n          \"source\": \"api\",\n          \"message_id\": \"3EB0B1C2D3E4F5A6B7C8\"\n        },\n        {\n          \"at\": 1790000600,\n          \"event\": \"payment_status\",\n          \"value\": \"captured\",\n          \"source\": \"device\",\n          \"message_id\": \"3EB0A9F8E7D6C5B4A3B2\"\n        }\n      ]\n    }\n  },\n  \"success\": true\n}"
+            },
+            {
+              "id": "955ce708-587a-581b-9bc0-43a58fc9b569",
+              "name": "400 No identifier or more than one",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/state",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "state"
+                  ],
+                  "query": [
+                    {
+                      "key": "reference_id",
+                      "value": "order-2026-0915-001",
+                      "description": "`reference_id` of the billing that accepted the order.",
+                      "disabled": true
+                    },
+                    {
+                      "key": "order_id",
+                      "value": "1976123456789012",
+                      "description": "Order ID from the received `OrderMessage`.",
+                      "disabled": true
+                    },
+                    {
+                      "key": "billing_message_id",
+                      "value": "3EB0B1C2D3E4F5A6B7C8",
+                      "description": "WhatsApp message ID of the billing that accepted the order.",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 400,\n  \"error\": \"exactly one of messageID, reference_id, order_id or billing_message_id (at most 256 bytes) is required\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "41bce9c4-be24-5d88-bcdb-e8cd6f1da9b5",
+              "name": "401 Invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/state",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "state"
+                  ],
+                  "query": [
+                    {
+                      "key": "reference_id",
+                      "value": "order-2026-0915-001",
+                      "description": "`reference_id` of the billing that accepted the order.",
+                      "disabled": true
+                    },
+                    {
+                      "key": "order_id",
+                      "value": "1976123456789012",
+                      "description": "Order ID from the received `OrderMessage`.",
+                      "disabled": true
+                    },
+                    {
+                      "key": "billing_message_id",
+                      "value": "3EB0B1C2D3E4F5A6B7C8",
+                      "description": "WhatsApp message ID of the billing that accepted the order.",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 401,\n  \"error\": \"unauthorized\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "7501980a-024b-51c1-8ef6-920bc7e2f968",
+              "name": "404 Order state not found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/state",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "state"
+                  ],
+                  "query": [
+                    {
+                      "key": "reference_id",
+                      "value": "order-2026-0915-001",
+                      "description": "`reference_id` of the billing that accepted the order.",
+                      "disabled": true
+                    },
+                    {
+                      "key": "order_id",
+                      "value": "1976123456789012",
+                      "description": "Order ID from the received `OrderMessage`.",
+                      "disabled": true
+                    },
+                    {
+                      "key": "billing_message_id",
+                      "value": "3EB0B1C2D3E4F5A6B7C8",
+                      "description": "WhatsApp message ID of the billing that accepted the order.",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 404,\n  \"error\": \"order state not found\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "c6b7f9aa-7a6d-52b1-8d43-d17d00fd9b6f",
+              "name": "500 Lookup failed",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/state",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "state"
+                  ],
+                  "query": [
+                    {
+                      "key": "reference_id",
+                      "value": "order-2026-0915-001",
+                      "description": "`reference_id` of the billing that accepted the order.",
+                      "disabled": true
+                    },
+                    {
+                      "key": "order_id",
+                      "value": "1976123456789012",
+                      "description": "Order ID from the received `OrderMessage`.",
+                      "disabled": true
+                    },
+                    {
+                      "key": "billing_message_id",
+                      "value": "3EB0B1C2D3E4F5A6B7C8",
+                      "description": "WhatsApp message ID of the billing that accepted the order.",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 500,\n  \"error\": \"order state lookup failed\",\n  \"success\": false\n}"
+            }
+          ]
+        },
+        {
+          "id": "dc8235cb-0c70-53a2-a5aa-25c4389b5264",
+          "name": "Get the order state kept by the gateway",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "User token of the WhatsApp instance."
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/business/order/state/:messageID",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "business",
+                "order",
+                "state",
+                ":messageID"
+              ],
+              "variable": [
+                {
+                  "key": "messageID",
+                  "value": "3EB0C767D26A1D6B8A9F",
+                  "description": "ID of the received order message (`incoming_message_id`)."
+                }
+              ]
+            },
+            "description": "Returns the order state this gateway keeps for a received order, like WhatsApp Web keeps its own local state.\n\nThe official WhatsApp apps keep the seller's order/billing card state (Accept/Decline buttons, \"Update status\" screen) only on the device that acted; nothing syncs it to the seller's other devices. The gateway is a linked device, so it keeps its own authoritative state and also tracks the actions the seller takes on the phone, which arrive as own messages.\n\n**Features:**\n- `state`: `received` (order message received), `accepted` (billing sent) or `rejected` (refusal sent)\n- `payment_status`: `\"\"`, `pending`, `captured` or `failed`; `order_status`: `\"\"` or the last declared lifecycle value (`preparing_to_ship`, `shipped`, `delivered`, `completed`, `canceled`, ...)\n- `billing_message_id` and `reference_id` link the billing that accepted the order\n- `history` (last 100 changes, oldest first): `at`, `event` (`received`, `accepted`, `rejected`, `payment_status`, `order_status`), `value`, `source` (`api` for this gateway, `device` for WhatsApp/the phone), `message_id`, and `note` (`out_of_order` for a phone action outside the expected order, `backfilled` for an order received before tracking started)\n- Every change emits the `OrderState` webhook event\n- Read-only and local: no WhatsApp request is made and no session connection is required\n\n**Transitions enforced on API sends** (checked before sending; nothing is sent on `409`):\n- `received` → `accepted` (`POST /business/order/accept`) or `rejected` (`POST /business/order/reject`); a second decision returns `409 order already <accepted|rejected> by message <id>; nothing sent`\n- Payment and status declarations (`/business/order/payment/status/send`, `/business/order/status/send`) on a billing linked to a tracked order require `accepted`: `409 order not accepted; nothing sent`, `409 order rejected; nothing sent`, and after `completed` or `canceled` `409 order already <completed|canceled>; nothing sent`\n- Declarations on a standalone billing (`/business/order/charge/send`) are not tracked or enforced\n- Phone actions are always recorded, never refused\n\n**Phone actions tracked** (own messages sent by another device of this account):\n- Accept: billing (`review_and_pay`) whose `order_request_id` is the order ID\n- Decline: the official refusal text `Este pedido foi recusado.` quoting the received order\n- Payment: `payment_status` declaration quoting the billing\n- Status: `review_order` declaration quoting the billing\n\n**Rules:**\n- `messageID` is the ID of the received order message (the same value used as `incoming_message_id` in accept/reject), at most 256 bytes; query lookups are not allowed together with the path (`400`)\n- `404 order state not found` when this instance never received or tracked that order for this user\n"
+          },
+          "response": [
+            {
+              "id": "38128448-962d-5fc1-a594-11839652df18",
+              "name": "200 Order received, no decision yet",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/state/:messageID",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "state",
+                    ":messageID"
+                  ],
+                  "variable": [
+                    {
+                      "key": "messageID",
+                      "value": "3EB0C767D26A1D6B8A9F",
+                      "description": "ID of the received order message (`incoming_message_id`)."
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"success\": true,\n    \"seller_card_state\": \"local_to_acting_device\",\n    \"state\": {\n      \"version\": 1,\n      \"incoming_message_id\": \"3EB0C767D26A1D6B8A9F\",\n      \"order_id\": \"1976123456789012\",\n      \"buyer\": \"5511999999999@s.whatsapp.net\",\n      \"state\": \"received\",\n      \"payment_status\": \"\",\n      \"order_status\": \"\",\n      \"billing_message_id\": \"\",\n      \"reference_id\": \"\",\n      \"updated_at\": 1790000000,\n      \"history\": [\n        {\n          \"at\": 1790000000,\n          \"event\": \"received\",\n          \"value\": \"1976123456789012\",\n          \"source\": \"device\",\n          \"message_id\": \"3EB0C767D26A1D6B8A9F\"\n        }\n      ]\n    }\n  },\n  \"success\": true\n}"
+            },
+            {
+              "id": "993a2236-4ec8-550b-9797-eec5e00142f8",
+              "name": "200 Order accepted on the phone, then shipped",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/state/:messageID",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "state",
+                    ":messageID"
+                  ],
+                  "variable": [
+                    {
+                      "key": "messageID",
+                      "value": "3EB0C767D26A1D6B8A9F",
+                      "description": "ID of the received order message (`incoming_message_id`)."
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"success\": true,\n    \"seller_card_state\": \"local_to_acting_device\",\n    \"state\": {\n      \"version\": 1,\n      \"incoming_message_id\": \"3EB0C767D26A1D6B8A9F\",\n      \"order_id\": \"1976123456789012\",\n      \"buyer\": \"5511999999999@s.whatsapp.net\",\n      \"state\": \"accepted\",\n      \"payment_status\": \"\",\n      \"order_status\": \"shipped\",\n      \"billing_message_id\": \"3EB0B1C2D3E4F5A6B7C8\",\n      \"reference_id\": \"order-2026-0915-001\",\n      \"updated_at\": 1790000900,\n      \"history\": [\n        {\n          \"at\": 1790000000,\n          \"event\": \"received\",\n          \"value\": \"1976123456789012\",\n          \"source\": \"device\",\n          \"message_id\": \"3EB0C767D26A1D6B8A9F\"\n        },\n        {\n          \"at\": 1790000300,\n          \"event\": \"accepted\",\n          \"source\": \"device\",\n          \"message_id\": \"3EB0B1C2D3E4F5A6B7C8\"\n        },\n        {\n          \"at\": 1790000900,\n          \"event\": \"order_status\",\n          \"value\": \"shipped\",\n          \"source\": \"api\",\n          \"message_id\": \"3EB0D4C3B2A1F0E9D8C7\"\n        }\n      ]\n    }\n  },\n  \"success\": true\n}"
+            },
+            {
+              "id": "10eb8bd2-46a4-5387-bb92-f7dec8f9e3ee",
+              "name": "400 Path and query lookup together",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/state/:messageID",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "state",
+                    ":messageID"
+                  ],
+                  "variable": [
+                    {
+                      "key": "messageID",
+                      "value": "3EB0C767D26A1D6B8A9F",
+                      "description": "ID of the received order message (`incoming_message_id`)."
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 400,\n  \"error\": \"exactly one of messageID, reference_id, order_id or billing_message_id (at most 256 bytes) is required\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "3b0f7d81-5ba3-5ad0-893d-0c81d5741306",
+              "name": "401 Invalid token",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/state/:messageID",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "state",
+                    ":messageID"
+                  ],
+                  "variable": [
+                    {
+                      "key": "messageID",
+                      "value": "3EB0C767D26A1D6B8A9F",
+                      "description": "ID of the received order message (`incoming_message_id`)."
+                    }
+                  ]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 401,\n  \"error\": \"unauthorized\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "31e7ac79-c8a8-5e7f-b7c7-78976ff1def5",
+              "name": "404 Order state not found",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/state/:messageID",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "state",
+                    ":messageID"
+                  ],
+                  "variable": [
+                    {
+                      "key": "messageID",
+                      "value": "3EB0C767D26A1D6B8A9F",
+                      "description": "ID of the received order message (`incoming_message_id`)."
+                    }
+                  ]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 404,\n  \"error\": \"order state not found\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "c87f1538-1962-562f-b09c-dea0a8e9b1a4",
+              "name": "500 Lookup failed",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/state/:messageID",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "state",
+                    ":messageID"
+                  ],
+                  "variable": [
+                    {
+                      "key": "messageID",
+                      "value": "3EB0C767D26A1D6B8A9F",
+                      "description": "ID of the received order message (`incoming_message_id`)."
+                    }
+                  ]
+                }
+              },
+              "status": "Internal Server Error",
+              "code": 500,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 500,\n  \"error\": \"order state lookup failed\",\n  \"success\": false\n}"
+            }
+          ]
+        },
+        {
           "id": "58642c22-298b-58bb-b749-8ff5994589c0",
           "name": "Send an order status declaration",
           "request": {
@@ -89275,7 +90515,7 @@
                 "send"
               ]
             },
-            "description": "Sends an order lifecycle declaration (`review_order` native flow) quoting a billing message previously sent by this instance, with the new status written into the quoted order.\n\n**Rules:**\n- `to`, `billing_message_id` (own billing message ID), `reference_id` (the `billing.reference_id` of that billing) and `status` are required; `body` and `id` are optional\n- `status` must be one of `pending`, `processing`, `partially_shipped`, `shipped`, `completed`, `canceled`, `payment_requested`, `preparing_to_ship`, `delivered`, `confirmed`, `delayed`, `out_for_delivery`, `failed`, `refunded` (`400 invalid order lifecycle claim`)\n- Forbidden: `image`, `billing`, `incoming_message_id` (`400 own billing_message_id and reference_id are required`) and `payment_method`, `payment_timestamp`, `order_status` (`400 payment fields are not order status fields`)\n- The billing must be stored for this user, buyer and reference and contain one `review_and_pay` button (`409`)\n- The declaration quotes the billing **exactly as it was sent**: the quoted payload is never rewritten, matching what the\n  official client does.\n- **The order card does not follow these declarations.** Each one arrives as its own message (\"Status: shipped\", and so\n  on), which is what the buyer reads; the badge on the billing card only moves through the seller's own app. The client\n  reserves card updates for a button name (`order_status`) that the buyer's app does not render — measured live on\n  2026-09-16, both ways. Treat the messages as the delivery channel, not the card.\n\n**Typical sequence** (validated end to end on a real order): `POST /business/order/accept` sends the billing, then this\nroute walks the order through `confirmed` -> `processing` -> `preparing_to_ship` -> `shipped` -> `out_for_delivery` ->\n`delivered` -> `completed`. Each call is an independent declaration quoting the same billing: there is no server-side\nstate machine here, so any order of statuses is accepted and the buyer sees every declaration. Payment is declared\nseparately with `POST /business/order/payment/status/send`.\n",
+            "description": "Sends an order lifecycle declaration (`review_order` native flow) quoting a billing message previously sent by this instance, with the new status written into the quoted order.\n\n**Rules:**\n- Seller devices keep the billing \"Update status\" screen state locally (official app behavior): the buyer sees the declaration, the seller's phone does not change its screen. Responses carry `seller_card_state: \"local_to_acting_device\"`\n- Order state: when the billing belongs to an order tracked by the gateway (accepted by `POST /business/order/accept` or on the phone), the order must be `accepted` — `409 order not accepted; nothing sent`, `409 order rejected; nothing sent`, and after `completed` or `canceled` `409 order already <completed|canceled>; nothing sent` — checked before sending. On success the state is updated (`GET /business/order/state/{messageID}`), the `OrderState` webhook event is emitted and `order_state` is added to the response. Standalone charges are not enforced\n- `to`, `billing_message_id` (own billing message ID), `reference_id` (the `billing.reference_id` of that billing) and `status` are required; `body` and `id` are optional\n- `status` must be one of `pending`, `processing`, `partially_shipped`, `shipped`, `completed`, `canceled`, `payment_requested`, `preparing_to_ship`, `delivered`, `confirmed`, `delayed`, `out_for_delivery`, `failed`, `refunded` (`400 invalid order lifecycle claim`)\n- Forbidden: `image`, `billing`, `incoming_message_id` (`400 own billing_message_id and reference_id are required`) and `payment_method`, `payment_timestamp`, `order_status` (`400 payment fields are not order status fields`)\n- The billing must be stored for this user, buyer and reference and contain one `review_and_pay` button (`409`)\n- The declaration quotes the billing **exactly as it was sent**: the quoted payload is never rewritten, matching what the\n  official client does.\n- **The order card does not follow these declarations.** Each one arrives as its own message (\"Status: shipped\", and so\n  on), which is what the buyer reads; the badge on the billing card only moves through the seller's own app. The client\n  reserves card updates for a button name (`order_status`) that the buyer's app does not render — measured live on\n  2026-09-16, both ways. Treat the messages as the delivery channel, not the card.\n\n**Typical sequence** (validated end to end on a real order): `POST /business/order/accept` sends the billing, then this\nroute walks the order through `confirmed` -> `processing` -> `preparing_to_ship` -> `shipped` -> `out_for_delivery` ->\n`delivered` -> `completed`. Each call is an independent declaration quoting the same billing: any order of non-terminal statuses is\naccepted and the buyer sees every declaration; for an order tracked by the gateway, declarations stop after `completed` or\n`canceled` (`409`). Payment is declared\nseparately with `POST /business/order/payment/status/send`.\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"to\": \"5511999999999@s.whatsapp.net\",\n  \"billing_message_id\": \"3EB0C767D26A1D6B8A9F\",\n  \"reference_id\": \"REF-0001\",\n  \"status\": \"shipped\",\n  \"body\": \"Your order is on its way.\"\n}",
@@ -89994,6 +91234,132 @@
                 }
               ],
               "body": "{\n  \"code\": 409,\n  \"error\": \"verified billing quote cannot represent this declaration\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "f611a242-d508-538a-8ea2-22f57f5350c2",
+              "name": "409 Tracked order not accepted",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/status/send",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "status",
+                    "send"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 409,\n  \"error\": \"order not accepted; nothing sent\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "41f82da5-eed3-5ed6-83dc-83d5a2d08fbd",
+              "name": "409 Tracked order rejected",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/status/send",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "status",
+                    "send"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 409,\n  \"error\": \"order rejected; nothing sent\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "a35a565f-03bc-54b0-98b1-ea1dfcf9367e",
+              "name": "409 Tracked order already completed",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/business/order/status/send",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "business",
+                    "order",
+                    "status",
+                    "send"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 409,\n  \"error\": \"order already completed; nothing sent\",\n  \"success\": false\n}"
             },
             {
               "id": "18a26858-2477-5fee-a527-7f78b7eb30f5",
@@ -101359,7 +102725,7 @@
                 "create"
               ]
             },
-            "description": "Creates a WhatsApp channel (newsletter) owned by this account, optionally with a description and a picture.\nThe new channel JID is returned in `data.jid` and can be used right away with `POST /newsletter/send`.\n\n**Rules:**\n- The body must be exactly one JSON object of at most 24 MiB; unknown keys are ignored.\n- `name` is required and cannot be blank. It is cut to its first 25 **bytes**, which may split a multi-byte character; `data.name` shows the value actually used.\n- `picture` accepts a base64 data URL or an HTTP(S) URL of a JPEG, PNG, GIF or WebP image. It is converted to a JPEG of at most 640x640 pixels before upload.\n- The account must have accepted the channel terms first (`POST /newsletter/accept-tos`); otherwise WhatsApp refuses the creation.\n\n**Error envelopes:**\n- Body and `name` validation errors and `no session` use the standard error envelope.\n- Picture errors (**400**) and a creation refused by WhatsApp (**500**) use a legacy envelope: `success` stays `true` and the failure is in `data.success: false` with `data.message`.\n",
+            "description": "Creates a WhatsApp channel (newsletter) owned by this account, optionally with a description and a picture.\nThe new channel JID is returned in `data.jid` and can be used right away with `POST /newsletter/send`.\nThe response does **not** include the invite code: call `POST /newsletter/info` with `{\"jid\": \"<data.jid>\"}` to read `invite_code`.\n\n**Rules:**\n- The body must be exactly one JSON object of at most 24 MiB; unknown keys are ignored.\n- `name` is required and cannot be blank. It is cut to its first 25 **bytes**, which may split a multi-byte character; `data.name` shows the value actually used.\n- `picture` accepts a base64 data URL or an HTTP(S) URL of a JPEG, PNG, GIF or WebP image. It is converted to a JPEG of at most 640x640 pixels before upload.\n- The account must have accepted the channel terms (`POST /newsletter/accept-tos`) **before** creating a channel; otherwise WhatsApp refuses the creation.\n\n**Error envelopes:**\n- Body and `name` validation errors and `no session` use the standard error envelope.\n- Picture errors (**400**) and a creation refused by WhatsApp (**500**) use a legacy envelope: `success` stays `true` and the failure is in `data.success: false` with `data.message`.\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Product Updates\"\n}",
@@ -101470,8 +102836,8 @@
               "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"success\": true,\n    \"jid\": \"120363000000000022@newsletter\",\n    \"name\": \"Product Updates\",\n    \"message\": \"Newsletter created successfully\"\n  },\n  \"success\": true\n}"
             },
             {
-              "id": "a76c3b0b-c5f1-5704-829b-c1bc74b55505",
-              "name": "200 Channel created; `data.jid` is the new channel JID.",
+              "id": "e7e3064d-d47b-5eb3-92c8-4241c59bd766",
+              "name": "200 Channel created; `data.jid` is the new channel JID. No invite code is returned — read it with `POST /newsletter/info`.",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -103300,7 +104666,7 @@
                 "mark-viewed"
               ]
             },
-            "description": "Sends a view receipt for one or more channel posts, incrementing their `views_count`. This is not the same as\nmarking the chat as read on other devices.\n\n**Rules:**\n- `jid` (aliases `NewsletterJID`, `newsletter_jid`) must be an `@newsletter` JID.\n- `server_ids` (alias `message_ids`) is required: at least one positive server ID (numbers or numeric strings) from `POST /newsletter/messages`.\n- The session is checked first (**500** `no session`). As in the original contract, missing or empty `server_ids`, a non-positive numeric ID or a parseable JID that is not an `@newsletter` JID (for example `{}`) returns **500** `error marking as viewed: ...`; nothing is sent to WhatsApp. A body that is not a JSON object, a field with the wrong type or a non-numeric string ID returns **400**.\n- The body must be a JSON object of at most 1 MiB. Unknown keys are ignored and `null` values count as absent.\n- A view is counted only for posts this account has not viewed yet; repeating the call returns 200 without changing `views_count`.\n",
+            "description": "Sends a view receipt for one or more channel posts. This is not the same as marking the chat as read on other\ndevices.\n\nA 200 only means the WhatsApp server acknowledged the view receipt. It does **not** guarantee that `views_count`\nincreases: the count seen by the channel owner may not reflect it (observed live on 2026-09-22).\n\n**Rules:**\n- `jid` (aliases `NewsletterJID`, `newsletter_jid`) must be an `@newsletter` JID.\n- `server_ids` (alias `message_ids`) is required: at least one positive server ID (numbers or numeric strings) from `POST /newsletter/messages`.\n- The session is checked first (**500** `no session`). As in the original contract, missing or empty `server_ids`, a non-positive numeric ID or a parseable JID that is not an `@newsletter` JID (for example `{}`) returns **500** `error marking as viewed: ...`; nothing is sent to WhatsApp. A body that is not a JSON object, a field with the wrong type or a non-numeric string ID returns **400**.\n- The body must be a JSON object of at most 1 MiB. Unknown keys are ignored and `null` values count as absent.\n- Repeating the call for the same posts also returns 200.\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"jid\": \"120363000000000022@newsletter\",\n  \"server_ids\": [\n    120,\n    121\n  ]\n}",
@@ -103362,8 +104728,8 @@
               "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"success\": true,\n    \"message\": \"Messages marked as viewed\"\n  },\n  \"success\": true\n}"
             },
             {
-              "id": "b98e0d10-f94b-5829-831a-f8a7fbb05bd4",
-              "name": "200 WhatsApp accepted the view receipt.",
+              "id": "dc77dba4-77d0-5e54-8577-cfaaf389dbdc",
+              "name": "200 The WhatsApp server acknowledged the view receipt (the owner's `views_count` may not change).",
               "originalRequest": {
                 "method": "POST",
                 "header": [
@@ -123148,7 +124514,7 @@
                 }
               ]
             },
-            "description": "Fetches the five app-state collections (`critical_block`, `critical_unblock_low`, `regular_low`, `regular_high`, `regular`) from WhatsApp without reconnecting, updating chat settings, contacts, labels and other synced data in the local store.\n\n**Behavior:**\n- The collections are fetched one after another; the call always answers **200** once all five were attempted. `data.success` is `false` when any collection failed, and each item in `data.results` carries its own `success`, `error` and `duration`.\n- With `auto_recovery` (default `true`) a failed collection triggers an app-state recovery request to the primary phone; `recovery_requested` shows whether it was sent. Recovered data arrives later through app-state events.\n\n**Rules:**\n- Options come from a JSON body when one is sent; a body that does not parse is ignored and the defaults (`full_sync: true`, `auto_recovery: true`) are kept.\n- Without a body, the `full_sync` and `auto_recovery` query or form parameters are read; only the literal value `false` disables an option.\n- `full_sync: true` discards the local collection versions and downloads full snapshots; `false` only fetches patches newer than the stored versions.\n- Precondition failures use the legacy envelope (message in `data`, `success: true`): **404** when no client exists and **400** when it is not connected. A never-paired session returns **500** `not logged in`.\n- Full syncs can take several seconds; do not call this in a tight loop.\n",
+            "description": "Fetches the five app-state collections (`critical_block`, `critical_unblock_low`, `regular_low`, `regular_high`, `regular`) from WhatsApp without reconnecting, updating chat settings, contacts, labels and other synced data in the local store.\n\n**Behavior:**\n- The collections are fetched one after another; the call always answers **200** once all five were attempted. `data.success` is `false` when any collection failed, and each item in `data.results` carries its own `success`, `error` and `duration`.\n- With `auto_recovery` (default `true`) a failed collection triggers an app-state recovery request to the primary phone; `recovery_requested` shows whether it was sent. Requests are limited to one per collection every 2 minutes (`recovery_skipped: true` otherwise), because the phone stops answering repeated requests. Recovered data arrives later through app-state events.\n\n**Rules:**\n- Options come from a JSON body when one is sent; a body that does not parse is ignored and the defaults (`full_sync: true`, `auto_recovery: true`) are kept.\n- Without a body, the `full_sync` and `auto_recovery` query or form parameters are read; only the literal value `false` disables an option.\n- `full_sync: true` discards the local collection versions and downloads full snapshots; `false` only fetches patches newer than the stored versions.\n- Precondition failures use the legacy envelope (message in `data`, `success: true`): **404** when no client exists and **400** when it is not connected. A never-paired session returns **500** `not logged in`.\n- Full syncs can take several seconds; do not call this in a tight loop.\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"full_sync\": true,\n  \"auto_recovery\": true\n}",
