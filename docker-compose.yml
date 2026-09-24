@@ -52,9 +52,15 @@ services:
       # TZ: Timezone padrão utilizado por logs, agendadores e conversões de horário.
       - TZ=America/Sao_Paulo
 
-      # Estado persistente dos nós tsnet por sessão. Sem este volume, uma
-      # recriação do container exige nova auth key JIT e mantém a rota bloqueada.
+      # Estado dos nós tsnet por sessão: fica no BANCO, cifrado; não precisa de volume.
+      # Este diretório só é lido para importar, uma vez, o tailscaled.state de uma
+      # instalação 2.1.0 (ver docs/network-route.md, deploy em dois passos).
       - NETWORK_ROUTE_STATE_DIR=/app/network-routes
+      # Opcionais: chave própria do estado (>= 32 caracteres), valor anterior na troca
+      # e rotas restauradas em paralelo no boot.
+      # - NETWORK_ROUTE_STATE_KEY=
+      # - NETWORK_ROUTE_STATE_KEY_PREVIOUS=
+      # - NETWORK_ROUTE_RESTORE_CONCURRENCY=32
 
       # ========== CONFIGURAÇÕES PADRÃO DE DISPOSITIVO WHATSAPP ==========
       # ========================================
@@ -451,7 +457,7 @@ services:
       # TRACING_SERVICE_NAME: Nome lógico do serviço reportado ao tracer.
       - TRACING_SERVICE_NAME=zuckzapgo
       # TRACING_SERVICE_VERSION: Versão reportada nas tags de tracing.
-      - TRACING_SERVICE_VERSION=v2.1.0 # x-release-please-version
+      - TRACING_SERVICE_VERSION=v2.2.0 # x-release-please-version
       # TRACING_ENVIRONMENT: Identificador do ambiente (development, staging, production).
       - TRACING_ENVIRONMENT=development
 
@@ -552,6 +558,7 @@ services:
       - MONITORING_PRUNE_INTERVAL=24h
       # Absolute base URL returned in stream_url (leave empty to fall back to ZUCKZAPGO_ADDRESS or http://localhost:<port>)
       - MONITORING_STREAM_BASE_URL=http://localhost:8080
+    # OPCIONAL: só para importar o estado legado da 2.1.0. Instalação nova pode remover.
     volumes:
       - network_route_state_zuckzapgo:/app/network-routes
     networks:
@@ -681,6 +688,7 @@ networks:
 
 volumes:
   postgres_data_zuckzapgo:
+  # Opcional (importação legada do estado das rotas mobile).
   network_route_state_zuckzapgo:
   # rabbitmq_data_zuckzapgo:
   # redis_data_zuckzapgo:

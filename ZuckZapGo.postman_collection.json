@@ -1,7 +1,7 @@
 {
   "info": {
-    "_postman_id": "ce47b146-f755-5827-8b22-594d0ac079b8",
-    "name": "ZUCKZAPGO v2.1.0",
+    "_postman_id": "f7a19862-ea75-58d1-81b7-0a6f340d3c35",
+    "name": "ZUCKZAPGO v2.2.0",
     "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n<h2>📞 Calls — LLM build guide</h2><p>Building a WhatsApp <b>voice or video call</b> integration? Open <a href=\"/api/llm.txt\" target=\"_blank\" rel=\"noopener\"><b>llm.txt</b></a> — a complete, self-contained spec you can paste into any LLM (Claude, GPT, Gemini, …) to generate a perfect calls integration (REST control + bidirectional PCM audio over WebSocket + bidirectional H.264 video over WebSocket + passkey pairing appendix). It also surfaces as the external-docs link on the <code>Call</code> tag below.</p>\n\n<h2>📱 Native mobile egress — operator and LLM guides</h2><p>Provision a fail-closed, TCP-only Tailscale exit route per session with <code>POST /session/network-route</code>, inspect it with <code>GET /session/network-route</code>, and — when a route cannot converge and is holding the session offline — remove it with <code>DELETE /session/network-route</code>, an explicit operator action that returns the session to legacy proxy or direct egress. Read the <a href=\"/docs/network-route.md\" target=\"_blank\" rel=\"noopener\">operator guide</a> or paste <a href=\"/api/network-route-llm.txt\" target=\"_blank\" rel=\"noopener\"><b>network-route-llm.txt</b></a> into an LLM for the complete integration contract. Auth keys are write-only and must never be persisted, returned, or logged.</p>\n\n<h2>🔌 Connector — embeddable pairing widget</h2><p>Embed WhatsApp pairing (QR, phone code, or passkey) in any app with one <code>&lt;script&gt;</code> — without ever exposing the real instance token to the browser. Your backend mints a short-lived ephemeral token via <code>POST /session/connector/token</code>; the browser runs <code>ZZ.connector.open({ token })</code> against the <b>Connector</b> tag's <code>/connector/*</code> routes. Paste-into-any-LLM guide: <a href=\"/api/connector-llm.txt\" target=\"_blank\" rel=\"noopener\"><b>connector-llm.txt</b></a>. Full docs hub for API users &amp; LLMs: <a href=\"/docs\" target=\"_blank\" rel=\"noopener\">/docs</a>.</p>\n\nGenerated from static/api/spec.yml (OpenAPI 3.0.0).\n\n**Variables:** set `base_url`, `api_token` (user token, sent as the `token` header) and `admin_token` (sent as the `Authorization` header on admin routes). Path variables are prefilled with documentation examples.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -12119,7 +12119,7 @@
                 "webhook"
               ]
             },
-            "description": "Returns the individual webhook URL of this instance and the event types it is subscribed to.\n\n**Rules:**\n- `webhook` is empty when no individual webhook is configured.\n- `subscribe` is the stored comma-separated list split into an array. When nothing is stored the array contains one empty string (`[\"\"]`).\n- The server-wide global webhook is configured by environment variables and is not part of this response.\n\n**Event types:**\n- **Messages:** `Message`, `UndecryptableMessage`, `FBMessage`, `Receipt`, `MediaRetry`, `ReadReceipt`\n- **Chat management:** `Star`, `Pin`, `Archive`, `Mute`, `MarkChatAsRead`, `ClearChat`, `DeleteChat`, `DeleteForMe`, `LabelAssociationChat`, `LabelAssociationMessage`, `LabelEdit`\n- **Groups and contacts:** `GroupInfo`, `JoinedGroup`, `Contact`, `Picture`, `PushName`, `BusinessName`, `UserAbout`\n- **Privacy:** `PrivacySettings`, `IdentityChange`, `Blocklist`, `BlocklistChange`, `UserStatusMute`\n- **Connection:** `Connected`, `Disconnected`, `QR`, `PairSuccess`, `PairError`, `QRScannedWithoutMultidevice`, `LoggedOut`, `StreamReplaced`, `StreamError`, `ConnectFailure`, `KeepAliveTimeout`, `KeepAliveRestored`, `ManualLoginReconnect`, `TemporaryBan`, `ClientOutdated`, `CATRefreshError`, `PasskeyRequest`, `PasskeyConfirmation`\n- **Calls:** `CallOffer`, `CallAccept`, `CallAcceptEngine`, `CallPreAccept`, `CallTransport`, `CallTerminate`, `CallTerminateEngine`, `CallRecordingReady`, `CallReject`, `CallOfferNotice`, `CallRelayLatency`, `CallReminder`, `UnknownCallEvent`\n- **Business:** `OrderState` (gateway-kept order state changed)\n- **Presence:** `Presence`, `ChatPresence`\n- **Newsletters:** `NewsletterJoin`, `NewsletterLeave`, `NewsletterMuteChange`, `NewsletterLiveUpdate`\n- **Sync:** `AppState`, `AppStateSyncComplete`, `AppStateSyncError`, `HistorySync`, `OfflineSyncPreview`, `OfflineSyncCompleted`, `PushNameSetting`, `UnarchiveChatsSetting`\n- **Special:** `All` subscribes to every event type\n"
+            "description": "Returns the individual webhook URL of this instance and the event types it is subscribed to.\n\n**Rules:**\n- `webhook` is empty when no individual webhook is configured.\n- `subscribe` is the stored comma-separated list split into an array. When nothing is stored the array contains one empty string (`[\"\"]`).\n- The server-wide global webhook is configured by environment variables and is not part of this response.\n\n**Event types:**\n- **Messages:** `Message`, `UndecryptableMessage`, `FBMessage`, `Receipt`, `MediaRetry`, `ReadReceipt`\n- **Chat management:** `Star`, `Pin`, `Archive`, `Mute`, `MarkChatAsRead`, `ClearChat`, `DeleteChat`, `DeleteForMe`, `LabelAssociationChat`, `LabelAssociationMessage`, `LabelEdit`\n- **Groups and contacts:** `GroupInfo`, `JoinedGroup`, `Contact`, `Picture`, `PushName`, `BusinessName`, `UserAbout`\n- **Privacy:** `PrivacySettings`, `IdentityChange`, `Blocklist`, `BlocklistChange`, `UserStatusMute`\n- **Connection:** `Connected`, `Disconnected`, `QR`, `PairSuccess`, `PairError`, `QRScannedWithoutMultidevice`, `LoggedOut`, `StreamReplaced`, `StreamError`, `ConnectFailure`, `KeepAliveTimeout`, `KeepAliveRestored`, `ManualLoginReconnect`, `TemporaryBan`, `ClientOutdated`, `CATRefreshError`, `PasskeyRequest`, `PasskeyConfirmation`\n- **Calls:** `CallOffer`, `CallAccept`, `CallAcceptEngine`, `CallPreAccept`, `CallTransport`, `CallTerminate`, `CallTerminateEngine`, `CallRecordingReady`, `CallRecordingStopped`, `CallReject`, `CallOfferNotice`, `CallRelayLatency`, `CallReminder`, `UnknownCallEvent`\n- **Business:** `OrderState` (gateway-kept order state changed)\n- **Presence:** `Presence`, `ChatPresence`\n- **Newsletters:** `NewsletterJoin`, `NewsletterLeave`, `NewsletterMuteChange`, `NewsletterLiveUpdate`\n- **Sync:** `AppState`, `AppStateSyncComplete`, `AppStateSyncError`, `HistorySync`, `OfflineSyncPreview`, `OfflineSyncCompleted`, `PushNameSetting`, `UnarchiveChatsSetting`\n- **Special:** `All` subscribes to every event type\n"
           },
           "response": [
             {
@@ -113450,7 +113450,7 @@
                 "config"
               ]
             },
-            "description": "Returns the native calls engine configuration stored for this instance: whether the engine is enabled,\nhow inbound calls are handled, auto-recording, and the voice-agent provider settings.\n\n**Rules:**\n- Reads the saved database row, not the running engine: changes made with `PUT /call/config` only take effect after the instance reconnects.\n- `callProviderToken` is write-only and never returned.\n- Unset provider fields (`callSttUrl`, `callLlmUrl`, `callTtsUrl`, `callSystemPrompt`, `callGreeting`) are returned as empty strings.\n- `callInboundMode` falls back to `webhook` when it was never saved.\n- Works whether or not the engine is enabled; it never answers **409**.\n"
+            "description": "Returns the native calls engine configuration stored for this instance: whether the engine is enabled,\nhow inbound calls are handled, auto-recording, and the voice-agent provider settings.\n\n**Rules:**\n- Reads the saved database row, not the running engine. `callRecord` from `PUT /call/config` is already in effect; the other fields take effect after the instance reconnects.\n- `callProviderToken` is write-only and never returned.\n- Unset provider fields (`callSttUrl`, `callLlmUrl`, `callTtsUrl`, `callSystemPrompt`, `callGreeting`) are returned as empty strings.\n- `callInboundMode` falls back to `webhook` when it was never saved.\n- Works whether or not the engine is enabled; it never answers **409**.\n"
           },
           "response": [
             {
@@ -113623,7 +113623,7 @@
                 "config"
               ]
             },
-            "description": "Saves the native calls engine configuration for this instance. The engine reads it when the WhatsApp\nsession connects, so reconnect the instance (`POST /session/disconnect` then `POST /session/connect`)\nfor the change to apply.\n\n**Rules:**\n- This is a full replace, not a merge: an omitted `callsEnabled` or `callRecord` is saved as `false`, and an omitted `callSttUrl`, `callLlmUrl`, `callTtsUrl`, `callSystemPrompt` or `callGreeting` is cleared.\n- `callProviderToken` is the only field kept when omitted; send a new value to replace it.\n- `callInboundMode` defaults to `webhook` when empty and must be `manual`, `bot`, `ivr`, `ai`, `webhook` or `reject` (**400** otherwise).\n- `bot`, `ivr` and `ai` are accepted but the voice-agent is not available in this build: inbound calls in those modes are rejected by the engine.\n- The request body is an object; send `{}` to reset everything except the provider token.\n\n**Inbound modes:**\n- `webhook`: the engine answers and reports the lifecycle (and the recording when `callRecord` is on) through webhooks.\n- `manual`: the call rings; your application answers with `POST /call/answer` and drives media through the API and streams.\n- `reject`: the engine is not started at all, even with `callsEnabled: true`; every engine endpoint (`/call/dial`, `/call/status`, streams...) then answers **409**.\n",
+            "description": "Saves the native calls engine configuration for this instance. `callRecord` applies to the running engine\nimmediately: the next answered call records (or not), and `POST /call/record/start` follows it. A recording\nalready in progress is not cut. Every other field is read when the WhatsApp session connects, so reconnect\nthe instance (`POST /session/disconnect` then `POST /session/connect`) for those to apply.\n\n**Rules:**\n- This is a full replace, not a merge: an omitted `callsEnabled` or `callRecord` is saved as `false`, and an omitted `callSttUrl`, `callLlmUrl`, `callTtsUrl`, `callSystemPrompt` or `callGreeting` is cleared.\n- `callProviderToken` is the only field kept when omitted; send a new value to replace it.\n- `callInboundMode` defaults to `webhook` when empty and must be `manual`, `bot`, `ivr`, `ai`, `webhook` or `reject` (**400** otherwise).\n- `bot`, `ivr` and `ai` are accepted but the voice-agent is not available in this build: inbound calls in those modes are rejected by the engine.\n- The request body is an object; send `{}` to reset everything except the provider token.\n\n**Inbound modes:**\n- `webhook`: the engine answers and reports the lifecycle (and the recording when `callRecord` is on) through webhooks.\n- `manual`: the call rings; your application answers with `POST /call/answer` and drives media through the API and streams.\n- `reject`: the engine is not started at all, even with `callsEnabled: true`; every engine endpoint (`/call/dial`, `/call/status`, streams...) then answers **409**.\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"callsEnabled\": true,\n  \"callInboundMode\": \"webhook\",\n  \"callRecord\": true\n}",
@@ -119646,7 +119646,7 @@
                 "start"
               ]
             },
-            "description": "Starts recording the other party's audio of a live call to a WAV file in the durable recording spool.\nStop it with `POST /call/record/stop`, or let the call end: the recording is then finalized, uploaded\nto S3 and announced by the `call.recording_ready` webhook.\n\n**Rules:**\n- Requires object storage (S3) for the instance and an available recording spool; otherwise **400** with the reason.\n- Only the peer's inbound audio is recorded, not the audio played into the call.\n- Recording and the `/call/{call_id}/stream` audio WebSocket share the call's single inbound audio sink, so they cannot run at the same time on one call.\n- Starting while a recording is already running is a no-op and still returns `ok: true`.\n- `callRecord: true` in `PUT /call/config` starts recording automatically for every connected call.\n",
+            "description": "Starts recording the other party's audio of a live call to a WAV file in the durable recording spool.\nStop it with `POST /call/record/stop`, or let the call end: the recording is then finalized, uploaded\nto S3 and announced by the `call.recording_ready` webhook.\n\n**Rules:**\n- Requires `callRecord: true` in `PUT /call/config` (applied immediately); otherwise **403** `call_recording_disabled` and nothing is recorded.\n- Requires object storage (S3) for the instance and an available recording spool; otherwise **400** with the reason.\n- Only the peer's inbound audio is recorded, not the audio played into the call.\n- Recording and the `/call/{call_id}/stream` audio WebSocket share the call's single inbound audio sink, so they cannot run at the same time on one call.\n- Starting while a recording is already running is a no-op and still returns `ok: true`.\n- `callRecord: true` in `PUT /call/config` starts recording automatically for every connected call.\n",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"callId\": \"call_17B3F2A1C9D04E8F\"\n}",
@@ -119903,6 +119903,47 @@
                 }
               ],
               "body": "{\n  \"code\": 401,\n  \"error\": \"unauthorized\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "3b252e0e-309c-5861-810f-55487907a16e",
+              "name": "403 Forbidden: recording is not authorized for this instance (`callRecord` is off in `PUT /call/config`). Nothing is recorded.",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/call/record/start",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "call",
+                    "record",
+                    "start"
+                  ]
+                }
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 403,\n  \"error\": \"call_recording_disabled\",\n  \"success\": false\n}"
             },
             {
               "id": "f16670c3-e954-5395-9901-24cf99e57401",

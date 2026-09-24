@@ -56,9 +56,15 @@ services:
       # TZ: Timezone padrão utilizado por logs, agendadores e conversões de horário.
       - TZ=America/Sao_Paulo
 
-      # Estado persistente dos nós tsnet por sessão. O serviço está fixado no
-      # manager; preserve este volume em updates para restaurar sem nova chave.
+      # Estado dos nós tsnet por sessão: fica no BANCO, cifrado; não precisa de volume
+      # nem de trava de máquina. Este diretório só é lido para importar, uma vez, o
+      # tailscaled.state de uma instalação 2.1.0 (docs/network-route.md, dois passos).
       - NETWORK_ROUTE_STATE_DIR=/app/network-routes
+      # Opcionais: chave própria do estado (>= 32 caracteres), valor anterior na troca
+      # e rotas restauradas em paralelo no boot.
+      # - NETWORK_ROUTE_STATE_KEY=
+      # - NETWORK_ROUTE_STATE_KEY_PREVIOUS=
+      # - NETWORK_ROUTE_RESTORE_CONCURRENCY=32
 
       # ========== CONFIGURAÇÕES PADRÃO DE DISPOSITIVO WHATSAPP ==========
       # ========================================
@@ -455,7 +461,7 @@ services:
       # TRACING_SERVICE_NAME: Nome lógico do serviço reportado ao tracer.
       - TRACING_SERVICE_NAME=zuckzapgo
       # TRACING_SERVICE_VERSION: Versão reportada nas tags de tracing.
-      - TRACING_SERVICE_VERSION=v2.1.0 # x-release-please-version
+      - TRACING_SERVICE_VERSION=v2.2.0 # x-release-please-version
       # TRACING_ENVIRONMENT: Identificador do ambiente (development, staging, production).
       - TRACING_ENVIRONMENT=development
 
@@ -556,6 +562,8 @@ services:
       - MONITORING_PRUNE_INTERVAL=24h
       # Absolute base URL returned in stream_url (leave empty to fall back to ZUCKZAPGO_ADDRESS or http://localhost:<port>)
       - MONITORING_STREAM_BASE_URL=http://api.example.com
+    # OPCIONAL: só para importar o estado legado da 2.1.0 (passo 1). Depois da
+    # importação conferida, o passo 2 remove este mount.
     volumes:
       - network_route_state_zuckzapgo:/app/network-routes
     deploy:
@@ -797,6 +805,7 @@ volumes:
   postgres_data_zuckzapgo:
     name: postgres_data_zuckzapgo
     external: true
+  # Opcional (importação legada do estado das rotas mobile).
   network_route_state_zuckzapgo:
     name: network_route_state_zuckzapgo
   # rabbitmq_data_zuckzapgo:
