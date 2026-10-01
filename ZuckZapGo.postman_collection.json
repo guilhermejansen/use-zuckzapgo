@@ -1,7 +1,7 @@
 {
   "info": {
-    "_postman_id": "6fc362de-2884-5db1-96e3-6d36008ae097",
-    "name": "ZUCKZAPGO v2.2.5",
+    "_postman_id": "cec322a6-48f7-54fe-a65c-93de259553ac",
+    "name": "ZUCKZAPGO v2.3.0",
     "description": "ZUCKZAPGO implements a multi user and multi device REST API for WhatsApp.\n\n<h2>Authentication</h2><ul><li>Standard Endpoints: Include the token header with a valid user token (matches tokens stored in the users database table).</li><li>Admin Endpoints: Use the Authorization header with the admin token (set in .env as ZUCKZAPGO_ADMIN_TOKEN).</li></ul><h2>Admin Setup:</h2>You can manage users and do some tests by using the builtin dashboard [here](/dashboard).<h3>Add a Sample User via API</h3>Run this command to create a test user:<pre><code>curl -X POST http://localhost:8080/admin/users \\ \n-H \"Authorization: $ZUCKZAPGO_ADMIN_TOKEN\" \\ \n-H \"Content-Type: application/json\" \\ \n-d '{\"name\": \"John\", \"token\": \"Z1234ABCCXD\"}' </code> </pre>\n\n<h2>Webhook Configuration</h2>To receive WhatsApp messages:<ul><li>Host your own server (to process incoming messages).</li><li>Set its URL as the webhook via the [webhook](#Webhook) API call.</li></ul><h2>Phone number format:</h2><ul><li>Required: Country code (e.g. <b>5491155553934</b> for Argentina</li><li>Do not prefix with a plus sign (+), as natively whatsapp requires no plus sign prefix.</li></ul>\n\n<h2>Global Dispatcher Flags &amp; API Echo</h2><p>Configure tenant-level skips for the shared dispatcher via <code>/session/globaltransports/config</code> and toggle <code>Info.IsFromAPI</code> emission through <code>/session/echo/api</code>. Both flows are surfaced in the dashboard and Postman collection.</p>\n\n<h2>📞 Calls — LLM build guide</h2><p>Building a WhatsApp <b>voice or video call</b> integration? Open <a href=\"/api/llm.txt\" target=\"_blank\" rel=\"noopener\"><b>llm.txt</b></a> — a complete, self-contained spec you can paste into any LLM (Claude, GPT, Gemini, …) to generate a perfect calls integration (REST control + bidirectional PCM audio over WebSocket + bidirectional H.264 video over WebSocket + passkey pairing appendix). It also surfaces as the external-docs link on the <code>Call</code> tag below.</p>\n\n<h2>📱 Native mobile egress — operator and LLM guides</h2><p>Provision a fail-closed, TCP-only Tailscale exit route per session with <code>POST /session/network-route</code>, inspect it with <code>GET /session/network-route</code>, and — when a route cannot converge and is holding the session offline — remove it with <code>DELETE /session/network-route</code>, an explicit operator action that returns the session to legacy proxy or direct egress. Read the <a href=\"/docs/network-route.md\" target=\"_blank\" rel=\"noopener\">operator guide</a> or paste <a href=\"/api/network-route-llm.txt\" target=\"_blank\" rel=\"noopener\"><b>network-route-llm.txt</b></a> into an LLM for the complete integration contract. Auth keys are write-only and must never be persisted, returned, or logged.</p>\n\n<h2>🔌 Connector — embeddable pairing widget</h2><p>Embed WhatsApp pairing (QR, phone code, or passkey) in any app with one <code>&lt;script&gt;</code> — without ever exposing the real instance token to the browser. Your backend mints a short-lived ephemeral token via <code>POST /session/connector/token</code>; the browser runs <code>ZZ.connector.open({ token })</code> against the <b>Connector</b> tag's <code>/connector/*</code> routes. Paste-into-any-LLM guide: <a href=\"/api/connector-llm.txt\" target=\"_blank\" rel=\"noopener\"><b>connector-llm.txt</b></a>. Full docs hub for API users &amp; LLMs: <a href=\"/docs\" target=\"_blank\" rel=\"noopener\">/docs</a>.</p>\n\nGenerated from static/api/spec.yml (OpenAPI 3.0.0).\n\n**Variables:** set `base_url`, `api_token` (user token, sent as the `token` header) and `admin_token` (sent as the `Authorization` header on admin routes). Path variables are prefilled with documentation examples.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
@@ -49766,6 +49766,846 @@
                 }
               ],
               "body": "{\n  \"code\": 500,\n  \"error\": \"error sending message: server returned error 479\",\n  \"success\": false\n}"
+            }
+          ]
+        },
+        {
+          "id": "1fa1bf8f-4b9a-568b-a50b-3157ffd875f7",
+          "name": "Request the contact's phone number (request_contact_info)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "token",
+                "value": "{{api_token}}",
+                "type": "text",
+                "description": "User token of the WhatsApp instance."
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/chat/send/contact-request",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "chat",
+                "send",
+                "contact-request"
+              ]
+            },
+            "description": "Sends the native WhatsApp contact request: a body text plus the **Share contact** button. It is the same interactive the Cloud API sends with `interactive.type = request_contact_info` (an `InteractiveMessage` whose only native flow button is `request_contact_info`, no parameters, header or footer).\n\n**What the contact sees and what comes back:**\n- The contact sees the text and a \"Share contact\" button rendered by their own app\n- Tapping it sends the contact's own card back as a regular `Message` webhook: `event.Message.contactMessage` with `isSelfContact: true` and a vCard carrying `TEL;...;waid=<phone>` and `X-WA-LID:<lid>`\n- The returned card has no `stanzaID`: it does not reference the request, so correlate by chat, never by timing alone\n\n**Rules:**\n- One-to-one chats only: digits (optional `+`), `<digits>@s.whatsapp.net` or `<digits>@lid`. Groups, newsletters, broadcast lists and status return `400`\n- `body` is required, 1 to 1024 characters after trimming. Longer text returns `400`; it is never truncated\n- No Enterprise license is required\n- Snake_case and PascalCase field names are accepted (`phone`/`Phone`, `body`/`Body`, `id`/`Id`, `context_info`/`ContextInfo`)\n\n**Idempotency (send your own `id` and reuse it on every retry):**\n- A retry of an `id` already sent returns the original result **without sending again**: `State: sent`, or `State: confirmed` with `ConfirmedAt` once the recipient's delivery or read receipt for that same `id` arrives\n- `409 contact_request_dispatch_unknown`: the send may have left (timeout or connection loss after it was queued). It is never repeated for this `id`; it turns into `confirmed` if the recipient's receipt arrives\n- `409 contact_request_id_conflict`: the `id` was already used with another recipient, body or quote\n- `502 contact_request_send_failed`, `503 contact_request_session_unavailable` and `503 contact_request_ledger_unavailable` mean nothing was sent: the same `id` can be retried\n- `id`s are remembered for 30 days\n",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"5511999999999\",\n  \"body\": \"Para continuarmos o atendimento, compartilhe seu contato.\",\n  \"id\": \"3EB0A1B2C3D4E5F6A7B8C9\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [
+            {
+              "id": "8b654712-4d3e-55dc-af9c-121992bcd495",
+              "name": "Request example: Recipient known only by LID",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"100000000000001@lid\",\n  \"body\": \"Compartilhe seu contato para continuarmos.\",\n  \"id\": \"3EB0B1C2D3E4F5A6B7C8D9\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Sent\",\n    \"Id\": \"3EB0A1B2C3D4E5F6A7B8C9\",\n    \"State\": \"sent\",\n    \"Timestamp\": \"2026-10-01T12:00:00-03:00\"\n  },\n  \"success\": true\n}"
+            },
+            {
+              "id": "00f5ce55-8d53-5623-830b-84e9f0b48e70",
+              "name": "Request example: As a reply to a message",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"5511999999999\",\n  \"body\": \"Para confirmar o pedido, compartilhe seu contato.\",\n  \"id\": \"3EB0C1D2E3F4A5B6C7D8E9\",\n  \"context_info\": {\n    \"StanzaID\": \"3EB0F00D1234567890AB\",\n    \"Participant\": \"5511999999999@s.whatsapp.net\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Sent\",\n    \"Id\": \"3EB0A1B2C3D4E5F6A7B8C9\",\n    \"State\": \"sent\",\n    \"Timestamp\": \"2026-10-01T12:00:00-03:00\"\n  },\n  \"success\": true\n}"
+            },
+            {
+              "id": "5e694a5c-014e-58eb-9ad0-645743817806",
+              "name": "200 Sent",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"Details\": \"Sent\",\n    \"Id\": \"3EB0A1B2C3D4E5F6A7B8C9\",\n    \"State\": \"sent\",\n    \"Timestamp\": \"2026-10-01T12:00:00-03:00\"\n  },\n  \"success\": true\n}"
+            },
+            {
+              "id": "64410b97-cf13-5957-bf39-70eb87d49469",
+              "name": "200 Retry after the recipient's receipt",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 200,\n  \"data\": {\n    \"ConfirmedAt\": \"2026-10-01T12:00:02-03:00\",\n    \"Details\": \"Confirmed\",\n    \"Id\": \"3EB0A1B2C3D4E5F6A7B8C9\",\n    \"State\": \"confirmed\",\n    \"Timestamp\": \"2026-10-01T12:00:00-03:00\"\n  },\n  \"success\": true\n}"
+            },
+            {
+              "id": "e3869008-7952-5e74-a994-b7ca729af797",
+              "name": "400 contact_request_invalid_json",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 400,\n  \"error\": \"contact_request_invalid_json\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "6160a010-b09d-55c8-badf-f58fa74b1a12",
+              "name": "400 contact_request_phone_required",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 400,\n  \"error\": \"contact_request_phone_required\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "5fdb38d8-5ce0-5630-8f83-09c5388236d1",
+              "name": "400 contact_request_invalid_phone",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 400,\n  \"error\": \"contact_request_invalid_phone\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "0a9d332a-3e56-53cb-a293-378e3c84f0df",
+              "name": "400 contact_request_invalid_recipient",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 400,\n  \"error\": \"contact_request_invalid_recipient\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "9fa8d353-bf00-5035-af89-c8a8449532d8",
+              "name": "400 contact_request_body_required",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 400,\n  \"error\": \"contact_request_body_required\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "f8891f7e-7183-5254-a5c7-477eb2a2b30b",
+              "name": "400 contact_request_body_too_long",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 400,\n  \"error\": \"contact_request_body_too_long\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "f4c63b6b-f205-5e68-b634-554c0d1b204d",
+              "name": "400 contact_request_invalid_id",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 400,\n  \"error\": \"contact_request_invalid_id\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "0aa8c8ce-bc56-563b-9e12-8f9837f1f21e",
+              "name": "400 contact_request_invalid_context_info",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 400,\n  \"error\": \"contact_request_invalid_context_info\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "516ec066-95a6-50ea-aaff-aecf49485374",
+              "name": "400 contact_request_recipient_not_on_whatsapp",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 400,\n  \"error\": \"contact_request_recipient_not_on_whatsapp\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "05c2ff62-3c96-5143-805a-61f0dcb33e6d",
+              "name": "409 contact_request_dispatch_unknown",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 409,\n  \"error\": \"contact_request_dispatch_unknown\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "2ffd5760-ce4a-5c8e-b12c-ddc0272dbfbb",
+              "name": "409 contact_request_id_conflict",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 409,\n  \"error\": \"contact_request_id_conflict\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "6f05a7c0-d69c-5360-bf41-13b49f46cef5",
+              "name": "413 contact_request_request_too_large",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "Payload Too Large",
+              "code": 413,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 413,\n  \"error\": \"contact_request_request_too_large\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "48a7a0d1-ec9b-5d3b-b3e1-4637d71f66f7",
+              "name": "502 contact_request_send_failed",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "Bad Gateway",
+              "code": 502,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 502,\n  \"error\": \"contact_request_send_failed\",\n  \"detail\": \"server returned error 479\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "adeabbde-ef13-59c3-98e1-9d938167ec3c",
+              "name": "503 contact_request_session_unavailable",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 503,\n  \"error\": \"contact_request_session_unavailable\",\n  \"success\": false\n}"
+            },
+            {
+              "id": "294f67fe-491d-541b-a80c-3f24bd9fc94c",
+              "name": "503 contact_request_ledger_unavailable",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "token",
+                    "value": "{{api_token}}",
+                    "type": "text",
+                    "description": "User token of the WhatsApp instance."
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/chat/send/contact-request",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "chat",
+                    "send",
+                    "contact-request"
+                  ]
+                }
+              },
+              "status": "Service Unavailable",
+              "code": 503,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"code\": 503,\n  \"error\": \"contact_request_ledger_unavailable\",\n  \"success\": false\n}"
             }
           ]
         },
