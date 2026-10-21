@@ -571,7 +571,7 @@ duplicações. Com a opção `false`, a publicação não aguarda confirmação 
 GLOBAL_SQS_ENABLED=true
 GLOBAL_SQS_REGION=us-east-1
 GLOBAL_SQS_QUEUE_URL=https://sqs.us-east-1.amazonaws.com/123456789012/zuckzapgo-events
-GLOBAL_SQS_EVENTS=message,call,qr
+GLOBAL_SQS_EVENTS=Message,ReadReceipt,CallOffer,QR
 
 # Credenciais AWS
 GLOBAL_SQS_ACCESS_KEY=SEU_SQS_ACCESS_KEY
@@ -599,7 +599,7 @@ GLOBAL_REDIS_USERNAME=                       # Redis 6+
 GLOBAL_REDIS_PASSWORD=SEU_REDIS_PASSWORD
 GLOBAL_REDIS_TLS=false
 GLOBAL_REDIS_STREAM=zuckzapgo:events
-GLOBAL_REDIS_EVENTS=message,call,qr
+GLOBAL_REDIS_EVENTS=Message,ReadReceipt,CallOffer,QR
 GLOBAL_REDIS_MAX_LEN=10000                   # Máximo de eventos no stream
 GLOBAL_REDIS_APPROXIMATE_TRIMMING=true       # Trimming eficiente
 GLOBAL_REDIS_CONSUMER_GROUP=zuckzapgo-consumers
@@ -615,7 +615,7 @@ GLOBAL_REDIS_RETRY_DELAY=2                   # segundos
 ```bash
 GLOBAL_WEBSOCKET_ENABLED=true
 GLOBAL_WEBSOCKET_PATH=/ws/events
-GLOBAL_WEBSOCKET_EVENTS=message,call,qr
+GLOBAL_WEBSOCKET_EVENTS=Message,ReadReceipt,CallOffer,QR
 GLOBAL_WEBSOCKET_MAX_CONNECTIONS=1000
 GLOBAL_WEBSOCKET_READ_BUFFER=4096
 GLOBAL_WEBSOCKET_WRITE_BUFFER=4096

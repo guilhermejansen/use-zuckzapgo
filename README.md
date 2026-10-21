@@ -1578,6 +1578,9 @@ Os arquivos `api/*` deste repositório correspondem aos servidos em `/api/*` pel
 | [Vídeo de chamadas](docs/call-video-guide.md) | H.264, codecs, grupos e limitações |
 | [Integração de chamadas no navegador](docs/whatsapp-web-call-integration.md) | Fluxos de integração com o gateway |
 
+
+O [contrato de eventos por transporte](docs/webhook-events.md#contrato-de-saída-por-transporte--global-e-individual) documenta webhook/RabbitMQ individuais e globais, SQS, WebSocket e Redis MessagePack, catálogo de eventos, enrichment, ACK/deduplicação e normalizador de referência para seu integrador.
+
 ## Connector, passkey e importação
 
 Seu backend chama `POST /session/connector/token` com o token real da sessão e entrega somente o token efêmero ao widget em `/connector.js`. Configure `CONNECTOR_CORS_ORIGINS` com as origens permitidas. Tokens efêmeros e estado de passkey são locais ao processo; mantenha afinidade de réplica durante o pareamento.

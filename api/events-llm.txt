@@ -1,0 +1,9 @@
+# ZuckZapGo — eventos de saída e normalização
+
+Referência canônica: ../docs/webhook-events.md (catálogo completo, schema copiável e normalizador Python).
+
+Webhook/RabbitMQ: envelope.data. Webhook individual usa token; global usa userToken. SQS/WebSocket: envelope.payload JSON e createdAt Unix nanossegundos. Redis Streams: entry.payload é bytes MessagePack do envelope, cujo payload contém o evento. No caminho bufferizado, payload.event pode ser bytes JSON e requer um segundo JSON decode somente nesse campo. Preserve inteiros64 e campos desconhecidos. S3 é anexo, não fila; não há transporte individual WS/SQS/Redis no fan-out atual. WebSocket global conecta ao servidor receptor do integrador; não é o stream de mídia de chamada.
+
+Use nomes exatos Message, ReadReceipt, CallOffer, QR ou All. Receipt é cadastrado mas o emitter publica ReadReceipt; PairSuccess não tem callback garantido no handler atual. O catálogo distingue seletores, tipos cadastrados e emitidos. O payload mantém type/event, enriquecimentos opcionais e v1 com schema_version/event/instance_id/ts/data. Não troque payload inteiro por v1.data: você perderia campos legados e irmãos.
+
+Implemente inbox durável, identidade de tenant, ACK após commit e deduplicação por entrega e negócio. IDs de diferentes transportes podem divergir; não deduplique somente por timestamp. QR/passkey, token/userToken, mensagens e URLs podem ser sensíveis. Não logue o envelope inteiro. WS não fornece ACK de negócio; sucesso de escrita a um endpoint não prova persistência nem entrega a todos. Consulte o guia para exemplos, limites e testes de receptor.

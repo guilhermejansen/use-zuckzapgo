@@ -18,6 +18,7 @@ Este repositório distribui documentação e exemplos públicos. Consulte a vers
 ## API e LLMs
 
 - [connector-llm.txt](../api/connector-llm.txt) — na instância: `/api/connector-llm.txt`.
+- [events-llm.txt](../api/events-llm.txt) — na instância: `/api/events-llm.txt`.
 - [llm.txt](../api/llm.txt) — na instância: `/api/llm.txt`.
 - [network-route-llm.txt](../api/network-route-llm.txt) — na instância: `/api/network-route-llm.txt`.
 - [OpenAPI JSON](../api/swagger.json)
