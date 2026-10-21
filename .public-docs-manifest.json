@@ -1,7 +1,7 @@
 {
   "brand": "ZuckZapGo",
   "files": {
-    "README.md": "eeb60c2ad90b4b23acdb80cb053cd54eb300b9955752111e43e6af05edc02668",
+    "README.md": "a80a61273b12b43fdd79da212a317727d7657ef4da842e55cd1bba946b0c97fd",
     "api/connector-llm.txt": "3a7654d08646945cf6957d99ff8111d9f1ca4f7b8a7b50354ad94c7836fecf01",
     "api/llm.txt": "f8133122c337ae4ac33962325806a9eef46d7dbfb379fe75a530c31d81f79531",
     "api/network-route-llm.txt": "ba3ba6a04f7e06154a2a0ffe5922affbd1919b57ba3e44b885aaaeb78a5d976d",
@@ -25,6 +25,6 @@
   },
   "public_repository": "guilhermejansen/use-zuckzapgo",
   "schema": 1,
-  "source_commit": "31656d9aa3e9fdbde2bfe087f06bb393e4b57a93",
+  "source_commit": "672bcc18b2911c6cebc4d413b7cba888a315c410",
   "version": "2.4.2"
 }
