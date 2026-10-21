@@ -1,0 +1,325 @@
+ZUCKZAPGO NATIVE MOBILE NETWORK ROUTE — IMPLEMENTATION GUIDE FOR LLMS
+====================================================================
+
+Purpose
+-------
+Use this guide to implement a backend integration with ZuckZapGo's native,
+per-session mobile TCP egress. The application embeds tailscale.com/tsnet and
+does not require a manually managed SOCKS sidecar.
+
+Non-negotiable security model
+-----------------------------
+1. Mint a Tailscale auth key just in time on a trusted backend. Configure the
+   key as single-use in Tailscale. Never send it to browser/mobile frontend.
+2. Call ZuckZapGo over TLS. Never log request bodies for the route endpoint.
+3. Only mode="mobile" is accepted and tcpOnly=true is required. Explicitly send
+   failClosed=true for the recommended fail-closed policy. false is supported;
+   omitting failClosed also decodes as false. That permissive policy allows the
+   session to use its legacy proxy or direct egress while the route is not ready,
+   changing the IP visible to WhatsApp. Choose it only with operator authorization.
+4. Select the exit node by its StableNodeID, never hostname or current IP.
+5. Treat routeVersion as a monotonic fencing token per ZuckZapGo user.
+6. Generate a new idempotencyKey for every new version. Reuse it only when
+   retrying the exact same request.
+7. With failClosed=true, ready=false must hold the session offline; do not
+   introduce a direct/proxy fallback. With failClosed=false, the gateway itself
+   permits default egress while the route is not ready; ready=false still means
+   the requested mobile route is not established, not that provisioning succeeded.
+8. The native call engine is blocked for mobile routes with failClosed=true
+   and tcpOnly=true. false does not activate that guard, but the route remains
+   TCP-only: do not infer that native UDP media goes through the mobile SOCKS
+   route or that calls are guaranteed with the permissive policy.
+9. tcpOnly describes WhatsApp application egress through SOCKS. Tailscale may
+   itself use UDP/WireGuard or DERP to carry that TCP, so it is not a promise
+   that the host emits no UDP packets.
+10. Removing the route (DELETE) is an operator decision, never a fallback. It
+   returns the session to legacy proxy or direct egress, so the peer sees a
+   different IP. Never call it from a retry loop or a ready=false branch.
+
+Apply endpoint
+--------------
+POST /session/network-route
+Headers:
+  token: <real ZuckZapGo user token>
+  Content-Type: application/json
+
+Body (recommended explicit fail-closed profile; always send failClosed to avoid omission selecting false):
+{
+  "mode": "mobile",
+  "authKey": "<single-use JIT Tailscale auth key>",
+  "exitNodeId": "nStableMobileExit01",
+  "routeVersion": 1,
+  "idempotencyKey": "route-2026-08-15-0001",
+  "failClosed": true,
+  "tcpOnly": true
+}
+
+Success envelope:
+{
+  "code": 200,
+  "data": {
+    "mode": "mobile",
+    "exitNodeId": "nStableMobileExit01",
+    "desiredVersion": 1,
+    "appliedVersion": 1,
+    "failClosed": true,
+    "tcpOnly": true,
+    "status": "ready",
+    "ready": true
+  },
+  "details": "network route ready",
+  "reconnectScheduled": false,
+  "success": true
+}
+
+The response never contains authKey, idempotencyKey, SOCKS credentials, or a
+proxy URL. Do not write client code that expects those values.
+
+Read endpoint
+-------------
+GET /session/network-route
+Header: token: <real ZuckZapGo user token>
+
+Use ready only as reported by this endpoint. A stored status of ready is not
+enough by itself: ZuckZapGo also requires the live runtime and matching desired
+and applied versions.
+
+Remove endpoint (explicit operator escape hatch)
+-----------------------------------------------
+DELETE /session/network-route
+Header: token: <real ZuckZapGo user token>
+
+Removal logs the tsnet node out of the tailnet, closes it, deletes the persisted
+row and the node state stored in the database, and wipes any legacy state file. The session then egresses through its
+legacy proxy_url, or directly when none is set. Use it for one situation only: a
+fail-closed route that cannot converge is holding the session offline — status
+blocked, or a runtime that did not come back after a gateway restart (node state
+that cannot be decrypted, consumed auth key, offline exit node). While that lasts, connect
+aborts on route readiness and GET /session/qr answers 500.
+
+Success envelope (data is the route as read immediately before removal):
+{
+  "code": 200,
+  "data": {
+    "mode": "mobile",
+    "exitNodeId": "nStableMobileExit01",
+    "desiredVersion": 4,
+    "appliedVersion": 3,
+    "failClosed": true,
+    "tcpOnly": true,
+    "status": "blocked",
+    "ready": false,
+    "errorCode": "network_route_prepare_failed"
+  },
+  "details": "network route removed; this session egresses through its legacy proxy_url on the next connect, or directly when none is set",
+  "reconnectScheduled": true,
+  "success": true
+}
+
+The live client is disconnected first and any stored QR code is cleared, because
+a code kept from the blocked era can no longer be scanned. When the removed route
+was what held the session down — it was connected, or fail-closed and not ready —
+a reconnect is scheduled, reconnectScheduled=true, and a fresh QR follows. A
+session the operator had deliberately stopped over a healthy route stays stopped.
+
+Repeating the call is safe: absence answers 404 network_route_not_configured.
+After removal nothing remains to restore, so provisioning again requires a
+newly minted single-use auth key; fencing also restarts, because the row is
+gone and any valid routeVersion is accepted. Keep your own counter monotonic
+regardless. Removing a fail-closed mobile TCP-only route also removes its native
+Calls guard on the next client start; actual call/media availability still depends
+on the remaining network configuration.
+
+Fencing algorithm for your integration
+--------------------------------------
+Maintain nextRouteVersion per ZuckZapGo user in your own transactional store.
+
+For a new desired route:
+  A. atomically reserve version current+1;
+  B. create a cryptographically random idempotency key;
+  C. mint a single-use Tailscale auth key;
+  D. send POST once;
+  E. on transport timeout, retry the identical body and idempotency key;
+  F. on 409 stale_version, GET state and reconcile;
+  G. on blocked/503, do not connect directly; diagnose, then submit a higher
+     version with a newly minted auth key and new idempotency key.
+
+Exact retry semantics:
+- same version + same route digest + same idempotency key: idempotent result;
+  a ready version returns 200, while a blocked version repeats its safe 503
+  without another disconnect, node start, or enrollment-key consumption;
+- lower version: 409 network_route_stale_version;
+- same version with a changed exit node, flags, or idempotency key:
+  409 network_route_version_conflict.
+
+Pre-pairing provisioning
+------------------------
+POST /admin/users accepts an optional networkRoute object with the exact same
+schema. It must not be combined with proxyConfig.
+
+Example:
+{
+  "name": "pilot-mobile-01",
+  "token": "<new user token>",
+  "networkRoute": {
+    "mode": "mobile",
+    "authKey": "<single-use JIT Tailscale auth key>",
+    "exitNodeId": "nStableMobileExit01",
+    "routeVersion": 1,
+    "idempotencyKey": "provision-pilot-0001",
+    "failClosed": true,
+    "tcpOnly": true
+  }
+}
+
+If provisioning fails after the user row is created, ZuckZapGo returns the user
+ID and leaves it blocked. The exact Chatwoot success contract includes
+data.id, data.token, and a data.network_route object where ready=true and
+desiredVersion==appliedVersion:
+
+{
+  "code": 201,
+  "data": {
+    "id": "stable-internal-user-id",
+    "token": "<new user token>",
+    "network_route": {
+      "mode": "mobile",
+      "exitNodeId": "nStableMobileExit01",
+      "desiredVersion": 1,
+      "appliedVersion": 1,
+      "failClosed": true,
+      "tcpOnly": true,
+      "status": "ready",
+      "ready": true
+    }
+  },
+  "success": true
+}
+
+If route preparation fails after persistence, the exact 503 contract includes
+data.userId and blocked data.network_route, but deliberately omits token:
+
+{
+  "code": 503,
+  "data": {
+    "userId": "stable-internal-user-id",
+    "network_route": {
+      "mode": "mobile",
+      "exitNodeId": "nStableMobileExit01",
+      "desiredVersion": 1,
+      "appliedVersion": 0,
+      "failClosed": true,
+      "tcpOnly": true,
+      "status": "blocked",
+      "ready": false,
+      "errorCode": "network_route_prepare_failed"
+    }
+  },
+  "error": "network_route_prepare_failed",
+  "details": "user persisted in blocked state; submit a higher routeVersion with a new one-use auth key or delete this user",
+  "success": false
+}
+
+For transactional Chatwoot provisioning, accept AddUser only when ready=true
+and desiredVersion==appliedVersion. On 503, execute
+DELETE /admin/users/{data.userId} with the admin token to roll back, or retain
+the blocked user and remediate using a higher route version if your trusted
+backend still has the session token. Never blindly retry AddUser: the token
+already exists and the enrollment key may be consumed.
+
+Status/error handling
+---------------------
+400 network_route_mode_invalid
+  Your body attempted a mode other than mobile. Direct is never supported.
+
+400 network_route_mobile_requires_tcp_only
+  Set tcpOnly=true. failClosed=false is accepted and is a separate, explicit
+  operator choice; this guide recommends true to prevent changes of egress IP.
+
+400 network_route_auth_key_invalid
+  Mint a new single-use tskey-auth-* value on the trusted backend.
+
+409 network_route_stale_version
+  GET the current state and advance from desiredVersion.
+
+409 network_route_version_conflict
+  Do not mutate an existing version. Allocate a higher one.
+
+503 network_route_prepare_failed
+  The route remains blocked (failClosed=true holds session traffic). Check
+  exit-node advertisement/ACL, tailnet health,
+  database reachability (node state lives there), and TLS reachability through
+  that exit node. The route is not ready; a failClosed=false session may still
+  connect through its legacy proxy or direct egress. That does not make the route ready.
+
+503 network_route_store_unavailable
+  The route state cannot be trusted. Keep the session blocked and retry later.
+
+404 network_route_not_configured
+  No route exists for this session. On DELETE this is the idempotent answer and
+  confirms the route is already gone.
+
+503 network_route_manager_unavailable
+  The native route manager is not initialized in this process. Nothing was read
+  or changed.
+
+503 network_route_revoke_failed
+  Node logout/close, row delete, or state cleanup did not complete. Repeat the
+  DELETE; a 404 then means the route is already gone and the session boots
+  through the legacy path.
+
+Operational invariants
+----------------------
+- No volume is needed (2.2.0+). Each route's tsnet node state is stored in the
+  database, encrypted with AES-256-GCM, so the gateway can restart or move to
+  another machine and restore every route without an auth key.
+- Encryption key: by default a random key is generated on first boot and kept
+  in the database (nothing to configure). Optionally set NETWORK_ROUTE_STATE_KEY
+  (>= 32 characters); to change it, put the new value there and the old one in
+  NETWORK_ROUTE_STATE_KEY_PREVIOUS for one boot. Changing the key without the
+  previous value leaves those routes in restore_failed: recover with a higher
+  version and a new auth key.
+- State that cannot be decrypted never crashes the process: that route stays
+  blocked and the others start. failClosed=true holds that session offline;
+  failClosed=false permits its legacy proxy/direct egress while remediation is pending.
+- NETWORK_ROUTE_STATE_DIR is only the source of a one-time import of the
+  tailscaled.state left by 2.1.0 (renamed to .imported after import).
+- Routes are restored in parallel on boot (NETWORK_ROUTE_RESTORE_CONCURRENCY,
+  default 32).
+- Graceful shutdown closes runtimes without logging out, preserving identity.
+- User deletion logs out/revokes and removes only that user's derived state.
+- Each active route is a separate tsnet netstack/control client and therefore
+  consumes non-trivial memory and goroutines. Load-test the real pilot count.
+- The built-in preflight proves SOCKS TCP + TLS through the configured exit
+  route. After EditPrefs it runs up to 8 cancelable attempts (5 seconds each,
+  exponential backoff from 250 ms to 2 seconds) and requires 2 consecutive
+  successes, avoiding both immediate-convergence false negatives and flapping
+  false positives. Independently verify carrier ASN/geolocation in the physical
+  pilot.
+
+Full references
+---------------
+OpenAPI 3.0: /api/spec.yml
+Human guide: /docs/network-route.md
+Status: GET /session/network-route
+
+Acceptance checklist for an integration
+----------------------------------------
+- AddUser 2xx is accepted only with data.id, data.token, ready=true, and equal
+  desired/applied versions.
+- AddUser 503 with data.userId triggers DELETE /admin/users/{id} rollback, or a
+  deliberate blocked-state remediation; it is never treated as success.
+- No log, trace, metric, database row, browser state, retry queue, or response
+  contains authKey, SOCKS password, or proxy URL.
+- With failClosed=true, a blocked/unrestored route prevents connect and
+  SetProxyAddress failure aborts bootstrap; prove there is no direct fallback.
+- If an operator deliberately selects failClosed=false, prove that unavailable
+  route state permits the legacy proxy/direct egress and that your UI clearly
+  reports the mobile route as not ready. Never select false through omission.
+- Native Calls returns the mobile TCP-only conflict for fail-closed routed
+  users. A permissive route does not activate that guard; it does not add UDP
+  media support to the TCP SOCKS path.
+- DELETE /session/network-route is reachable to an operator and is never called
+  automatically: no retry loop, health check, or ready=false branch triggers it.
+- Before production, use a real single-use key and physical mobile exit to verify
+  carrier ASN/geolocation, then measure RSS/goroutines/DERP at pilot concurrency.

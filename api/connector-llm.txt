@@ -1,0 +1,244 @@
+# ZuckZapGo — Connector: complete LLM build guide
+
+> Paste this whole file into any LLM (Claude, GPT, Gemini, …) and ask it to embed the
+> **ZuckZapGo Connector** — a widget that pairs a WhatsApp number (QR, phone code, or
+> passkey) inside any web app, without ever exposing the real instance token to the
+> browser. It is self-contained: the embed, the server-side token mint (Node, Next.js,
+> PHP, Laravel, Go), the full endpoint reference, events, theming/i18n, the passkey
+> solver, security rules, and the exact wire shapes are all here.
+>
+> - **Two placeholders**: `{BASE_URL}` (your ZuckZapGo host, e.g. `https://your-host`)
+>   and `{REAL_TOKEN}` (the per-instance user token — server-side only, NEVER in a browser).
+> - **Golden rule**: the browser only ever holds an **ephemeral** token (`ct_…`).
+
+---
+
+## 0. Mental model (one paragraph)
+
+Your backend calls `POST {BASE_URL}/session/connector/token` with the **real** instance
+token and gets back a short-lived **ephemeral** token (`ct_…`, default 10 min). You send
+only that ephemeral token to the browser. The browser loads
+`<script src="{BASE_URL}/connector.js">` and calls `ZZ.connector.open({ token })`, which
+opens a modal and drives pairing over the `/connector/*` routes (which accept the
+ephemeral token and translate it back server-side). For **passkey** accounts, the owner must complete WebAuthn on
+`https://web.whatsapp.com`. No passkey browser extension is distributed. The widget
+retains an optional extension bridge and offers a bookmarklet when no solver is installed;
+use that documented owner-operated flow rather than expecting automatic pairing.
+
+```
+partner backend ──POST /session/connector/token (REAL token)──► {BASE_URL}: mint ephemeral (ct_…)
+                            │ ephemeral
+partner browser ◄───────────┘
+   <script src="{BASE_URL}/connector.js">
+   ZZ.connector.open({ token: EPHEMERAL, baseUrl: "{BASE_URL}" })
+       polls /connector/{status,qr,passkey/status} → QR / phone code / passkey → loggedIn
+```
+
+---
+
+## 1. Endpoints
+
+### 1a. Mint (server-side, real token)
+
+```
+POST {BASE_URL}/session/connector/token
+Header: token: {REAL_TOKEN}
+→ 200 { "code":200, "success":true, "data": { "token":"ct_…", "expiresIn":600, "tokenType":"connector" } }
+429 if you exceed CONNECTOR_TOKEN_RATE_PER_MIN (default 60/min per real token)
+```
+
+Return only `data.token` to the browser.
+
+### 1b. Connector surface (browser, ephemeral token via the `token` header or the `token` query parameter)
+
+All mirror the standard `/session/*` handlers but are gated by the ephemeral token:
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| POST | `/connector/connect` | Start the WhatsApp connection |
+| POST | `/connector/disconnect` | Disconnect |
+| GET  | `/connector/status` | Snapshot: `loggedIn`, `connected`, `jid`, `qrcode`, `passkeyRequired`, `passkeyConfirmationCode`, `passkeySkipHandoffUX`, `passkeyError` |
+| GET  | `/connector/qr` | `{ QRCode: "<base64 png>", code }` |
+| POST | `/connector/pairphone` | Body `{ "Phone": "+5511…" }` → `{ LinkingCode }` |
+| GET  | `/connector/passkey/status` | `{ required, challenge, confirmationCode, skipHandoffUX, … }` |
+| POST | `/connector/passkey/challenge` | Probe: force the WebAuthn options now (503 `passkey_unavailable` if not a passkey account) |
+| POST | `/connector/passkey/response` | Submit the WebAuthn assertion (base64url) |
+| POST | `/connector/passkey/confirm` | Confirm when `skipHandoffUX=false` |
+
+Response envelope is always `{ code, success, data, error? }`; read `data`.
+
+---
+
+## 2. Embed (browser)
+
+```html
+<script src="{BASE_URL}/connector.js"></script>
+<script type="module">
+  // ephemeral token fetched from YOUR backend (see §3)
+  const { token } = await (await fetch("/my-backend/connector-token", { method: "POST" })).json();
+  const paired = await ZZ.connector.open({
+    token,
+    baseUrl: "{BASE_URL}",
+    theme: "auto",                          // 'light' | 'dark' | 'auto'
+    locale: "pt",                           // 'pt' | 'en'
+    methods: { qr: true, phone: true, passkey: true },
+    onStatus: (s) => console.log("loggedIn?", s.loggedIn),
+  });
+  console.log("paired?", paired);           // true when loggedIn
+</script>
+```
+
+`window.ZZ.connector` (alias `window.ZZGConnector`):
+
+| Method | Description |
+|--------|-------------|
+| `open(opts) → Promise<boolean>` | Opens the modal; resolves `true` when paired, `false` if closed first. |
+| `close()` | Tear down the modal. |
+| `on(ev, fn)` / `off(ev, fn)` | Events: `open`, `status`, `qr`, `connected`, `error`, `close`. |
+
+**Options**: `token` (required), `baseUrl`, `theme`, `locale`, `methods{qr,phone,passkey}`,
+`messages` (override i18n strings), `container` (CSS selector/element; default body),
+`pollIntervalMs` (2000), `subscribe` (["Message"]), `autoConnect` (true — set false when the
+instance is already connected), `bookmarkletUrl`. The legacy `extensionInstallUrl {chrome,firefox}` option only
+supplies operator-provided links; no extension is shipped.
+Each event `ev` also maps to an `on<Ev>` callback in `open(opts)` (e.g. `onConnected`).
+
+The widget renders in a Shadow DOM (style-isolated) and is dependency-free.
+
+---
+
+## 3. Server-side mint — authenticated integration point
+
+The one integration point is a backend route that mints the ephemeral token and returns
+only that to the browser. The snippets below illustrate the integration point; protect
+your own token-mint route with your application authentication and authorization.
+
+**Node / Express**
+```js
+app.post("/connector-token", async (_req, res) => {
+  const r = await fetch(`${process.env.ZUCKZAPGO_URL}/session/connector/token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", token: process.env.ZUCKZAPGO_TOKEN },
+  });
+  const env = await r.json();
+  const data = env.data ?? env;
+  const { token, expiresIn } = data;
+  res.json({ token, expiresIn });
+});
+```
+
+**Next.js (App Router)** — `app/api/connector-token/route.ts`
+```ts
+export async function POST() {
+  const r = await fetch(`${process.env.ZUCKZAPGO_URL}/session/connector/token`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", token: process.env.ZUCKZAPGO_TOKEN! },
+    cache: "no-store",
+  });
+  const env = await r.json();
+  const data = env?.data ?? env;
+  const { token, expiresIn } = data;
+  return Response.json({ token, expiresIn });
+}
+```
+
+**PHP**
+```php
+$ch = curl_init(getenv('ZUCKZAPGO_URL')."/session/connector/token");
+curl_setopt_array($ch, [CURLOPT_POST=>true, CURLOPT_RETURNTRANSFER=>true,
+  CURLOPT_HTTPHEADER=>['Content-Type: application/json',sprintf('%s: %s', 'token', getenv('ZUCKZAPGO_TOKEN'))]]);
+$env = json_decode(curl_exec($ch), true); $data = $env['data'] ?? $env;
+echo json_encode(array_combine(['token', 'expiresIn'], [$data['token'], $data['expiresIn']]));
+```
+
+**Laravel**
+```php
+$resp = Http::withHeaders(array_combine(['token'], [env('ZUCKZAPGO_TOKEN')]))
+    ->post(env('ZUCKZAPGO_URL')."/session/connector/token");
+$data = $resp->json()['data'] ?? $resp->json();
+return response()->json(array_combine(['token', 'expiresIn'], [$data['token'], $data['expiresIn']]));
+```
+
+**Go (stdlib)**
+```go
+req, _ := http.NewRequest("POST", zuckURL+"/session/connector/token", nil)
+req.Header.Set("token", zuckTok)
+resp, _ := http.DefaultClient.Do(req)
+body, _ := io.ReadAll(resp.Body)
+var env map[string]any; json.Unmarshal(body, &env)
+data, _ := env["data"].(map[string]any)
+publicData := make(map[string]any, 2)
+for _, field := range []string{"token", "expiresIn"} { publicData[field] = data[field] }
+json.NewEncoder(w).Encode(publicData)
+```
+
+---
+
+## 4. Passkey — owner-operated bookmarklet, no distributed extension
+
+Some accounts require a passkey instead of QR/phone. WebAuthn binds the credential to
+`whatsapp.com`; the ceremony runs at `https://web.whatsapp.com`, using the server's
+`publicKey` options verbatim. Your embed cannot perform it on its own origin.
+
+1. Probe `POST /connector/passkey/challenge`, then read `/connector/passkey/status`.
+   Accounts outside the cohort can return `503 passkey_unavailable`.
+2. Open `{BASE_URL}/passkey-bookmarklet.html`. Provide `{BASE_URL}` and the ephemeral
+   `ct_…` token there, or construct the documented `?apiUrl=…&token=…` prefill URL in
+   your own integration. Treat that URL/bookmark as a credential and discard it after use.
+3. The owner drags the bookmarklet to the bookmarks bar, opens `https://web.whatsapp.com`,
+   invokes it there and approves their authenticator. The bookmarklet selects
+   `/connector/passkey/*` for `ct_…` tokens and submits the base64url assertion.
+4. If `skipHandoffUX=false`, have the owner verify `confirmationCode` on their phone,
+   then POST `/connector/passkey/confirm`. Poll `/connector/status` until `loggedIn`.
+
+Add both your embed origin and `https://web.whatsapp.com` to `CONNECTOR_CORS_ORIGINS`
+for this cross-origin browser flow. Browser/CSP restrictions and the account's available
+credentials can still prevent completion; do not promise that every browser/device works.
+
+The widget keeps `/connector.html` bridge detection for compatibility, but no browser
+extension or store download is supplied. Its built-in bookmarklet link does not itself
+mint or prefill credentials. Use a packaged passkey companion only for a trusted operator
+workflow with the real user token on `/session/*`, as described in `/docs/passkey-integration.md`;
+it is not a drop-in consumer of the Connector token.
+
+---
+
+## 5. Security (do this)
+
+- **Mint server-side.** The real token authenticates the mint and stays on your backend.
+  Only the ephemeral `ct_…` token reaches the browser; it works only on `/connector/*`.
+- **CORS allowlist.** For cross-origin embeds, add your app's origin to
+  `CONNECTOR_CORS_ORIGINS` on the ZuckZapGo host (comma-separated; `*` = dev only).
+  Non-allow-listed origins get no CORS headers and the browser blocks them.
+- **Env** (ZuckZapGo host): `CONNECTOR_CORS_ORIGINS`, `CONNECTOR_TOKEN_TTL` (default 600s),
+  `CONNECTOR_TOKEN_RATE_PER_MIN` (default 60).
+- **Never** put the real token, or `NEXT_PUBLIC_*`-style secrets, in client code.
+
+---
+
+## 6. Operational notes
+
+- **In-memory state** (ephemeral tokens + passkey state) is per-process — lost on restart,
+  not shared across replicas. For multi-replica, pin connector traffic to one replica or
+  move the store to Redis (future work).
+- **Handoff window** ~5 min: if the passkey handoff proof lapses, reconnect for a fresh
+  challenge.
+- **Passkey response** is rate-limited (1 / 5s per user); wait a moment before retrying a
+  cancelled prompt.
+- A successful assertion submission is not completed pairing. Verify `loggedIn` with
+  the real owner/account and browser; no new live validation is claimed by this guide.
+
+---
+
+## 7. Copy-paste task prompt for your LLM
+
+> Using the ZuckZapGo Connector guide above, add "Connect WhatsApp" to my app.
+> Backend `{stack}` at `{BASE_URL}` with instance token in env. 1) Add a server route
+> `POST /connector-token` that mints an ephemeral token via
+> `POST {BASE_URL}/session/connector/token` (real token server-side) and returns only
+> `{ token }`. 2) On the page, load `{BASE_URL}/connector.js`, fetch `/connector-token`,
+> and call `ZZ.connector.open({ token, baseUrl: "{BASE_URL}", methods:{qr:true,phone:true,passkey:true} })`.
+> 3) Remind me to add my app's origin to `CONNECTOR_CORS_ORIGINS` on the ZuckZapGo host.
+> Output the full files for `{stack}`.
+
+Full reference: `/docs/connector.md`. OpenAPI: `/api/spec.yml` (tag **Connector**).

@@ -1,0 +1,869 @@
+# ZuckZapGo — Calls API: complete LLM build guide
+
+> Paste this whole file into any LLM (Claude, GPT, Gemini, …) and ask it to build a
+> WhatsApp **voice and video call** integration against ZuckZapGo. It is self-contained: every
+> endpoint, the exact audio/video wire-formats, the enable sequence, full end-to-end flows, a
+> drop-in browser client, a server-side (Node/Python/Go) client, inbound-mode availability,
+> passkey pairing, and the common pitfalls are described here. Validate the installed release and client environment.
+>
+> Native two-way call audio powered by **meowcaller** (https://github.com/purpshell/meowcaller) — 🙏 thank you, Rajeh (@purpshell).
+
+- **Format**: this document is the source of truth. Field names, status codes, and the PCM
+  framing below are exact — copy them verbatim.
+- **Two placeholders** you must fill in: `{BASE_URL}` (e.g. `https://your-host` or
+  `http://localhost:8080`) and `{TOKEN}` (the per-instance user token).
+
+---
+
+## 0. The one-paragraph mental model
+
+ZuckZapGo exposes a **native, pure-Go VoIP engine**. You drive calls with plain **REST**
+(`/call/*`, JSON, token header) and you carry **audio** over a single **bidirectional
+WebSocket** at `GET /call/{call_id}/stream` and **video** over a second WebSocket at
+`GET /call/{call_id}/video/stream`. The audio socket speaks **raw PCM**: signed
+16-bit little-endian, **16 000 Hz, mono**, in **960-sample (1920-byte, 60 ms) frames**.
+The video socket speaks raw **H.264 Annex-B access units** (one frame per binary message).
+The engine does not encode or decode pixels; your client must produce and consume H.264.
+There is **no WebRTC, no SDP, no ICE** to deal with — the engine already terminates the
+WhatsApp media relay (SRTP) for you and hands you decoded PCM / H.264. Your only job is:
+enable the engine, place/answer a call, open the WebSocket(s), and play/capture PCM/H.264.
+
+```
+                 control plane (REST, token header)
+  your app  ───────────────────────────────────────────────►  ZuckZapGo  ──► WhatsApp
+            POST /call/dial · /call/answer · /call/hangup · …    (VoIP engine)   relay
+            ◄───────────────────────────────────────────────
+                 media plane (WebSocket, query parameter token)
+  your app  ◄══════ s16le 16kHz mono PCM (peer audio) ════════  ZuckZapGo  ◄═ SRTP/16kHz
+            ═══════ s16le 16kHz mono PCM (your mic)  ═══════►   /call/{id}/stream
+
+  your app  ◄══════ H.264 Annex-B (peer video) ══════════════  ZuckZapGo  ◄═ SRTP/H.264
+            ═══════ H.264 Annex-B (your camera) ═══════════►   /call/{id}/video/stream
+```
+
+**Golden rules**
+1. Audio/video only flows **after the call is answered** (callee picks up an outbound call, or
+   you answer an inbound call). Before that the relay is silent — that is normal, not a bug.
+2. For app/browser-driven two-way audio/video, use `callInboundMode:"manual"` in
+   `PUT /call/config`. `webhook` auto-answers and emits lifecycle webhooks, with
+   recording only when authorized and the user's S3 is configured. `reject` leaves
+   the native engine off (legacy rejection path). `bot`, `ivr` and `ai` are unavailable
+   and reject inbound calls; configuring provider URLs does not enable them (see §9).
+3. The audio WebSocket and server-side **recording are mutually exclusive per call** — they
+   share the call's single inbound sink. Use one or the other.
+4. Video is **optional**: a call can be audio-only (`video: false`) or video
+   (`video: true`). You may open the audio socket, the video socket, or both.
+
+---
+
+## 1. Authentication
+
+| Surface | How to authenticate |
+|---|---|
+| REST `/call/*` (and all standard endpoints) | HTTP header `token: {TOKEN}` |
+| WebSocket `/call/{call_id}/stream` | Query param `?token={TOKEN}` (browsers cannot set WS headers). The `token` header also works for non-browser clients. |
+| Admin endpoints (not needed for calls) | HTTP header `Authorization: {ADMIN_TOKEN}` |
+
+The token identifies the **instance** (one WhatsApp number). All `/call/*` calls operate on
+that instance's engine.
+
+---
+
+## 2. Response envelope
+
+Every JSON response is wrapped:
+
+```jsonc
+// success
+{ "code": 200, "data": { /* payload */ }, "success": true }
+// error
+{ "code": 409, "error": "calls engine not enabled for this instance ...", "success": false }
+```
+
+Always read the payload from `.data` and check `.success` / HTTP status. Examples below show
+the `data` payload.
+
+---
+
+## 3. Two call APIs — use the native engine one for audio
+
+ZuckZapGo has **two** families under `/call/*`. Do not mix them up:
+
+| Family | Endpoints | Purpose | Audio? |
+|---|---|---|---|
+| **Native VoIP engine** ✅ | `/call/config`, `/call/status`, `/call/dial`, `/call/answer`, `/call/hangup`, `/call/play`, `/call/record/start`, `/call/record/stop`, `/call/{id}/stream`, `/call/{id}/video/stream`, `/call/{id}/video/state` | Real media: dial, answer, two-way PCM audio, two-way H.264 video, play files, record | **Yes** — this is the one you want |
+| Legacy signaling (Spec 004) | `/call/reject`, `/call/accept`, `/call/preaccept`, `/call/terminate`, `/call/initiate`, `/call/reject/send` | Raw WhatsApp call-signaling control only | **No.** `/call/initiate` returns **501** by default; `GLOBAL_CALL_INITIATE_DIAL_ALIAS=true` makes it an alias of `/call/dial`. Use `/call/dial` directly for audio. |
+
+**To make calls with audio, only use the Native VoIP engine endpoints.** Outbound = `POST
+/call/dial` (never `/call/initiate`).
+
+---
+
+## 4. Endpoint reference (Native VoIP engine)
+
+All paths are relative to `{BASE_URL}`. All REST calls send `token: {TOKEN}`.
+
+### 4.1 `GET /call/config` — read engine configuration
+
+Response `data`:
+```jsonc
+{
+  "callsEnabled": true,
+  "callInboundMode": "manual",   // manual | webhook | reject; bot/ivr/ai reject inbound calls (unavailable)
+  "callRecord": false,
+  "callSttUrl": "",              // reserved provider config; built-in voice agent unavailable
+  "callLlmUrl": "",
+  "callTtsUrl": "",
+  "callSystemPrompt": "",
+  "callGreeting": ""
+}
+```
+> `callProviderToken` is write-only and never returned.
+
+### 4.2 `PUT /call/config` — update engine configuration (applies on next reconnect; `callRecord` applies at once)
+
+Body:
+```jsonc
+{
+  "callsEnabled": true,
+  "callInboundMode": "manual",      // empty defaults to "webhook"; invalid value → 400
+  "callRecord": false,
+  "callSttUrl": null,               // reserved provider config, not an active voice agent; see §9
+  "callLlmUrl": null,
+  "callTtsUrl": null,
+  "callProviderToken": null,        // bearer token for the STT/LLM/TTS provider(s)
+  "callSystemPrompt": null,
+  "callGreeting": null
+}
+```
+Response `data`: `{ "ok": true }`. **The new config takes effect on the instance's next
+reconnect** — see §5.
+
+### 4.3 `GET /call/status` — list live calls
+
+Response `data`:
+```jsonc
+{
+  "calls": [
+    {
+      "callId": "A1B2C3...",        // engine's own id — use this everywhere
+      "peer": "5521999999999@s.whatsapp.net",
+      "state": "active",            // idle|calling|ringing|connecting|active|ended|unknown
+      "direction": "inbound",       // inbound | outbound
+      "video": false,
+      "recording": false,
+      "startedAt": "2026-06-28T12:00:00Z"
+    }
+  ]
+}
+```
+Poll this (~2.5 s) to detect **inbound ringing calls** and remote hangups — the media socket
+alone does not signal a remote hangup. **Detect "call ended" by the call's _disappearance_ from
+the `calls[]` array, not by a `state:"ended"` value**: when a call ends the engine stops
+tracking it, so it vanishes from the list (you will rarely, if ever, observe `state:"ended"`
+here). Once a call you were in is gone from `calls[]`, tear your UI/socket down.
+
+### 4.4 `POST /call/dial` — place an outbound call
+
+Body: `{ "phone": "5521999999999", "video": false }`
+- `phone` = **E.164 digits only, no `+`** (country code + number).
+- `video` = `true` starts an H.264 video call (the offer advertises video capability).
+- Response `data`: `{ "callId": "A1B2C3..." }`.
+- **409** if the engine is not enabled (enable + reconnect first, §5).
+- **502** if the peer is unreachable.
+
+After dialing, open the media WebSocket(s) (§6, §7) immediately; audio/video starts when the
+callee answers.
+
+### 4.5 `POST /call/answer` — answer a ringing inbound call (manual mode)
+
+Body: `{ "callId": "A1B2C3..." }` → `data: { "ok": true }`. **404** if the call is not found.
+Then open the media WebSocket (§6).
+
+### 4.6 `POST /call/hangup` — end a live call
+
+Body: `{ "callId": "A1B2C3..." }` → `data: { "ok": true }`. **404** if not found. Also close
+the WebSocket. Use this to **decline** an inbound call too.
+
+### 4.7 `POST /call/play` — play an audio file/clip into the call
+
+Body: `{ "callId": "...", "audioUrl": "https://…/clip.mp3" }`
+or `{ "callId": "...", "audioBase64": "<base64 of WAV/MP3/Ogg-Opus>" }`.
+- Format auto-detected (WAV / MP3 / Ogg-Opus) and resampled to 16 kHz mono.
+- Plays to the peer. → `data: { "ok": true }`. Works alongside or instead of the mic stream.
+
+### 4.8 `POST /call/record/start` — start server-side recording
+
+Body: `{ "callId": "..." }` → `data: { "ok": true }`. Records the **peer's** audio to a WAV.
+Mutually exclusive with the media WebSocket on the same call.
+- **Requires `callRecord: true`** in `PUT /call/config` (applies at once, no reconnect). Off →
+  **403** `call_recording_disabled`, nothing recorded. Recording is never on by default.
+- Requires S3 configured for the instance → otherwise **400**
+  `voip: recording requires object storage (S3) to be configured`. Also **400** when the
+  process recording memory quota is full.
+- Where the audio goes: straight to the instance's own S3 during the call (5 MiB parts plus a
+  private checkpoint every 30 s of audio). Nothing is written to local disk, so deploys and
+  restarts do not lose finished recordings, and a sudden crash loses at most the last 30 s.
+- Silence is not recorded: the phone sends no packets while its user is silent and gaps over
+  2 s never reach the recorder. A recording can be shorter than the call; limits count
+  recorded audio, not the clock.
+
+### 4.9 `POST /call/record/stop` — stop + upload recording
+
+Body: `{ "callId": "..." }` → `data: { "ok": true, "mediaKey": "<url>" }` (`mediaKey` holds the
+URL of the WAV; the name is historical).
+- No recording active → still **200** with `mediaKey: ""`. **Treat an empty `mediaKey` as
+  "nothing stored", not as success.**
+- S3 failing at stop → **400** with the reason. The recording stays pending in the database and
+  is finished in the background when S3 answers (even by another instance after a deploy). Do
+  not retry stop: wait for the `CallRecordingReady` webhook.
+
+**Recording webhooks** (subscribe to them in `POST /webhook`):
+- `CallRecordingReady` — the WAV is stored; carries the media URL/key. Emitted once.
+- `CallRecordingStopped` — `CallID`, `RecordingID`, `Reason` = `recording_limit` (128 MiB,
+  about 70 min) or `recording_quota` (process memory quota, e.g. S3 down during the call).
+  The call continues; what was recorded until then still ends in `CallRecordingReady`.
+
+### 4.10 `GET /call/{call_id}/stream` — bidirectional PCM media WebSocket
+
+The audio plane. Full protocol in §6. Auth via `?token={TOKEN}`.
+
+### 4.11 `GET /call/{call_id}/video/stream` — bidirectional H.264 video WebSocket
+
+The video plane. Open this **in addition to** the audio socket for a video call.
+Auth via `?token={TOKEN}`.
+
+```
+GET {BASE_URL_AS_WS}/call/{call_id}/video/stream?token={TOKEN}
+```
+
+- Use **binary** frames only; text frames are ignored.
+- **Server → client** (binary): peer video as **H.264 Annex-B access units**. Each message is
+  one access unit (NALUs prefixed with start code `0x00 0x00 0x00 0x01`). Feed directly to a
+  hardware or software H.264 decoder (e.g. `<video>` via Media Source Extensions, or a WebCodecs
+  `VideoDecoder`).
+- **Client → server** (binary): your camera video as **H.264 Annex-B access units**. The engine
+  forwards them to the peer. You do **not** send raw frames, JPEG, or WebRTC tracks — encode to
+  H.264 first.
+- Key-frame rule: send an IDR/keyframe immediately after opening the socket and then at a
+  sensible GOP interval (every 1–2 s). The peer cannot decode until it sees a keyframe.
+- The socket forwards whatever you send; if the peer has not enabled video, the frames are
+  dropped silently by the WhatsApp relay.
+- **Ready-made browser renderer:** the dashboard SDK ships `ZZ.sdk.calls.video.startSession(...)`
+  (in `js/sdk/modules/calls.js`) — it wires this socket to WebCodecs `VideoDecoder`
+  (peer → `<canvas>`) and `VideoEncoder` (camera → Annex-B), derives the H.264 codec string from
+  the SPS, gates on the first keyframe, and applies the peer's orientation. `isSupported()`
+  feature-detects WebCodecs; where it is missing, surface an "unsupported browser" message (a full
+  MSE fallback needs an in-browser Annex-B→fMP4 muxer). Video is **BETA** until validated against
+  a real WhatsApp video call.
+
+### 4.12 `GET /call/{call_id}/video/state` — peer video state SSE
+
+Server-Sent Events stream for peer video state changes: camera on/off, audio→video upgrade,
+and device orientation.
+
+```
+GET {BASE_URL}/call/{call_id}/video/state?token={TOKEN}
+```
+
+Response is `text/event-stream`. The server writes one JSON object per line (no `data:`
+prefix):
+
+```jsonc
+{ "active": true,  "upgrade": false, "orientation": 0, "raw": 1 }
+{ "active": false, "upgrade": false, "orientation": 0, "raw": 2 }
+```
+
+| Field | Meaning |
+|---|---|
+| `active` | `true` = peer camera is on; `false` = off |
+| `upgrade` | `true` = peer upgraded an audio call to video |
+| `orientation` | Device orientation hint (0 = portrait, 1 = landscape, etc.) |
+| `raw` | Raw protocol value for advanced debugging |
+
+Use this to toggle your local UI between "audio call" and "video call" layouts without
+parsing the H.264 bitstream.
+
+---
+
+## 5. Enabling the engine (do this once per instance)
+
+The engine attaches when the instance connects. To turn it on for app-driven audio:
+
+```bash
+# 1) Enable native calls in MANUAL mode (required for two-way app/browser audio)
+curl -X PUT "{BASE_URL}/call/config" \
+  -H "token: {TOKEN}" -H "Content-Type: application/json" \
+  -d '{"callsEnabled":true,"callInboundMode":"manual","callRecord":false}'
+
+# 2) Reconnect so the engine attaches — subscribe to "Call" so inbound offers ring.
+#    (Read current events first to preserve existing subscriptions.)
+curl -X POST "{BASE_URL}/session/disconnect" -H "token: {TOKEN}" -d '{}'
+sleep 1
+curl -X POST "{BASE_URL}/session/connect" \
+  -H "token: {TOKEN}" -H "Content-Type: application/json" \
+  -d '{"Subscribe":["Message","Call"],"Immediate":true}'
+```
+
+After reconnect, `GET /call/status` works and `POST /call/dial` no longer returns 409.
+**Why reconnect**: `callsEnabled` / `call_inbound_mode` are read when the engine attaches at
+connect time. Without a reconnect a running session keeps the old (disabled) engine.
+
+Optional (push instead of polling): point the instance webhook at your server and subscribe to
+the `Call` event. Inbound calls then emit `v1.call.*` webhook events — the inbound **ring** is
+**`v1.call.offer`** (others: `v1.call.offer_notice`, `v1.call.accept`, `v1.call.preaccept`,
+`v1.call.transport`, `v1.call.terminate`, `v1.call.reject`, `v1.call.relay_latency`,
+`v1.call.unknown`). These come from the **standard `Call` event subscription** and are
+independent of the legacy `/call/initiate` signaling endpoints (§3) — you do **not** need that
+legacy path to receive them. Match the webhook's call id to `/call/status`, then `POST
+/call/answer`. Full payload shapes: see `docs/webhook-events.md`. If you don't want webhooks,
+polling `/call/status` (§4.3) is a complete alternative.
+
+---
+
+## 6. The media WebSocket protocol (exact)
+
+```
+GET {BASE_URL_AS_WS}/call/{call_id}/stream?token={TOKEN}
+```
+- `{BASE_URL_AS_WS}` = your base URL with `http`→`ws` / `https`→`wss`.
+- `{call_id}` = the `callId` returned by `/call/dial` or seen in `/call/status` (URL-encode it).
+- The connection is a standard WebSocket. Use **binary** frames only; text frames are ignored.
+
+**Audio format on the wire (both directions): raw PCM, no header, no container.**
+
+| Property | Value |
+|---|---|
+| Sample format | signed 16-bit **little-endian** (`s16le` / `int16`) |
+| Sample rate | **16 000 Hz** |
+| Channels | **1 (mono)** |
+| Frame size | **960 samples = 1920 bytes = 60 ms** |
+
+- **Server → client** (binary): decoded **peer** audio. Each message is s16le PCM. Treat the
+  payload as a stream of `int16` little-endian samples; lengths are multiples of 2 bytes.
+  Play them out (use a small jitter buffer — see §7).
+- **Client → server** (binary): your **microphone** audio, s16le 16 kHz mono. **Send exactly
+  960-sample (1920-byte) frames.** The server splits incoming bytes into 960-sample frames and
+  **zero-pads** any trailing partial frame to 960 samples (injecting a little silence into the
+  call) — so always frame to exactly 1920 bytes before sending to avoid that.
+
+**PCM sample conversions** (the only math you need):
+```js
+// int16 little-endian  ->  float32 in [-1, 1]
+function s16leToFloat(arrayBuffer) {
+  const v = new DataView(arrayBuffer), n = (arrayBuffer.byteLength >> 1);
+  const out = new Float32Array(n);
+  for (let i = 0; i < n; i++) out[i] = v.getInt16(i * 2, true) / 0x8000;
+  return out;
+}
+// float32 in [-1, 1]  ->  int16 little-endian
+function floatToS16LE(frame) {
+  const buf = new ArrayBuffer(frame.length * 2), v = new DataView(buf);
+  for (let i = 0; i < frame.length; i++) {
+    const s = Math.max(-1, Math.min(1, frame[i] || 0));
+    v.setInt16(i * 2, s < 0 ? s * 0x8000 : s * 0x7fff, true);
+  }
+  return buf;
+}
+```
+
+The socket closes when the call ends or you call `/call/hangup`. A remote hangup does **not**
+always close the socket promptly — also watch `/call/status` (poll) to tear your UI down.
+
+---
+
+## 7. Drop-in browser client (Web Audio / AudioWorklet)
+
+This is the validated browser path: an `AudioContext` at 16 kHz, a **player** AudioWorklet
+(jitter buffer, silence on underrun) for inbound audio, and a **recorder** AudioWorklet that
+posts mic frames you batch into 1920-byte frames and send. A linear resampler is used only if
+the browser refuses a 16 kHz context.
+
+> A complete, production widget already ships in this repo at
+> `/dashboard` → `static/dashboard/js/calls.js`. Read it as the reference. The essentials:
+
+```js
+const SAMPLE_RATE = 16000, FRAME_SAMPLES = 960; // 60 ms @ 16 kHz
+
+// --- inlined AudioWorklet processors (loaded as Blob modules) ---
+const PLAYER_WORKLET = `
+class PcmPlayer extends AudioWorkletProcessor {
+  constructor(){ super(); this.q=[]; this.r=null; this.p=0; this.b=0; this.play=false;
+    this.pre=Math.floor(sampleRate*0.18); this.max=sampleRate*1;   // ~180ms prebuffer, 1s cap
+    this.port.onmessage=(e)=>{ const d=e.data;
+      if(d==='flush'){ this.q=[]; this.r=null; this.p=0; this.b=0; this.play=false; return; }
+      if(this.b>this.max){ this.q=[]; this.r=null; this.p=0; this.b=0; }
+      this.q.push(d); this.b+=d.length; }; }
+  pull(){ if(!this.r||this.p>=this.r.length){ this.r=this.q.shift()||null; this.p=0; if(!this.r) return 0; } this.b--; return this.r[this.p++]; }
+  process(_i,o){ const out=o[0]&&o[0][0]; if(!out) return true;
+    if(!this.play){ if(this.b>=this.pre) this.play=true; else { out.fill(0); return true; } }
+    for(let i=0;i<out.length;i++){ if(this.b<=0){ this.play=false; out[i]=0; } else { out[i]=this.pull(); } } return true; } }
+registerProcessor('pcm-player', PcmPlayer);`;
+
+const RECORDER_WORKLET = `
+class PcmRec extends AudioWorkletProcessor {
+  constructor(){ super(); this.muted=false;
+    this.port.onmessage=(e)=>{ if(e.data&&typeof e.data.muted==='boolean') this.muted=e.data.muted; }; }
+  process(inp){ const input=inp[0]&&inp[0][0];
+    if(input&&input.length){ const c=new Float32Array(input.length); if(!this.muted) c.set(input);
+      this.port.postMessage(c,[c.buffer]); } return true; } }
+registerProcessor('pcm-recorder', PcmRec);`;
+
+const blobModuleURL = (code) => URL.createObjectURL(new Blob([code], { type: "application/javascript" }));
+
+async function startCallAudio(baseUrl, callId, token) {
+  const audioUrl = new URL(baseUrl.replace(/^http/i, "ws") + "/call/" + encodeURIComponent(callId) + "/stream");
+  audioUrl.searchParams.set("token", token);
+  const wsUrl = audioUrl.toString();
+  const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: SAMPLE_RATE });
+  await ctx.resume();
+  await ctx.audioWorklet.addModule(blobModuleURL(PLAYER_WORKLET));
+  await ctx.audioWorklet.addModule(blobModuleURL(RECORDER_WORKLET));
+
+  const player = new AudioWorkletNode(ctx, "pcm-player", { numberOfInputs:0, numberOfOutputs:1, outputChannelCount:[1] });
+  player.connect(ctx.destination);
+
+  const localStream = await navigator.mediaDevices.getUserMedia({
+    audio: { channelCount:1, echoCancellation:true, noiseSuppression:true } });
+  const recorder = new AudioWorkletNode(ctx, "pcm-recorder", { numberOfInputs:1, numberOfOutputs:0 });
+  ctx.createMediaStreamSource(localStream).connect(recorder);
+
+  const ws = new WebSocket(wsUrl); ws.binaryType = "arraybuffer";
+  let acc = new Float32Array(0);
+
+  // mic -> batch to 960-sample frames -> send s16le
+  recorder.port.onmessage = (e) => {
+    if (ws.readyState !== WebSocket.OPEN) return;
+    const merged = new Float32Array(acc.length + e.data.length);
+    merged.set(acc); merged.set(e.data, acc.length);
+    let off = 0;
+    while (merged.length - off >= FRAME_SAMPLES) {
+      ws.send(floatToS16LE(merged.subarray(off, off + FRAME_SAMPLES)));
+      off += FRAME_SAMPLES;
+    }
+    acc = merged.slice(off);
+  };
+  // peer audio -> player jitter buffer
+  ws.onmessage = (ev) => {
+    if (typeof ev.data === "string") return;
+    const pcm = s16leToFloat(ev.data);
+    player.port.postMessage(pcm, [pcm.buffer]);
+  };
+
+  return {
+    setMuted: (m) => recorder.port.postMessage({ muted: m }),
+    close: () => { try { ws.close(); } catch(e){} localStream.getTracks().forEach(t=>t.stop()); ctx.close().catch(()=>{}); },
+  };
+}
+```
+
+**Outbound from the browser**
+```js
+const r = await fetch(`${BASE_URL}/call/dial`, {
+  method:"POST", headers:{ "Content-Type":"application/json", token: TOKEN },
+  body: JSON.stringify({ phone: "5521999999999" }) });
+const callId = (await r.json()).data.callId;
+const session = await startCallAudio(BASE_URL, callId, TOKEN);   // callee answers -> audio
+// ... session.setMuted(true) to mute ...
+// hang up:
+await fetch(`${BASE_URL}/call/hangup`, { method:"POST",
+  headers:{ "Content-Type":"application/json", token: TOKEN }, body: JSON.stringify({ callId }) });
+session.close();
+```
+
+**Inbound in the browser**: poll `GET /call/status`; when a call appears with
+`direction:"inbound"` and `state` in `ringing|connecting|calling`, show a ring UI; on accept
+`POST /call/answer {callId}` then `startCallAudio(BASE_URL, callId, TOKEN)`. Note: device
+labels are blank until the page holds mic permission — call `getUserMedia` once to populate
+`enumerateDevices()` labels if you build a device picker.
+
+---
+
+## 8. Server-side client (Node / Python / Go) — softphones, bots, AI
+
+You don't need a browser. Any WebSocket client can bridge the PCM both ways — feed it from a
+TTS engine, an AI voice agent, a SIP gateway, a file, etc. Read **1920-byte** binary frames
+in; send **1920-byte** binary frames out.
+
+**Node.js (`ws`)**
+```js
+import WebSocket from "ws";
+const wsUrl = new URL(
+  `${BASE_URL.replace(/^http/, "ws")}/call/${encodeURIComponent(callId)}/stream`
+);
+wsUrl.searchParams.set("token", TOKEN);
+const ws = new WebSocket(wsUrl.toString());
+ws.binaryType = "nodebuffer";
+ws.on("message", (buf) => {
+  // buf = s16le 16kHz mono peer audio. Int16Array view:
+  const pcm = new Int16Array(buf.buffer, buf.byteOffset, buf.byteLength >> 1);
+  // -> write to speaker / STT / file ...
+});
+// send your audio: chunk your s16le 16kHz mono stream into 1920-byte Buffers
+function sendFrame(int16Frame /* length 960 */) {
+  ws.send(Buffer.from(int16Frame.buffer));   // 1920 bytes
+}
+```
+
+**Python (`websockets`)**
+```python
+import asyncio, websockets, numpy as np
+from urllib.parse import urlencode
+async def run(base_ws, call_id, token):
+    url = f"{base_ws}/call/{call_id}/stream?" + urlencode({"token": token})  # base_ws uses ws:// or wss://
+    async with websockets.connect(url, max_size=None) as ws:
+        async for msg in ws:                 # bytes = s16le 16kHz mono peer audio
+            pcm = np.frombuffer(msg, dtype="<i2")   # int16 little-endian
+            # ... play / STT ...
+            # to talk back, send exact 1920-byte frames:
+            # await ws.send(frame_int16_960.astype("<i2").tobytes())
+```
+
+This is the path for building **AI voice agents in your own stack**: peer audio → your STT →
+your LLM → your TTS → 1920-byte frames back. You implement that loop outside the gateway;
+the built-in voice-agent modes are unavailable (§9). A SIP adapter would also be your own
+integration, not a bundled SIP service.
+
+---
+
+## 9. Inbound modes — built-in voice agent unavailable
+
+The configuration API accepts all six mode names for compatibility. Acceptance of a
+configuration is not proof that its voice-agent behavior is implemented.
+
+| `callInboundMode` | Current behavior |
+|---|---|
+| `manual` | Your app answers and drives play/record or the PCM WebSocket. Use for two-way browser/app audio. |
+| `webhook` | Engine auto-answers; lifecycle events and optional authorized recording are surfaced via webhooks. |
+| `bot` | Unavailable: the engine rejects the inbound call because the voice agent is absent. |
+| `ivr` | Unavailable: the engine rejects the inbound call because the voice agent is absent. |
+| `ai` | Unavailable: the engine rejects the inbound call because the voice agent is absent. |
+| `reject` | Engine off; rejection follows the legacy path. |
+
+Setting `callSttUrl`, `callLlmUrl`, `callTtsUrl`, `callSystemPrompt`, `callGreeting`, or
+`callProviderToken` does not enable a built-in agent. There is no greeting fallback or
+server-managed conversation loop in `bot`/`ivr`/`ai`. For an external voice agent, keep
+`manual` mode and implement the STT → LLM → TTS loop in your stack using §8.
+
+### 9.1 Provider HTTP contracts — reference only, not an active inbound agent
+
+The retained provider bridge defines the following JSON/audio contracts. They are
+reference material for implementers; the current inbound handler rejects `bot`/`ivr`/`ai`
+before invoking a voice agent. Implementing these endpoints alone will not make calls run
+through them. Your external loop in `manual` mode can use its own provider contracts.
+
+**Common auth**: when `callProviderToken` is set, every request carries
+`Authorization: Bearer {callProviderToken}`.
+
+**STT — `POST {callSttUrl}`** (speech → text)
+- Request: `Content-Type: audio/wav`, body = a **WAV file, 16 kHz mono** (the captured utterance).
+- Response: JSON `{ "text": "<transcript>" }`.
+
+**LLM — `POST {callLlmUrl}`** (chat turn → reply)
+- Request: `Content-Type: application/json`, body:
+  ```jsonc
+  { "system": "<callSystemPrompt>",
+    "messages": [ { "role": "user", "content": "..." }, { "role": "assistant", "content": "..." } ] }
+  ```
+  (full conversation history; roles are `user` / `assistant`).
+- Response: JSON `{ "reply": "<assistant text>" }`.
+
+**TTS — `POST {callTtsUrl}`** (text → speech)
+- Request: `Content-Type: application/json`, `Accept: audio/wav`, body `{ "text": "<to speak>" }`.
+- Response: **either** a WAV file (`RIFF`/`WAVE` — any sample rate, resampled for you) **or**
+  raw **s16le 16 kHz mono PCM** (anything that isn't a RIFF header is treated as raw PCM).
+
+The bridge treats a non-2xx provider response as an error. This reference does not imply
+that an inbound agent invokes the bridge. Use `manual` mode + the §8 WebSocket client for
+a voice agent implemented in your own application.
+
+---
+
+## 10. End-to-end recipes
+
+**A) Outbound call with two-way audio**
+1. (once) `PUT /call/config {callsEnabled:true, callInboundMode:"manual"}` → reconnect (§5).
+2. `POST /call/dial {phone}` → `callId`.
+3. Open `wss://…/call/{callId}/stream?token=…`; start the AudioWorklet/player+recorder.
+4. Callee answers → audio both ways. `setMuted(true)` to mute.
+5. `POST /call/hangup {callId}` + close the socket.
+
+**A.1) Outbound call with two-way audio + video**
+Same as (A), but:
+- Step 2: `POST /call/dial {phone, video:true}`.
+- Step 3 plus: open `wss://…/call/{callId}/video/stream?token=…` and send H.264 Annex-B
+  access units from your camera. Open `GET /call/{callId}/video/state?token=…` (SSE) to
+  follow the peer camera state. Decode inbound Annex-B units and render to a `<video>` element.
+- Use the dashboard's native-calls widget (`/dashboard`) as the validated browser reference.
+
+**B) Inbound call with two-way audio**
+1. (once) manual mode + reconnect, subscribe `Call`.
+2. Detect ring: the **`v1.call.offer`** webhook (Call subscription) **or** poll
+   `GET /call/status` for `direction:"inbound"`, `state in ringing|connecting|calling`.
+3. `POST /call/answer {callId}` → open the socket → audio.
+4. Decline instead = `POST /call/hangup {callId}`.
+
+**C) Play a clip / IVR-style prompt without a mic**
+1. Dial or answer as above (manual mode).
+2. `POST /call/play {callId, audioUrl|audioBase64}` (WAV/MP3/Ogg-Opus). No WebSocket required
+   if you only need outbound audio.
+
+**D) Record a call**
+1. Set `callRecord:true` in `PUT /call/config` and configure the instance's own S3.
+2. `POST /call/record/start {callId}` … `POST /call/record/stop {callId}` → `mediaKey`.
+   (Do **not** also open the PCM WebSocket on the same call — mutually exclusive.)
+
+**E) Built-in AI agent**: unavailable. `bot`/`ivr`/`ai` reject inbound calls (§9). Do not
+configure those modes as a working voice-agent recipe.
+
+**F) Server-side AI agent (your stack)**: manual mode + the §8 server WebSocket client.
+
+---
+
+## 11. Pitfalls & troubleshooting (read this)
+
+- **`409 calls engine not enabled`** → you enabled config but didn't reconnect. Do §5.
+- **Dial works but no audio** → (a) the callee hasn't answered yet (audio starts on answer);
+  (b) you're not in `manual` mode; (c) browser `AudioContext` is suspended — call `ctx.resume()`
+  after a user gesture; (d) the player worklet isn't loaded / WS isn't `binaryType:"arraybuffer"`.
+- **Choppy / robotic audio** → you're not framing outbound to exactly **1920 bytes**, or your
+  player has no jitter buffer. Batch to 960 samples; prebuffer ~180 ms.
+- **Inbound rings but `/answer` 404s** → use the `callId` exactly as returned by `/call/status`
+  (it is the engine's own id; do not transform case).
+- **Remote hangup leaves UI stuck** → also poll `/call/status`; the socket may not close
+  promptly. The ended call **disappears** from `calls[]` (you won't see `state:"ended"`).
+- **Recording produced no file / empty `mediaKey`** → `/call/record/start` always returns `ok`,
+  but the WAV upload needs S3 configured; a missing/failed upload yields `mediaKey:""` on
+  `/call/record/stop` (with `ok:true`). Treat empty `mediaKey` as failure. Also, the call must
+  not have an open PCM WebSocket (recording and `/stream` share the single inbound sink).
+- **WS connects then closes immediately** → bad/missing query parameter `token`, or the `call_id` isn't a live
+  call (check `/call/status`).
+- **Server-side debugging**: set env `VOIP_LOG_LEVEL=debug` on ZuckZapGo and watch logs tagged
+  `subsystem:calls` — `offer sent`, `relay silent after allocate`, `starting media`,
+  `first RTP decoded from relay`, `selected audio codec`, `failed to unprotect`. `offer sent`
+  then silence = callee never answered (not a bug).
+
+---
+
+## 12. Quick reference
+
+```
+AUTH        REST: header  token: {TOKEN}        WS: query  ?token={TOKEN}
+ENVELOPE    { code, data, success }  |  errors: { code, error, success:false }
+
+REST (Native VoIP engine)
+  GET  /call/config                      -> engine config
+  PUT  /call/config                      {callsEnabled,callInboundMode,callRecord,call*Url,callProviderToken,callSystemPrompt,callGreeting} (reconnect to apply; callRecord at once)
+  GET  /call/status                      -> { calls:[{callId,peer,state,direction,video,recording,startedAt}] }
+  POST /call/dial                        {phone (E.164 no +), video(true|false)} -> {callId}  (409 if disabled, 502 if unreachable)
+  POST /call/answer                      {callId} -> {ok}             (404 if not found)
+  POST /call/hangup                      {callId} -> {ok}             (also: decline)
+  POST /call/play                        {callId, audioUrl|audioBase64} -> {ok}
+  POST /call/record/start                {callId} -> {ok}            (requires callRecord=true + user S3; exclusive with /stream)
+  POST /call/record/stop                 {callId} -> {ok, mediaKey}  (empty = no active recording; upload failure = 400, pending recovery)
+
+MEDIA (WebSocket)
+  GET  /call/{call_id}/stream?token=...       bidirectional binary PCM
+       format: s16le, 16000 Hz, mono        frame: 960 samples = 1920 bytes = 60 ms
+       server->client: peer audio           client->server: your mic (send exact 1920-byte frames)
+  GET  /call/{call_id}/video/stream?token=... bidirectional binary H.264 Annex-B access units
+       server->client: peer video           client->server: your camera H.264
+  GET  /call/{call_id}/video/state?token=...  SSE: peer video state {active,upgrade,orientation,raw}
+
+INBOUND     v1.call.offer webhook (Call subscription)  OR  poll /call/status
+MODES       manual(app audio/video) | webhook | reject; bot/ivr/ai unavailable (reject inbound)
+STATES      idle | calling | ringing | connecting | active | (ended = call drops from /call/status)
+DIRECTION   inbound | outbound
+```
+
+---
+
+## 13. Copy-paste task prompt for your LLM
+
+> You are integrating WhatsApp **voice and video calls** into <my app / stack> using the
+> ZuckZapGo Calls API documented above. Build <a browser softphone | a server-side voice bot |
+> an AI voice agent | a video-call client>. Requirements:
+> 1. Enable the engine once (`PUT /call/config` `manual` mode) and reconnect.
+> 2. Outbound via `POST /call/dial {phone, video?}`; inbound via `/call/status` polling or the
+>    `v1.call.offer` webhook + `POST /call/answer`.
+> 3. Carry audio over `GET /call/{call_id}/stream?token=…` as **s16le 16 kHz mono PCM**, sending
+>    the mic in **exact 1920-byte (960-sample, 60 ms) frames** and playing inbound frames with a
+>    ~180 ms jitter buffer.
+> 4. For video, carry H.264 Annex-B access units over
+>    `GET /call/{call_id}/video/stream?token=…` and watch peer state via
+>    `GET /call/{call_id}/video/state?token=…` (SSE).
+> 5. Mute = send **zero-filled (silence)** frames, keeping the socket open (the reference does
+>    this — it does not stop the send loop); hang up = `POST /call/hangup` + close the socket(s);
+>    detect remote hangups by the call **disappearing** from `/call/status`.
+> 6. Use the response envelope `{code,data,success}` and the `token` header (query parameter `token` for the WS).
+> Produce complete, runnable code for <language/framework>, with reconnect/cleanup handling.
+
+---
+
+## 14. Appendix — WhatsApp passkey pairing
+
+Some WhatsApp accounts are enrolled in a server-side passkey linking cohort. When you call
+`/session/connect`, the engine may receive a `PairPasskeyRequest` instead of a QR code. The
+backend exposes endpoints so a dashboard, SDK, a zero-install bookmarklet, or a single
+companion binary can complete pairing. There is **no browser extension** — none is needed.
+
+### 14.1 Endpoints
+
+| Method | Path | Purpose |
+|---|---|---|
+| `GET`  | `/session/passkey/status`   | Poll challenge, confirmation code, and state |
+| `POST` | `/session/passkey/response` | Submit the WebAuthn assertion response (path A) |
+| `POST` | `/session/passkey/confirm`  | Send final confirmation when `skipHandoffUX=false` |
+| `POST` | `/session/import`           | Import an existing web.whatsapp.com session (path B, BETA) |
+
+All require the real per-instance user `token` header. Connector `ct_…` tokens
+only authenticate `/connector/*`; this gateway does not issue a separate scoped
+pairing code for these `/session/*` paths.
+
+### 14.2 WebAuthn contract — rpId vs. origin (read this carefully)
+
+WhatsApp sends a `publicKey` challenge with:
+
+```jsonc
+{
+  "rpId": "whatsapp.com",              // <-- relying-party id is whatsapp.com, NOT web.whatsapp.com
+  "allowCredentials": [],             // empty example; preserve the server's actual list verbatim
+  "userVerification": "required",
+  "challenge": "...",                 // base64url
+  "timeout": 600000                   // 10 minutes
+}
+```
+
+Two facts that trip everyone up:
+
+1. **The relying-party id is `whatsapp.com`.** The `https://web.whatsapp.com` string is the
+   **origin** the ceremony runs at, not the rpId. Do not confuse them.
+2. **The client NEVER constructs the rpId.** Pass the server's `publicKey` object **verbatim**
+   to `navigator.credentials.get({ publicKey })`. Building your own rpId is the single most
+   common cause of a silent server rejection ("it just won't connect").
+
+The call must run in a **browser context whose origin is `https://web.whatsapp.com`** (the
+zero-install bookmarklet, or the companion binary driving a real Chrome). The resulting assertion
+is forwarded to the backend.
+
+`POST /session/passkey/response` body (all binary fields base64url-encoded, no padding):
+
+```jsonc
+{
+  "id": "credential-id",
+  "rawId": "base64url(raw-id)",
+  "type": "public-key",
+  "response": {
+    "clientDataJSON": "base64url(...)",
+    "authenticatorData": "base64url(...)",
+    "signature": "base64url(...)",
+    "userHandle": "base64url(...)"     // optional
+  }
+}
+```
+
+### 14.3 Server-driven cohort (headless cannot be forced)
+
+If WhatsApp sends `allowCredentials: []` + `rpId: "whatsapp.com"` + `userVerification:
+"required"`, the server is asking for a **resident discoverable credential** the account owner
+already holds. A virtual/headless authenticator cannot satisfy this request; only the account
+owner's real authenticator, inside an origin-matching `https://web.whatsapp.com` browser context,
+can sign it. There is **no client-side toggle** to opt out of this cohort — it is enforced by
+WhatsApp servers for the phone number. Accounts **not** in the cohort keep pairing headlessly by
+QR/pair-code as usual.
+
+### 14.4 Two native paths (pick per account), one companion binary, no extension
+
+**Path A — forward the WebAuthn assertion (default, recommended).** Some browser context on
+`web.whatsapp.com` runs `navigator.credentials.get(publicKey)` and POSTs the assertion to
+`/session/passkey/response`. whatsmeow becomes a first-class linked device.
+
+**Path B — import an existing session (BETA).** The owner logs into `web.whatsapp.com`; a dumper
+extracts the session and POSTs it to `/session/import`, which converts it to a native device in
+Go (no new migration). More fragile and higher ToS risk — opt-in. See `docs/session-import.md`.
+
+Both paths for the cohort require **some browser touch** by the owner — the only variable is
+packaging:
+
+**Zero-install bookmarklet** (simplest): the dashboard ships `/passkey-bookmarklet.html`. It
+injects a script into `web.whatsapp.com` that polls `/session/passkey/status`, runs
+`navigator.credentials.get` with the server `publicKey` **verbatim**, and `fetch()`es
+`/session/passkey/response`.
+
+**Packaged companion binary — Go, no Node, no extension.** When included in the platform
+release package, it drives Chrome/Chromium via the DevTools Protocol. Two modes:
+
+```bash
+# Path A — forward WebAuthn
+./passkey-companion --api https://your-host --token "<USER_TOKEN>" --mode webauthn
+# Path B — import an existing session (BETA)
+./passkey-companion --api https://your-host --token "<USER_TOKEN>" --mode dump
+```
+
+Use the companion only if the executable is included in your platform release package
+(download from https://github.com/guilhermejansen/use-zuckzapgo/releases). It requires Chrome/Chromium.
+No private source checkout is needed to use a packaged binary. If absent, use the bookmarklet.
+`--token` is the actual per-instance token for `/session/*`; a random short-lived code or
+a Connector `ct_…` token does not authenticate these paths. Keep it on the trusted operator
+machine and protect command history/process visibility. The browser step still requires
+the owner's real authenticator; availability depends on the browser and account.
+
+**JS SDK high-level helper** (dashboards): `ZZ.sdk.session.connectAndWait()` calls
+`/session/connect`, polls `/session/status`, and invokes your callback when a passkey is required.
+It returns only after `loggedIn=true` (or timeout):
+
+```js
+const status = await ZZ.sdk.session.connectAndWait({
+  subscribe: ['Message'],
+  timeoutMs: 300000,
+  onPasskeyRequired: (pk) => {
+    // Open the bookmarklet or instruct the user to run the companion binary
+    window.open('/passkey-bookmarklet.html', '_blank');
+  },
+  onStatus: (s) => console.log(s.connectionHealth, s.passkeyRequired),
+});
+```
+
+**Non-browser integrators (n8n / PHP / Java / curl)** never run WebAuthn themselves. They
+orchestrate: `POST /session/connect` → poll `GET /session/passkey/status` → hand the browser step
+to the owner (bookmarklet or companion) → poll `GET /session/status` until `loggedIn`. The
+OpenAPI spec (`/api/spec.yml`) generates a client for 50+ languages; see
+`docs/passkey-integration.md` for copy-paste curl/Python/PHP/Node/Go snippets and the n8n flow.
+
+**Manual/dashboard flow**: render the confirmation code from `/session/passkey/status` and let
+the user type it on their phone, then call `/session/passkey/confirm`.
+
+### 14.5 Webhook events
+
+When passkey pairing is in progress, the standard event dispatcher emits:
+
+- `type: "PasskeyRequest"` — carries `publicKey` (the WebAuthn challenge).
+- `type: "PasskeyConfirmation"` — carries `code` and `skipHandoffUX`.
+
+Subscribe to these events via webhook/SSE to drive UI outside the dashboard.
+
+### 14.6 State machine
+
+```
+/session/connect → WhatsApp sends PairPasskeyRequest
+                        ↓
+            GET /session/passkey/status  (required=true, challenge set)
+                        ↓
+   Browser authenticator signs (rpId=whatsapp.com, origin=web.whatsapp.com,
+   using the server publicKey verbatim)
+                        ↓
+            POST /session/passkey/response
+                        ↓
+   skipHandoffUX=true  → backend auto-confirms → pairing completes
+   skipHandoffUX=false → POST /session/passkey/confirm → pairing completes
+```
+
+All passkey state is kept in memory and expires after 12 minutes (comfortably covering the
+server's 10-minute WebAuthn timeout). The backend auto-starts a pruner at startup and stops it on
+graceful shutdown. State is single-instance — behind a round-robin load balancer, use sticky
+sessions or a dedicated replica for the pairing window.
+
+---
+
+_Powered by meowcaller (https://github.com/purpshell/meowcaller). For the in-repo backend
+details and the production-validated rationale, see `docs/call-audio-implementation-guide.md`._

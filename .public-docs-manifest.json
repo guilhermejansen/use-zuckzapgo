@@ -1,0 +1,30 @@
+{
+  "brand": "ZuckZapGo",
+  "files": {
+    "README.md": "eeb60c2ad90b4b23acdb80cb053cd54eb300b9955752111e43e6af05edc02668",
+    "api/connector-llm.txt": "3a7654d08646945cf6957d99ff8111d9f1ca4f7b8a7b50354ad94c7836fecf01",
+    "api/llm.txt": "f8133122c337ae4ac33962325806a9eef46d7dbfb379fe75a530c31d81f79531",
+    "api/network-route-llm.txt": "ba3ba6a04f7e06154a2a0ffe5922affbd1919b57ba3e44b885aaaeb78a5d976d",
+    "api/spec.yml": "812df7ca83348d5245c093ebe8d833a097e0768fe394e23b5d4ab064f842d3db",
+    "api/swagger.json": "0f5f4d6481bc52166607ecfdf1546b77f1b317fc44b44d0dc2db42f395175cc0",
+    "api/swagger.yaml": "f12d4ce3623f8349350b7a3fdd73a2a4e71c04096364ed38c1156ebd97a42a66",
+    "docs/CONFIGURATION.md": "3b6ebf042bed8dc6703f388832b1c6e1d23c5f431db2cddf39f4d74c49899c9e",
+    "docs/INDEX.md": "786f50c84673bab3770337cce683b194e17df4ae6f59f63a659cde06e3d77203",
+    "docs/INSTALL.md": "7c3ca9c7c1993e09d2e661f59356fc9de89758543cd2e0c920a17f74e7b36d22",
+    "docs/call-audio-implementation-guide.md": "5b855f5eabfe70bceaecbf205b3524e5ac0bcbea706a3afed680a4f007cd3a71",
+    "docs/call-video-guide.md": "d20738d23c309e03cb45dfa27a3533ee98bec8069a707b377468f4f8dbe660c2",
+    "docs/connector.md": "c2b60f86adfb95a6aa6a6772c16d8cbb08c062d2aea6bb6302cb2726422a2a75",
+    "docs/network-route.md": "870cd1ff5c431967c77a1dc12b8945596a9cc705f0032a000dd236ffcab4706b",
+    "docs/passkey-integration.md": "82fd19994fc897c457a047093bd1c123e18ef2be63123c977218a6618eea0299",
+    "docs/session-import.md": "edaf0b0e353b27a0b22429d153f03ead9b3904a5435b7026f184ff8744e00b4e",
+    "docs/webhook-events.md": "31701abe3b943e82dd5d5d505d71b60aca1b417aa80003c4639c6367f9db0db2",
+    "docs/whatsapp-web-call-integration.md": "0b43ebb137dd7425ef8f2274e011ac4aeb1733dbdfad49868730f1cdabc98066",
+    "install.bat": "83d4b70f19111e3317f9d1d2d02341c7d727f32958dcafcba162b9c40077f092",
+    "install.sh": "f0b5ceefcacce7c7d2039ff888aa6d162a2bbf1a19cc8df5436129b855f30877",
+    "llms.txt": "2809e0d5dfb7689b06e893a2db7cf5315cea343098b432aa74a0b8049129c1d6"
+  },
+  "public_repository": "guilhermejansen/use-zuckzapgo",
+  "schema": 1,
+  "source_commit": "31656d9aa3e9fdbde2bfe087f06bb393e4b57a93",
+  "version": "2.4.2"
+}

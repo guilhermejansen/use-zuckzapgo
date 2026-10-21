@@ -1,0 +1,24 @@
+# ZuckZapGo
+
+> API WhatsApp multi-sessão. Documentação por marca e versão; o schema da instância implantada prevalece sobre exemplos genéricos.
+
+Não invente endpoints, campos, capacidades ou licenças. Nunca inclua token real, chave de pareamento ou áudio em prompts/logs. Recursos em desenvolvimento não são disponibilidade de produção.
+
+## Comece aqui
+
+- [README](https://raw.githubusercontent.com/guilhermejansen/use-zuckzapgo/main/README.md): instalação, autenticação, capacidades e suporte.
+- [Índice de documentação](https://raw.githubusercontent.com/guilhermejansen/use-zuckzapgo/main/docs/INDEX.md): guias curados.
+
+## Guias completos para LLMs
+
+- [connector-llm.txt](https://raw.githubusercontent.com/guilhermejansen/use-zuckzapgo/main/api/connector-llm.txt): guia publicado em /api/connector-llm.txt.
+- [llm.txt](https://raw.githubusercontent.com/guilhermejansen/use-zuckzapgo/main/api/llm.txt): guia publicado em /api/llm.txt.
+- [network-route-llm.txt](https://raw.githubusercontent.com/guilhermejansen/use-zuckzapgo/main/api/network-route-llm.txt): guia publicado em /api/network-route-llm.txt.
+
+## Contratos
+
+- [OpenAPI JSON](https://raw.githubusercontent.com/guilhermejansen/use-zuckzapgo/main/api/swagger.json)
+- [OpenAPI YAML](https://raw.githubusercontent.com/guilhermejansen/use-zuckzapgo/main/api/swagger.yaml)
+- [Spec YAML](https://raw.githubusercontent.com/guilhermejansen/use-zuckzapgo/main/api/spec.yml)
+
+Os arquivos api/* são cópias dos arquivos da própria distribuição; /api/* e /docs/* em exemplos referem-se à URL BASE da instalação, não a endpoints hospedados pelo GitHub.
