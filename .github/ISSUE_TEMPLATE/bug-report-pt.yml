@@ -76,7 +76,7 @@ body:
       label: Ambiente e configurações
       description: Dê contexto sobre o ambiente afetado.
       placeholder: |
-        - Versão do ZuckZapGo: v1.2.5
+        - Versão do ZuckZapGo: v2.5.0
         - Deploy: Docker / Swarm / bare metal
         - Serviços externos: RabbitMQ, Redis, Webhook, etc.
         - Tipo de licença: Standard / Premium / Enterprise

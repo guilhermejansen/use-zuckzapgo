@@ -1,0 +1,14 @@
+{
+  "name": "Planejamento trimestral",
+  "description": "Revisão das metas e do plano do próximo trimestre.",
+  "start_time": 1805133600,
+  "end_time": 1805140800,
+  "reminder_offset_sec": 3600,
+  "location": {
+    "name": "Escritório principal",
+    "address": "Avenida Exemplo, 100",
+    "latitude": -23.55,
+    "longitude": -46.63
+  },
+  "call": "video"
+}

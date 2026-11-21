@@ -76,7 +76,7 @@ body:
       label: Environment details
       description: Provide context such as deployment type, versions and custom configurations.
       placeholder: |
-        - ZuckZapGo version: v1.2.5
+        - ZuckZapGo version: v2.5.0
         - Deployment: Docker / Swarm / bare metal
         - External services enabled: RabbitMQ, Redis, Webhook, etc.
         - License type: Standard / Premium / Enterprise
