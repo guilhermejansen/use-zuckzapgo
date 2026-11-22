@@ -5,10 +5,13 @@ Este repositório distribui documentação e exemplos públicos. Consulte a vers
 ## Guias por assunto
 
 - [connector.md](connector.md)
+- [communities.md](communities.md)
 - [webhook-events.md](webhook-events.md)
 - [passkey-integration.md](passkey-integration.md)
 - [session-import.md](session-import.md)
 - [network-route.md](network-route.md)
+- [calls-overview.md](calls-overview.md)
+- [calls-media-install.md](calls-media-install.md)
 - [call-audio-implementation-guide.md](call-audio-implementation-guide.md)
 - [call-video-guide.md](call-video-guide.md)
 - [whatsapp-web-call-integration.md](whatsapp-web-call-integration.md)
@@ -33,4 +36,4 @@ Este repositório distribui documentação e exemplos públicos. Consulte a vers
 - [Instalador Windows](../install.bat)
 - [Changelog](../CHANGELOG.md)
 
-O instalador existente é do gateway; não implica disponibilidade de desktop, SIP ou runtime remoto em desenvolvimento.
+O instalador instala só o gateway. O serviço de mídia e o aplicativo do atendente têm instalação própria, em calls-media-install.md; ponte SIP não existe.

@@ -99,7 +99,7 @@ Ao assinar, você pode instalar o ZuckZapGo em sua própria máquina ou servidor
 - **📦 Upload/Download**: Gestão automática de mídias com URLs assinadas
 - **⚡ CDN Ready**: URLs públicas otimizadas para integração com CDN
 
-## 🧩 Docker Compose (Swarm) — v1.4.3
+## 🧩 Docker Compose (Swarm) — v2.5.0
 
 > Exemplo detalhado de configuração. Confira os nomes e defaults em [Configuração](docs/CONFIGURATION.md) e no [arquivo Swarm](docker-compose-swarm.yaml) da versão instalada. Preencha licença, credenciais, domínios e rede; deixe `SESSION_DEVICE_NAME` vazio. Para uma instalação nova, use o Quick Start atualizado mais abaixo.
 
@@ -148,10 +148,26 @@ services:
       - ZUCKZAPGO_ADMIN_TOKEN=YOUR_ADMIN_TOKEN
 
       # =================== IDENTIDADE DA SESSÃO ===================
-      # SESSION_DEVICE_NAME — Nome apresentado ao WhatsApp para identificar o dispositivo da sessão global.
-      - SESSION_DEVICE_NAME=
+      # SESSION_DEVICE_NAME (opcional, NÃO definido por padrão) — sobrescreve o osName e é
+      # literalmente a string que o WhatsApp exibe em "Aparelhos conectados".
+      # ANTI-BAN: NUNCA anuncie aqui o nome do produto — isso identifica a frota inteira de
+      # uma só vez e serve de gatilho para banimento em massa.
+      # Deixando VAZIO (recomendado), valem os padrões DO GATEWAY: Os="Mac OS 10" (flag
+      # -osname) e PlatformType=DESKTOP — um WhatsApp Desktop no macOS, aparelho vinculado
+      # legítimo. A biblioteca sozinha usaria Os="whatsmeow" e PlatformType=UNKNOWN, e esse
+      # "whatsmeow" identificaria a frota; por isso o gateway define os dois valores.
+      # Esta variável só tem efeito enquanto -osname estiver no padrão "Mac OS 10".
+      # Só defina se souber o que está fazendo, e sempre com cara de aparelho real:
+      # - SESSION_DEVICE_NAME=
+      # ATENÇÃO: DeviceProps só valem em um NOVO pareamento. Sessões já pareadas continuam
+      # exibindo o nome antigo até desconectar e parear novamente (novo QR / pair code).
       # TZ — Timezone padrão utilizado por logs, agendadores e conversões de horário.
       - TZ=America/Sao_Paulo
+
+      # Estado dos nós tsnet por sessão: fica no BANCO, cifrado; não precisa de volume
+      # nem de trava de máquina. Este diretório só é lido para importar, uma vez, o
+      # tailscaled.state de uma instalação 2.1.0 (docs/network-route.md, dois passos).
+      - NETWORK_ROUTE_STATE_DIR=/app/network-routes
 
       # ========== CONFIGURAÇÕES PADRÃO DE DISPOSITIVO WHATSAPP ==========
       # ========================================
@@ -247,8 +263,6 @@ services:
       # WA_PLATFORM_TYPE=SAFARI
 
       # =================== CONFIGURAÇÕES DE WEBHOOK INDIVIDUAL ===================
-      # WEBHOOK_FORMAT — Formato padrão do payload enviado para webhooks individuais (json ou form).
-      - WEBHOOK_FORMAT=json
       # WEBHOOK_TIMEOUT — Tempo máximo de espera por resposta do webhook individual antes de considerar timeout.
       - WEBHOOK_TIMEOUT=30s
       # WEBHOOK_MAX_RETRIES — Número de tentativas adicionais após uma falha no webhook individual.
@@ -268,6 +282,26 @@ services:
       # DB_TYPE — Driver relacional preferido (postgres ou mysql) quando utilizar variáveis isoladas.
       - DB_TYPE=postgres
 
+      # =================== POSTGRESQL CONNECTION POOL (ALTA CARGA) ===================
+      # Configurações do pool de conexões PostgreSQL otimizadas para cenários de alta carga
+      # DB_MAX_OPEN_CONNS: Máximo de conexões abertas simultâneas no pool.
+      - DB_MAX_OPEN_CONNS=200
+      # DB_MAX_IDLE_CONNS: Máximo de conexões ociosas mantidas no pool (recomendado ~30-40% do max_open).
+      - DB_MAX_IDLE_CONNS=75
+      # DB_CONN_MAX_LIFETIME_MINUTES: Tempo máximo de vida de uma conexão antes de ser reciclada.
+      - DB_CONN_MAX_LIFETIME_MINUTES=30
+      # DB_CONN_MAX_IDLE_TIME_MINUTES: Tempo máximo que uma conexão pode ficar ociosa antes de ser fechada.
+      - DB_CONN_MAX_IDLE_TIME_MINUTES=5
+
+      # =================== STARTUP E WATCHDOG (ALTA CARGA) ===================
+      # Configurações para inicialização controlada e monitoramento de clientes WhatsApp.
+      # STARTUP_BATCH_SIZE: Quantidade de clientes WhatsApp iniciados por lote.
+      - STARTUP_BATCH_SIZE=50
+      # STARTUP_BATCH_DELAY_MS: Delay em milissegundos entre lotes de inicialização.
+      - STARTUP_BATCH_DELAY_MS=2000
+      # WATCHDOG_INTERVAL_SECONDS: Intervalo do watchdog para verificar saúde dos clientes (default: 300 = 5 minutos).
+      - WATCHDOG_INTERVAL_SECONDS=300
+
       # =================== FILTROS GLOBAIS DE EVENTOS ===================
       # GLOBAL_SKIP_MEDIA_DOWNLOAD — Se true, desativa o download de mídias para todos os usuários.
       - GLOBAL_SKIP_MEDIA_DOWNLOAD=false
@@ -286,6 +320,21 @@ services:
       # GLOBAL_CALL_REJECT_TYPE — Tipo de rejeição aplicado (busy, decline ou unavailable).
       - GLOBAL_CALL_REJECT_TYPE=busy
 
+      # =================== CHAMADAS NATIVAS ===================
+      # Chamadas exigem licença Enterprise em novas assinaturas. Veja docs/calls-overview.md.
+      # GLOBAL_CALL_INITIATE_DIAL_ALIAS — Quando true, a rota antiga POST /call/initiate
+      # passa a discar como POST /call/dial. Com false, ela responde 501, como sempre.
+      - GLOBAL_CALL_INITIATE_DIAL_ALIAS=false
+      # GLOBAL_CALL_RECORDING_MEMORY_QUOTA_MB — Limite de memória, em MiB, para o áudio de
+      # gravações que ainda não foi enviado ao S3 do usuário. Vazio usa 25% do limite de
+      # memória do contêiner, ou 256 MiB quando não há limite. A gravação não usa disco.
+      - GLOBAL_CALL_RECORDING_MEMORY_QUOTA_MB=
+      # GLOBAL_CALLS_API_CONFIG_FILE — Caminho de um arquivo JSON privado (permissão 0600)
+      # que liga o modo com serviço de mídia separado, em que o áudio não passa pelo
+      # gateway. Vazio, o padrão, mantém as chamadas sendo atendidas pela própria API.
+      # Preenchido e inválido impede a subida do gateway, de propósito.
+      - GLOBAL_CALLS_API_CONFIG_FILE=
+
       # =================== COMPORTAMENTO DE API ===================
       # ECHO_API_MESSAGES_ENABLED — Quando true, gera eventos de confirmação para mensagens disparadas via API (echo).
       - ECHO_API_MESSAGES_ENABLED=false
@@ -294,7 +343,7 @@ services:
       # GLOBAL_S3_ENABLED — Controla se mídias globais serão persistidas em um bucket S3.
       - GLOBAL_S3_ENABLED=true
       # GLOBAL_S3_ENDPOINT — Endpoint HTTP(S) do provedor S3; deixe vazio para AWS padrão.
-      - GLOBAL_S3_ENDPOINT=https://s3.setupautomatizado.com.br
+      - GLOBAL_S3_ENDPOINT=https://s3.seudominio.com.br
       # GLOBAL_S3_REGION — Região S3 utilizada na autenticação e geração de URLs.
       - GLOBAL_S3_REGION=us-east-1
       # GLOBAL_S3_BUCKET — Nome do bucket onde as mídias globais serão guardadas.
@@ -306,13 +355,29 @@ services:
       # GLOBAL_S3_PATH_STYLE — Quando true, utiliza path-style URLs (compatível com MinIO/outros provedores).
       - GLOBAL_S3_PATH_STYLE=true
       # GLOBAL_S3_PUBLIC_URL — URL pública usada para montar links acessíveis externamente.
-      - GLOBAL_S3_PUBLIC_URL=https://s3.setupautomatizado.com.br
+      - GLOBAL_S3_PUBLIC_URL=https://s3.seudominio.com.br
       # GLOBAL_S3_MEDIA_DELIVERY — Modo de entrega das mídias nos eventos (base64, url ou both).
       - GLOBAL_S3_MEDIA_DELIVERY=url
       # GLOBAL_S3_RETENTION_DAYS — Quantidade de dias antes de expirar objetos armazenados (0 desativa expiração).
       - GLOBAL_S3_RETENTION_DAYS=1
       # GLOBAL_S3_DISABLE_ACL — Define se ACLs individuais serão suprimidos; true para buckets com Bucket Owner Enforced.
       - GLOBAL_S3_DISABLE_ACL=true
+
+      # =================== S3 RETENTION CLEANUP ===================
+      # Sistema de limpeza automática de objetos S3 expirados.
+      # O worker GLOBAL processa todos os usuários com s3_enabled=true E s3_retention_days > 0.
+      # S3_RETENTION_ENABLED: Habilita/desabilita o worker de limpeza.
+      - S3_RETENTION_ENABLED=true
+      # S3_RETENTION_INTERVAL: Intervalo entre ciclos de limpeza (default: 1h).
+      - S3_RETENTION_INTERVAL=1h
+      # S3_RETENTION_MAX_CONCURRENCY: Máximo de usuários processados em paralelo.
+      - S3_RETENTION_MAX_CONCURRENCY=5
+      # S3_RETENTION_BATCH_SIZE: Objetos por batch de delete (max: 1000).
+      - S3_RETENTION_BATCH_SIZE=1000
+      # S3_RETENTION_OBJECTS_PER_CYCLE: Limite de objetos por ciclo por usuário.
+      - S3_RETENTION_OBJECTS_PER_CYCLE=10000
+      # S3_RETENTION_OPERATION_TIMEOUT: Timeout para operação de limpeza por usuário.
+      - S3_RETENTION_OPERATION_TIMEOUT=10m
 
       # =================== DISTRIBUIÇÃO GLOBAL SQS ===================
       # GLOBAL_SQS_ENABLED — Ativa o fan-out de eventos para uma fila Amazon SQS.
@@ -512,7 +577,7 @@ services:
       # TRACING_SERVICE_NAME — Nome lógico do serviço reportado ao tracer.
       - TRACING_SERVICE_NAME=zuckzapgo
       # TRACING_SERVICE_VERSION — Versão reportada nas tags de tracing.
-      - TRACING_SERVICE_VERSION=v1.4.3
+      - TRACING_SERVICE_VERSION=v2.5.0
       # TRACING_ENVIRONMENT — Identificador do ambiente (development, staging, production).
       - TRACING_ENVIRONMENT=development
 
@@ -529,18 +594,6 @@ services:
       - SENTRY_TRACES_SAMPLE_RATE=0.1
       # SENTRY_PROFILES_SAMPLE_RATE — Percentual de perfis de CPU/memória coletados.
       - SENTRY_PROFILES_SAMPLE_RATE=0.1
-
-      # =================== MÉTRICAS PROMETHEUS ===================
-      # PROMETHEUS_ENABLED — Ativa a exportação de métricas para Prometheus.
-      - PROMETHEUS_ENABLED=false
-      # PROMETHEUS_METRICS_PATH — Path HTTP exposto com as métricas.
-      - PROMETHEUS_METRICS_PATH=/metrics
-      # METRICS_COLLECTION_INTERVAL — Frequência de coleta interna de métricas.
-      - METRICS_COLLECTION_INTERVAL=30s
-      # BUFFER_METRICS_ENABLED — Quando true, inclui métricas específicas do buffer.
-      - BUFFER_METRICS_ENABLED=true
-      # TRANSPORT_METRICS_ENABLED — Quando true, inclui métricas das integrações (RabbitMQ, SQS, etc.).
-      - TRANSPORT_METRICS_ENABLED=true
 
       # =================== PIPELINE GLOBAL DE EVENTOS ===================
       # GLOBAL_EVENT_BUFFER_USE_DATABASE — Se true, usa banco relacional como buffer persistente de eventos.
@@ -580,10 +633,6 @@ services:
       # GLOBAL_EVENT_BUFFER_PARTITION_RETENTION_MONTHS — Meses mantidos por partição histórica do buffer.
       - GLOBAL_EVENT_BUFFER_PARTITION_RETENTION_MONTHS=6
 
-      # =================== CONTROLE DE ENCERRAMENTO ===================
-      # SHUTDOWN_GRACE_PERIOD — Tempo máximo aguardado para finalizar workers antes de encerrar o processo.
-      - SHUTDOWN_GRACE_PERIOD=30s
-
       # =================== EVENT MONITORING SSE CONFIGURATION ===================
       # Enable real-time event monitoring via Server-Sent Events
       - MONITORING_ENABLED=false
@@ -599,12 +648,8 @@ services:
       - MONITORING_CACHE_TTL=5m
       # Cache cleanup interval (removes expired entries)
       - MONITORING_CACHE_CLEANUP_INTERVAL=1m
-      # Session token TTL (for SSE authentication)
-      - MONITORING_SESSION_TOKEN_TTL=YOUR_MONITORING_SESSION_TOKEN_TTL
-      # Maximum events per page for history endpoint
-      - MONITORING_MAX_PAGE_SIZE=1000
-      # Default page size for history endpoint
-      - MONITORING_DEFAULT_PAGE_SIZE=100
+      # Session token TTL (for SSE authentication). Default: 5m.
+      - MONITORING_SESSION_TOKEN_TTL=5m
       # Enable/disable persistence for monitoring events (set to false to keep only in-memory stream)
       - MONITORING_STORAGE_ENABLED=true
       # Retention window (in days) for monitoring_events table when storage is enabled
@@ -613,6 +658,10 @@ services:
       - MONITORING_PRUNE_INTERVAL=24h
       # Absolute base URL returned in stream_url (leave empty to fall back to ZUCKZAPGO_ADDRESS or http://localhost:<port>)
       - MONITORING_STREAM_BASE_URL=https://api.seudominiodaapi.com
+    # O encerramento gracioso do gateway pode levar até 45 s (drenagem de gravações de
+    # chamada e fechamento das rotas mobile). O padrão do Docker é 10 s, que cortaria o
+    # processo no meio; por isso este prazo maior.
+    stop_grace_period: 60s
     deploy:
       mode: replicated
       replicas: 1
@@ -1388,7 +1437,7 @@ Este é um projeto privado/comercial. Para contribuições, entre em contato atr
 
 ---
 
-## Documentação e operação atualizadas — v2.4.2
+## Documentação e operação atualizadas — v2.5.0
 
 **ZuckZapGo**, da Setup Automatizado, é um gateway REST auto-hospedado para conectar números WhatsApp, trocar mensagens e distribuir eventos para suas integrações. Inclui dashboard web, sessões independentes por usuário e engine nativo de chamadas.
 
@@ -1402,17 +1451,21 @@ Este é o repositório público de apoio: documentação, contratos de API, Post
 |---|---|
 | Sessões e dispositivos | Múltiplas sessões, QR, código por telefone, status, reconexão e preferências por usuário. Passkey depende da conta e do autenticador do titular. |
 | Mensagens | Texto, resposta/citação, imagens, áudio, vídeo, documentos, stickers, contatos, localização, links, reações, listas e enquetes. |
-| Interativos e negócios | Botões, carrosséis, flows, catálogo, produtos, coleções, pedidos e cobranças, conforme contrato e licença da distribuição. |
-| Conversas e organização | Presença, leitura, arquivamento, fixação, silenciamento, etiquetas e favoritos; disponibilidade depende da sincronização da conta. |
-| Grupos, comunidades e canais | Participantes, permissões, convites, comunidades, newsletters e status. Cada operação respeita as permissões da conta. |
+| Respostas rápidas | Criar, listar e remover as respostas rápidas nativas de texto da conta (`/quick-reply`). |
+| Eventos com link | Criar, listar e remover eventos (`/event/create`, `/event/list`, `/event/{eventID}`), com imagem de capa e lembretes, e enviar o convite de um evento existente (`/chat/send/event-invite`). |
+| Interativos e negócios | Botões, carrosséis, flows, catálogo, produtos, coleções próprias (inclusive em análise, recusadas e vazias), pedidos, cobranças e histórico de cobranças (`/business/order/charges`), conforme contrato e licença da distribuição. |
+| Conversas e organização | Presença, leitura, marcar conversa como lida ou não lida (`/chat/read`), arquivamento, fixação, silenciamento, etiquetas e favoritos; disponibilidade depende da sincronização da conta. |
+| Grupos, comunidades e canais | Participantes, permissões, convites, comunidades, newsletters, consulta de canal por convite (`/newsletter/info-invite`) e status. Entrega do histórico recente a novos membros (`/group/history/*`), pelas últimas N mensagens retidas do grupo (até 200) ou por lista de IDs, com as mensagens fixadas incluídas automaticamente e marcadas como fixadas no aparelho de quem recebe, e também no mesmo pedido que adiciona os participantes. A gestão de participantes devolve a resposta do WhatsApp para cada um, inclusive o código e a validade do convite oferecido quando a privacidade da pessoa recusa a adição, e esse convite pode ser enviado no chat individual com ela (`/chat/send/group-invite`), como o "Enviar convite" do aplicativo. Administrador sempre pode enviar; membro comum quando o grupo permite. Permissões de grupo da tela do aplicativo: quem adiciona participantes (`/group/memberaddmode`), quem compartilha o convite (`/group/memberlinkmode`), quem compartilha o histórico (`/group/historysharemode`) e aprovação de novos membros (`/group/joinapproval`); o valor atual de cada uma vem em `/group/info`. Liberar o convite para todos exige adicionar participantes em todos (o WhatsApp recusa a outra combinação; a rota responde 409 nomeando a causa), e ao restringir o compartilhamento o WhatsApp gera um link de convite novo, invalidando o anterior (liberar de novo não gira o link); o gateway não gira nem revoga por conta própria. O aplicativo restringe o convite no mesmo gesto em que restringe "adicionar participantes" a admins num grupo comum: `/group/memberaddmode` muda só o ajuste dele por padrão e reproduz esse gesto com o campo opcional `sync_invite_share`. Bloquear encaminhadas muitas vezes (`/group/frequentlyforwarded`; o WhatsApp ainda não oferece o ajuste e recusa a gravação, e a rota responde `setting_not_available`), envio para análise dos admins (`/group/adminreports`), cancelar o próprio pedido de entrada (`/group/join/cancel`) e aceitar o convite que um admin envia como mensagem (`/group/join` e `/group/inviteinfo` com `Inviter`). Privacidade avançada da conversa (`/group/limitsharing`), envio e lista de mensagens para análise dos admins (`/group/adminreports/report` e `/group/adminreports/list`) e denúncia do grupo ao WhatsApp (`/group/report`) e formulário de entrada (`/group/membershipform*`: perguntas, pedidos com respostas e entrada respondendo; sem a revisão por formulário liberada na conta, os pedidos vêm sem as respostas, como no aplicativo); `/group/info` traz o estado atual desses ajustes. Convite por SMS ou e-mail a quem não tem WhatsApp não é oferecido. Nas comunidades: as duas permissões da tela do aplicativo (`/community/group-add-mode`, `/community/member-add-mode`, leitura em `/community/settings`), sugestões de grupo com aprovação, recusa e cancelamento (`/community/group-suggestions/*`), criação de grupo já dentro da comunidade (`/community/group/create`), lista completa dos grupos inclusive os não ingressados (`/community/all-groups`), transferência de propriedade e desativação (`/community/transfer-ownership`, `/community/deactivate`); veja o [guia de comunidades](docs/communities.md). Administração de canal: editar nome, descrição, foto e reações permitidas (`/newsletter/edit`), seguidores com o papel de cada um (`/newsletter/followers`), admins e convites pendentes (`/newsletter/admins`), aceitar e revogar convite de admin (`/newsletter/admin-invite/accept`, `/newsletter/admin-invite/revoke`), rebaixar admin (`/newsletter/demote-admin`), transferir a propriedade (`/newsletter/transfer-ownership`) e convidar para seguir (`/newsletter/follower-invite`). A lista de seguidores identifica apenas quem os aplicativos oficiais mostrariam — quem administra o canal e quem está nos contatos da sessão; os demais vêm sem nada que os identifique, com o papel e a data em que passaram a seguir — e não tem paginação: a consulta oficial leva só uma quantidade, no máximo 5000. Transferir a propriedade e rebaixar admin conferem as pré-condições do aplicativo antes de enviar (só o dono transfere, nunca para si mesmo, só para quem já é admin; o dono não deixa de ser admin do próprio canal), recusando com 409 e motivo próprio sem chamar o servidor; transferir deixa quem transferiu como admin. Fixar e desfixar publicações (`/newsletter/pin`, `/newsletter/unpin`) — publicação com mais de 30 dias não é fixável e, com quatro fixadas, uma nova substitui a mais antiga, então a resposta traz o conjunto fixado inteiro com a validade de cada uma. Ler as próprias reações e votos (`/newsletter/my-reactions`) e as capacidades de admin do canal (`/newsletter/capabilities`). Ler quem reagiu a uma publicação (`/newsletter/reaction-senders`) e quem votou em cada opção da enquete (`/newsletter/poll-voters`), com quantos o WhatsApp listou — não a contagem total de reações ou votos; essas leituras nomeiam apenas quem está nos contatos da sessão, o mesmo critério dos aplicativos. Votar numa enquete, trocar e retirar o voto (`/newsletter/poll-vote`, opções pelo nome, conferidas contra a enquete antes de enviar); `/newsletter/messages` e `/newsletter/message-updates` trazem em `poll` as opções, os votos de cada uma e o total. Rotular publicação como conteúdo de IA ou parceria paga (`/newsletter/label-ai-content`, `/newsletter/label-paid-partnership`; o rótulo é irremovível) e ler as restrições do canal (`/newsletter/enforcements`). Encontrar canais públicos: o diretório por lista com filtro de país e de categoria e paginação por cursor (`/newsletter/directory`), a prévia por categoria (`/newsletter/directory/categories`), a busca por nome (`/newsletter/search`), os recomendados à conta (`/newsletter/recommended`, que escondem como o aplicativo os canais já seguidos e os suspensos) e os parecidos com um canal (`/newsletter/similar`), com os limites que o aplicativo pede e a marcação de quais canais a conta já segue. Denúncias que a conta fez, com andamento e recurso (`/newsletter/reports`), denunciar um canal sem amostras de publicações (`/newsletter/report`), perfil de admin do canal (`/newsletter/admin-profile`, `/newsletter/admin-profile/setting`) e estatísticas só agregadas (`/newsletter/insights`). Perguntas e respostas no canal: o dono ou um admin pergunta (`/newsletter/question/send`, texto, imagem ou vídeo), lê as respostas com filtros, busca e cursor (`/newsletter/question/responses`), responde publicamente a uma resposta (`/newsletter/question/reply`), curte (`/newsletter/question/response/like`), destaca, oculta e reexibe (`/newsletter/question/response/state`) e bloqueia quem respondeu de responder às perguntas daquele canal (`/newsletter/question/response/block`); o seguidor responde (`/newsletter/question/respond`, de 1 a 256 caracteres contados como o aplicativo conta), lê e apaga as próprias respostas (`/newsletter/question/my-responses`, `/newsletter/question/my-responses/delete`). Quem respondeu aparece como nos aplicativos ("Followers can't see who responded, but admins can."): para o dono e os admins, o nome da agenda de quem é contato ou o apelido de quem não é, e a foto, nunca o número nem o identificador interno; seguidores não veem quem respondeu. Cada escrita é enviada uma vez só, com 504 quando o resultado fica incerto e 503 quando a sessão não estava conectada e nada foi enviado. Não disponíveis na API: denunciar uma resposta ao WhatsApp (sistema geral de denúncia, que a API não implementa), desbloquear quem respondeu (os aplicativos não têm o comando), pergunta em áudio ou vídeo redondo, perguntas em status de canal, editar uma pergunta (os aplicativos não deixam) e encaminhamento próprio de pergunta (é o encaminhamento comum de `/chat/send`). Cada operação respeita as permissões da conta. |
 | Eventos | Webhooks individuais/globais, RabbitMQ, Amazon SQS, Redis Streams e WebSocket; filtros, retries, buffer persistente, DLQ e replay administrativo. |
 | Mídia e armazenamento | Upload/download, thumbnails e S3 compatível, com configuração global/por usuário e retenção configurável. |
 | Pareamento em aplicativos | Connector incorporável com token efêmero, QR/código e encaminhamento do passo de passkey ao titular. |
 | Rede | Proxy por sessão e rota móvel nativa via Tailscale/tsnet, com versionamento e controle de prontidão. |
-| Chamadas nativas | Controle de chamadas no gateway, áudio PCM por WebSocket, reprodução e gravação em S3. Vídeo H.264 e recursos de grupo/link têm condições próprias. |
+| Chamadas nativas | Controle de chamadas no gateway, áudio PCM por WebSocket, reprodução e gravação no S3 da própria sessão (sem ele, o início da gravação responde `400`). **Exige licença Enterprise em novas assinaturas**; veja o [guia de chamadas](docs/calls-overview.md). Vídeo H.264 e recursos de grupo/link têm condições próprias. |
 | Operação | Dashboard, `/health`, monitoramento SSE, métricas, Sentry e tracing OpenTelemetry/Jaeger, conforme configuração. |
 
 Não há promessa de capacidade ilimitada: dimensione sessões, mídia, filas e conexões conforme seus recursos e sua carga real.
+
+O OpenAPI descreve algumas rotas que **não estão ativas no pacote distribuído**. As oito rotas de `/group/participant-operations/*` são o caso desta versão: elas constam do contrato, mas no binário publicado respondem `503`, porque o serviço que as atende nasce inativo e nada o ativa. O código do `503` muda por rota (`authority_unavailable` na maioria; `source_binding_unavailable`, `original_locator_unavailable` ou `privacy_authority_unavailable` em três delas), como o OpenAPI de cada rota descreve. Trate-as como indisponíveis ao planejar sua integração. Para chamadas, veja também a condição de licença e as rotas que dependem de configuração, no [guia de chamadas](docs/calls-overview.md).
 
 ## Licença e identidade da distribuição
 
@@ -1424,8 +1477,11 @@ Não há promessa de capacidade ilimitada: dimensione sessões, mídia, filas e 
 | Registro | Docker Hub |
 | Prefixo das variáveis do servidor | `ZUCKZAPGO_` |
 | Licença | Comercial, informada em `LICENSE_KEY` |
+| Chamadas | Enterprise em novas assinaturas; instalações que já tinham direito mantêm o acesso. Veja o [guia de chamadas](docs/calls-overview.md) |
 
 Botões, carrosséis, flows, shop e operações de envio de pedidos/cobranças protegidas exigem licença Enterprise. Leituras e demais rotas seguem seus próprios contratos.
+
+As rotas de chamada seguem uma regra própria: **Enterprise em novas assinaturas**, com acesso mantido para assinaturas e instalações que já tinham direito antes dessa política. Quando a verificação da licença traz a decisão e ela nega chamadas, elas respondem `403 calls_enterprise_required`. O `503 calls_license_unavailable` tem uma causa só: a verificação trouxe uma decisão sobre chamadas que o gateway não conseguiu ler, agora ou na última resposta guardada no cache. Uma verificação bem-sucedida que não fala de chamadas — campo ausente, `null` ou vazio — **não** gera `503`: vale a última decisão que a instalação recebeu, e quem nunca recebeu nenhuma mantém as chamadas. Licença inválida ou expirada não gera `503`: o gateway não sobe, ou encerra, com o erro no log. Os eventos de chamada no webhook seguem a mesma regra. As rotas protegidas são `/call/*` e `/session/skipcalls/config`, sempre presentes, mais `/calls/*` e `/session/calls/*`, que **só existem** quando o modo com serviço de mídia está configurado; sem essa configuração elas respondem `404`, qualquer que seja a licença. Detalhes e o que fazer em cada resposta estão no [guia de chamadas](docs/calls-overview.md).
 
 `LICENSE_KEY` não usa o prefixo do produto. `DATABASE_URL`, `GLOBAL_*`, `CONNECTOR_*` e `NETWORK_ROUTE_*` também mantêm esses nomes. O token administrativo é `ZUCKZAPGO_ADMIN_TOKEN`; ele é diferente da licença e do token de cada sessão.
 
@@ -1436,7 +1492,7 @@ Pré-requisitos: Docker com Compose v2 e uma licença válida. O exemplo cria um
 ### 1. Configure `.env`
 
 ```dotenv
-DOCKER_TAG=v2.4.2
+DOCKER_TAG=v2.5.0
 LICENSE_KEY=SUBSTITUA_PELA_SUA_LICENCA
 ZUCKZAPGO_ADMIN_TOKEN=SUBSTITUA_POR_UM_TOKEN_ALEATORIO
 POSTGRES_PASSWORD=SUBSTITUA_POR_UMA_SENHA_ALEATORIA_HEXADECIMAL
@@ -1481,7 +1537,7 @@ volumes:
   postgres_data:
 ```
 
-O `sslmode=disable` acima vale para a rede interna deste exemplo. Em produção, configure o banco e seu TLS, publique o gateway atrás de HTTPS e ajuste `ZUCKZAPGO_ADDRESS` para a URL que seus consumidores realmente acessam. Deixe `SESSION_DEVICE_NAME` sem configuração para herdar a identidade nativa do dispositivo.
+O `sslmode=disable` acima vale para a rede interna deste exemplo. Em produção, configure o banco e seu TLS, publique o gateway atrás de HTTPS e ajuste `ZUCKZAPGO_ADDRESS` para a URL que seus consumidores realmente acessam. Deixe `SESSION_DEVICE_NAME` sem configuração para manter os padrões do gateway.
 
 ### 3. Inicie e confira
 
@@ -1493,7 +1549,7 @@ curl --fail-with-body http://localhost:8080/health
 
 Abra o dashboard em `http://localhost:8080/dashboard/` e a referência da instância em `http://localhost:8080/api/`. Se o startup falhar, consulte `docker compose logs gateway`; licença, conexão com banco e migrações precisam estar válidas antes do pareamento.
 
-O exemplo fixa a versão `v2.4.2`. Leia as notas da versão antes de atualizar; `latest` pode mudar. Os arquivos completos [`.env.sample`](.env.sample), [Compose](docker-compose.yml) e [Swarm](docker-compose-swarm.yaml) são referências que precisam de configuração para seu ambiente.
+O exemplo fixa a versão `v2.5.0`. Leia as notas da versão antes de atualizar; `latest` pode mudar. Os arquivos completos [`.env.sample`](.env.sample), [Compose](docker-compose.yml) e [Swarm](docker-compose-swarm.yaml) são referências que precisam de configuração para seu ambiente.
 
 ## Primeira sessão pela API
 
@@ -1558,6 +1614,7 @@ As respostas JSON normalmente usam `{ "code": 200, "success": true, "data": {} }
 | [api/llm.txt](api/llm.txt) | Chamadas nativas: autenticação, controle, PCM/H.264, exemplos e limites |
 | [api/connector-llm.txt](api/connector-llm.txt) | Connector: emissão de token, embed, pareamento e segurança |
 | [api/network-route-llm.txt](api/network-route-llm.txt) | Rota móvel: provisionamento, versões, prontidão e recuperação |
+| [api/events-llm.txt](api/events-llm.txt) | Eventos: transportes, envelope, filtros e entrega |
 | [api/spec.yml](api/spec.yml) | OpenAPI 3, referência para integração e geração de clientes |
 | [api/swagger.json](api/swagger.json) / [api/swagger.yaml](api/swagger.yaml) | Contratos Swagger gerados |
 | [ZuckZapGo.postman_collection.json](ZuckZapGo.postman_collection.json) | Collection Postman da marca |
@@ -1574,6 +1631,8 @@ Os arquivos `api/*` deste repositório correspondem aos servidos em `/api/*` pel
 | [Passkey](docs/passkey-integration.md) | Passo do titular no navegador e confirmação |
 | [Importação de sessão](docs/session-import.md) | Alternativa BETA com snapshot sensível |
 | [Rota móvel](docs/network-route.md) | Egresso por sessão, persistência e operação |
+| [Chamadas: modos, licença e implantação](docs/calls-overview.md) | Comece aqui: os dois modos de uso, a regra de licença e o que instalar |
+| [Chamadas com serviço de mídia: instalação](docs/calls-media-install.md) | Do zero à primeira ligação: provisão, serviço de mídia, aplicativo do atendente e SDK |
 | [Áudio de chamadas](docs/call-audio-implementation-guide.md) | Controle, stream e gravação |
 | [Vídeo de chamadas](docs/call-video-guide.md) | H.264, codecs, grupos e limitações |
 | [Integração de chamadas no navegador](docs/whatsapp-web-call-integration.md) | Fluxos de integração com o gateway |
@@ -1591,7 +1650,11 @@ Passkey exige o autenticador do titular e a cerimônia WebAuthn em `https://web.
 
 ## Chamadas: disponibilidade e limites
 
-- O engine nativo roda junto ao gateway. Habilite `callsEnabled` em `PUT /call/config` e reconecte a sessão. Use `manual` para seu aplicativo controlar o atendimento e o áudio; `webhook` atende automaticamente e emite eventos.
+**Chamadas exigem licença Enterprise em novas assinaturas.** Assinaturas e instalações que já tinham direito mantêm o acesso, sem mudar de plano. Quando a decisão do servidor de licenças nega chamadas para a instalação, as rotas `/call/*` e `/session/skipcalls/config` respondem `403 calls_enterprise_required` e os eventos de chamada deixam de ser emitidos no webhook. O `503 calls_license_unavailable` tem uma causa só: a verificação trouxe uma decisão sobre chamadas que o gateway não conseguiu ler, agora ou na última resposta guardada no cache; confira a resposta do servidor de licenças, não a `LICENSE_KEY`. Uma verificação bem-sucedida que não traz decisão — campo ausente, `null` ou vazio — mantém a última recebida, e a instalação que nunca recebeu uma mantém as chamadas. Licença inválida ou expirada não gera `503`: o gateway não sobe, ou encerra, com o erro no log. As rotas `/calls/*` e `/session/calls/*` só existem com o modo com serviço de mídia configurado; sem ele respondem `404`. O resto da API não é afetado.
+
+O [guia de chamadas](docs/calls-overview.md) compara os dois modos de uso — controle pela própria API ou com um serviço de mídia separado —, detalha a regra de licença e descreve a implantação de cada um. Os limites abaixo valem para o controle pela própria API.
+
+- O engine nativo roda junto ao gateway. Habilite `callsEnabled` em `PUT /call/config`, com licença que autorize chamadas, e reconecte a sessão. Use `manual` para seu aplicativo controlar o atendimento e o áudio; `webhook` atende automaticamente e emite eventos.
 - Saída com mídia usa `POST /call/dial`; `/call/initiate` responde `501` por padrão e só vira alias de dial com `GLOBAL_CALL_INITIATE_DIAL_ALIAS=true`.
 - Áudio bidirecional: `/call/{call_id}/stream`, PCM **s16le, 16 kHz, mono**, quadros de **960 amostras / 1920 bytes / 60 ms**. O áudio começa após o atendimento; sinalização de chamada não prova fluxo de mídia.
 - Vídeo: H.264 Annex-B no stream próprio, com codec no cliente. A API não converte automaticamente câmera, WebRTC, SDP ou SIP; confira o guia e valide sua combinação de cliente, conta e rede. Limites de participantes são impostos pelo WhatsApp.
@@ -1599,7 +1662,7 @@ Passkey exige o autenticador do titular e a cerimônia WebAuthn em `https://web.
 - Gravação exige `callRecord:true` e **S3 do usuário**. Gravação e stream PCM são mutuamente exclusivos na mesma chamada. O áudio fica em memória/S3; controle e partes ficam no banco. Pausas acima de 2 s podem não entrar no arquivo.
 - Rotas móveis com `failClosed:true` e `tcpOnly:true` bloqueiam o engine nativo. A política permissiva não ativa esse guard, mas o SOCKS continua sendo TCP: não interprete `failClosed:false` como suporte a mídia UDP pela rota móvel nem como garantia de chamadas.
 
-Servidor de mídia remoto, aplicativo desktop de telefonia, ponte SIP e seus novos instaladores não fazem parte desta distribuição pública. Consulte as notas de release para saber quais recursos estão disponíveis no pacote instalado.
+Os componentes do **modo com serviço de mídia** fazem parte da distribuição a partir da 2.5.0: a imagem do **serviço de mídia** (`setupautomatizado/zuckzapgo-callworker`, `amd64` e `arm64`), a **ferramenta de provisão**, que vem na imagem da API, e, na [release](https://github.com/guilhermejansen/use-zuckzapgo/releases), o **aplicativo do atendente** para macOS 14+ e Windows e o **SDK de chamadas** (`@conversalabs/calls-sdk`). Esse modo é **Beta** nesta versão, no macOS e no Windows; o aplicativo para Windows ainda não foi testado numa máquina Windows e ainda não tem certificado de assinatura de código, então o Windows mostra o aviso do SmartScreen na instalação. Ponte SIP não existe em nenhum modo. O passo a passo, da instalação à primeira ligação, está no [guia de instalação com serviço de mídia](docs/calls-media-install.md).
 
 ## Eventos, armazenamento e backups
 
@@ -1615,11 +1678,11 @@ Antes de atualizar, faça backup e ensaie restauração. Leia migrações e nota
 
 ## Binários, instaladores e integridade
 
-Baixe o pacote correspondente ao seu sistema e arquitetura em [Releases](https://github.com/guilhermejansen/use-zuckzapgo/releases). Mantenha o binário e os assets `static/` do mesmo pacote para que dashboard, SDK e `/api/` permaneçam compatíveis.
+Baixe o pacote correspondente ao seu sistema e arquitetura em [Releases](https://github.com/guilhermejansen/use-zuckzapgo/releases). Mantenha o binário e os assets `static/` do mesmo pacote para que o dashboard, o SDK JavaScript que ele carrega (`ZZ.sdk`) e `/api/` permaneçam compatíveis. Esse SDK do dashboard não é o SDK de chamadas do modo com serviço de mídia.
 
 As releases disponibilizam arquivos por plataforma e `checksums.txt`. Confira o SHA-256 do arquivo baixado contra a entrada correspondente, por exemplo com `sha256sum <arquivo>` no Linux, `shasum -a 256 <arquivo>` no macOS ou `Get-FileHash <arquivo> -Algorithm SHA256` no PowerShell.
 
-Os auxiliares [install.sh](install.sh) (Linux/macOS) e [install.bat](install.bat) (Windows) pertencem ao gateway existente. Leia suas opções e as notas da release antes de executar; instalação, permissões de serviço e compatibilidade precisam ser verificadas no seu ambiente. Esses scripts não instalam um novo desktop, worker de mídia remota ou ponte SIP.
+Os auxiliares [install.sh](install.sh) (Linux/macOS) e [install.bat](install.bat) (Windows) pertencem ao gateway existente. Leia suas opções e as notas da release antes de executar; instalação, permissões de serviço e compatibilidade precisam ser verificadas no seu ambiente. Esses scripts instalam somente o gateway. O **serviço de mídia** de chamadas e o **aplicativo do atendente** têm instalação própria, descrita no [guia de instalação com serviço de mídia](docs/calls-media-install.md); ponte SIP não existe.
 
 ## Suporte
 

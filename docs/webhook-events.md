@@ -79,6 +79,62 @@ built via `BuildOrderReceivedV1`. `data`: `message_id`, `business_jid`,
 `customer_jid`, `order_id`, `item_count`, `total`, `currency`, `products[]`,
 `enrichment_error`.
 
+## Channel question events (`v1.newsletter.*`)
+
+Channel questions (`/newsletter/question/*`) add four event types and describe
+question posts under the same single `v1` key, next to `event` (`data.v1` in the
+webhook, `payload.v1` in SQS/WebSocket/Redis). No existing key changes and no
+event that was emitted before stops. **None of them identifies a person**: the
+protocol never says who responded, which admin liked, or who was blocked by
+number or LID.
+
+| `type`                               | `v1.event`                                  | Key `v1.data` fields |
+|--------------------------------------|---------------------------------------------|----------------------|
+| `Message` (a channel question)       | `v1.newsletter.question`                    | `newsletter_jid`, `server_id`, `message_id`, `text` or `caption`, `media_type`, `is_sender` |
+| `Message` (an admin's public reply)  | `v1.newsletter.question_reply`              | `newsletter_jid`, `server_id`, `message_id`, `question_server_id`, `response_server_id`, `text` or `caption`, `quoted_question_text`, `quoted_response_text` (the quoted response never carries its author) |
+| `Message` (your own response, fanned out to this device) | `v1.newsletter.question_response` | `newsletter_jid`, `question_server_id`, `response_server_id`, `message_id`, `text`, `is_sender` |
+| `NewsletterQuestionResponseReaction` | `v1.newsletter.question_response_reaction`  | `newsletter_jid`, `question_server_id`, `response_message_id`, `reaction_code` (`like`, empty when taken back), `liked`, `revoked`, `response_text` (absent when the like is taken back), `offline` |
+| `NewsletterQuestionResponseRevoked`  | `v1.newsletter.question_response_revoked`   | `newsletter_jid`, `question_server_id`, `response_server_id`, `message_id` |
+| `NewsletterQuestionResponseState`    | `v1.newsletter.question_response_state`     | `question_server_id`, `response_server_id`, `state` (`star`, `unstar`, `hide`, `unhide`), `newsletter_jid` only when WhatsApp sent it |
+| `NewsletterQuestionResponseBlocked`  | `v1.newsletter.question_responder_blocked`  | `question_server_id`, `response_server_id`, `newsletter_jid` only when WhatsApp sent it |
+
+- `NewsletterQuestionResponseReaction` reaches the session that **sent** the
+  response, when an admin likes or unlikes it (WhatsApp's
+  `question_response_reaction` notification).
+- **A like produces two events.** The same notification still produces the
+  legacy, empty `NewsletterLiveUpdate` (`Messages: []`) that it produced before
+  this release; that event is kept unchanged for consumers that count on it. The
+  event that describes the like is `NewsletterQuestionResponseReaction`.
+- `NewsletterQuestionResponseRevoked` reaches the session when its own response
+  was deleted from another of its devices.
+- `NewsletterQuestionResponseState` and `NewsletterQuestionResponseBlocked` are
+  WhatsApp's MEX notifications to the channel's admins, typically when another
+  admin or device acted; a change made through this API may not echo back.
+- There is no event for a new response: WhatsApp does not notify admins of each
+  response. A question's `responses_count` comes with `/newsletter/messages`,
+  `/newsletter/message-updates` and `NewsletterLiveUpdate` (`ResponsesCount`, left out when the
+  count is 0).
+- A poll post's votes per option come the same way: `poll` in `/newsletter/messages`
+  and `/newsletter/message-updates`, and `PollVoteCounts` in each message of
+  `NewsletterLiveUpdate`, keyed by the option's SHA-256 hash in hex (the
+  `vote_hash_hex` of the routes) with the number of votes. Only options with
+  votes are listed, and the key is omitted on every other post.
+- A post's views come the same way. WhatsApp may send two view counts per post, a
+  legacy one and a newer `views` definition; each message of `NewsletterLiveUpdate`
+  keeps both in `ViewCounts` (`Type` empty for the legacy one, `views` for the newer),
+  and its `ViewsCount` is the newer one when WhatsApp sent it, otherwise the legacy
+  one, the same choice as `views_count` in `/newsletter/messages` and
+  `/newsletter/message-updates` and the count the official apps show when WhatsApp
+  enabled the newer definition. Before this release `ViewsCount` was whichever came
+  last and could read 0 while the owner's app showed the views.
+- All four follow `SkipNewsletters`, individual and global, like the other
+  newsletter events. `Message` events from channels already did.
+- In `event`, a channel `Message` that is a question, a reply or a response
+  carries `NewsletterMeta.QuestionType` (`question`, `reply`, `response`) and,
+  when the stanza has them, `ResponseServerID`, `ParentServerID` and `IsSender`.
+  These keys are absent on every other message, whose `event` serializes exactly
+  as before.
+
 ## `OrderState` event — order state kept by the gateway
 
 The official WhatsApp apps keep the seller's order/billing card state (Accept /
@@ -292,9 +348,29 @@ at `data.event.Message.conversation` exactly like a normal message — there is 
 
 ### `data.event_invite` / `data.payment_invite_type`
 
-`data.event_invite` is attached for an `eventInviteMessage` and carries only the
-fields WhatsApp actually sent: `event_id`, `title`, `start_time`, `caption`,
-`is_canceled`, `thumbnail_b64` (base64 JPEG). `data.payment_invite_type` is the
+`data.event_invite` is attached for an `eventInviteMessage` — the invitation to
+an **event with link** created in the Events tab of the official apps — and
+carries only the fields WhatsApp actually sent:
+
+| Field | Type | Meaning |
+|---|---|---|
+| `event_id` | string | Numeric id of the event on WhatsApp's servers. |
+| `title` | string | Event name. |
+| `start_time`, `end_time` | integer | Unix seconds. `end_time` is absent when the event has no end. |
+| `location_name` | string | Place name, when the event has a location. |
+| `call_link` | string | `https://call.whatsapp.com/...` link, when the event has a call. |
+| `caption` | string | Text the sender added to the invitation. |
+| `status` | string | `ACTIVE`, `CANCELED`, `SUSPENDED`, `DELETED`, `LEFT_EVENT`, `REMOVED_FROM_INVITE_LIST` or `UNKNOWN`. |
+| `is_canceled` | boolean | Legacy cancellation flag, when sent. |
+| `last_updated_ts_usec` | integer | Last change of the event, Unix **micro**seconds. |
+| `cover_image_handle` | string | Handle of the cover image stored on WhatsApp's servers (`wa_event_user_image/...`). It is an identifier, not a URL: the gateway does not download the full cover. |
+| `thumbnail_b64` | string | Base64 JPEG preview of the cover carried by the invitation. |
+
+The same object is accepted by `POST /chat/send/event-invite`, which sends the
+invitation of that existing event to another chat.
+
+This is a different message from the in-chat event (`eventMessage`, surfaced as
+`calendarEvent`), which has no cover image. `data.payment_invite_type` is the
 `PaymentInviteMessage` invite-type enum as a string.
 
 ### LID identity
@@ -464,9 +540,10 @@ A versão rica de API echo usa `event.Info.IsFromAPI:true`, mantendo IsFromMe; i
 ### Campos incorporados e identidade da mensagem
 
 - `MessageSource` é incorporado em Info e em Receipt/ChatPresence: Chat, Sender, IsFromMe, IsGroup, AddressingMode, SenderAlt, RecipientAlt, BroadcastListOwner, BroadcastRecipients[]. JIDs serializados são strings; não são o telefone garantido da pessoa.
-- `MessageInfo`: campos incorporados de MessageSource mais ID, ServerID, Type, PushName, Timestamp, Category, Multicast, MediaType, Edit, MsgBotInfo, MsgMetaInfo, IsNewsletterStatus, VerifiedName e DeviceSentMeta. `Info.IsFromAPI` é adicionado pelo DTO de echo API. Valores opcionais/ponteiros podem estar null; não assuma que todos estão preenchidos.
+- `MessageInfo`: campos incorporados de MessageSource mais ID, ServerID, Type, PushName, Timestamp, Category, Multicast, MediaType, Edit, MsgBotInfo, MsgMetaInfo, IsNewsletterStatus, VerifiedName e DeviceSentMeta. Quando disponível, `StanzaTag` identifica a stanza recebida (`message`, `status` ou `appdata`). `IsNewsletterStatus` permanece disponível nos consumidores atuais. `Info.IsFromAPI` é adicionado pelo DTO de echo API. Valores opcionais/ponteiros podem estar null; não assuma que todos estão preenchidos.
 - `BasicCallMeta`: From, Timestamp, CallCreator, CallCreatorAlt, CallID, GroupJID. `CallRemoteMeta`: RemotePlatform, RemoteVersion. Campos enriquecidos caller_phone/caller_lid podem complementar a identidade, sem substituir os JIDs brutos.
 - `AppState` incorpora SyncActionValue: o tipo de action define quais subobjetos existem; não o interprete como uma mensagem de texto. GroupInfo/JoinedGroup incorporam metadados de grupo e pointers de alterações, não um snapshot invariavelmente completo.
+- `GroupInfo` também informa os ajustes do aplicativo quando mudam: `NoFrequentlyForwarded` (bloquear encaminhadas muitas vezes) e `AllowAdminReports` (envio para análise dos admins) vêm preenchidos só no evento em que mudaram; `AdminReportReceived: true` avisa os admins de que um membro enviou uma mensagem para análise (a lista vem de `GET /group/adminreports/list`). Os nós dessas mudanças continuam também em `UnknownChanges`, como antes, para quem já os lia por lá. O `JoinedGroup` e o `GET /group/info` trazem o estado atual desses ajustes nos campos de `types.GroupInfo` (`IsNoFrequentlyForwarded`, `AllowAdminReports`, `LimitSharingEnabled`, `DefaultReactions`, `AppealStatus` e os demais).
 - Mensagens interativas, contatos, listas, carrosséis, reação, localização, pedidos e revoke aparecem dentro de variantes de `event.Message`. Revoke não exige um novo eventType: pode ser Message/protocolMessage. Preserve IDs alvos e diferencie nova mensagem, edição e ação sobre outra mensagem.
 - Eventos de teste/health podem não ter userID/type/data completos (`eventType:test`, por exemplo). Direcione-os para handler de probe antes do normalizador de eventos de instância; não use um probe como fixture que prova a forma de todos os eventos reais.
 
@@ -493,7 +570,7 @@ A lista inclui nomes cadastrados, aliases e seletores; a coluna de emissão evit
 | `LabelAssociationChat` | Chat labeled/unlabeled | `JID: types.JID; Timestamp: time.Time; LabelID: string; Action: *waSyncAction.LabelAssociationAction; FromFullSync: bool` |
 | `LabelAssociationMessage` | Message labeled/unlabeled | `JID: types.JID; Timestamp: time.Time; LabelID: string; MessageID: string; Action: *waSyncAction.LabelAssociationAction; FromFullSync: bool` |
 | `LabelEdit` | Label edited | `Timestamp: time.Time; LabelID: string; Action: *waSyncAction.LabelEditAction; FromFullSync: bool` |
-| `GroupInfo` | Group information changed | `JID: types.JID; Notify: string; Sender: *types.JID; SenderPN: *types.JID; Timestamp: time.Time; Name: *types.GroupName; Topic: *types.GroupTopic; Locked: *types.GroupLocked; Announce: *types.GroupAnnounce; Ephemeral: *types.GroupEphemeral; MembershipApprovalMode: *types.GroupMembershipApprovalMode; Delete: *types.GroupDelete; Link: *types.GroupLinkChange; Unlink: *types.GroupLinkChange; NewInviteLink: *string; PrevParticipantVersionID: string; ParticipantVersionID: string; JoinReason: string; Join: []types.JID; Leave: []types.JID; Promote: []types.JID; Demote: []types.JID; MembershipRequestsCreated: []types.JID; MembershipRequestsRevoked: []types.JID; MembershipRequestMethod: string; Suspended: bool; Unsuspended: bool; UnknownChanges: []*waBinary.Node` |
+| `GroupInfo` | Group information changed | `JID: types.JID; Notify: string; Sender: *types.JID; SenderPN: *types.JID; Timestamp: time.Time; Name: *types.GroupName; Topic: *types.GroupTopic; Locked: *types.GroupLocked; Announce: *types.GroupAnnounce; Ephemeral: *types.GroupEphemeral; MembershipApprovalMode: *types.GroupMembershipApprovalMode; MemberLinkMode: *types.GroupMemberLinkMode; Delete: *types.GroupDelete; Link: *types.GroupLinkChange; Unlink: *types.GroupLinkChange; AllowNonAdminSubGroupCreation: *bool; NewInviteLink: *string; PrevParticipantVersionID: string; ParticipantVersionID: string; JoinReason: string; Join: []types.JID; Leave: []types.JID; Promote: []types.JID; Demote: []types.JID; MembershipRequestsCreated: []types.JID; MembershipRequestsRevoked: []types.JID; MembershipRequestMethod: string; Suspended: bool; Unsuspended: bool; UnknownChanges: []*waBinary.Node; NoFrequentlyForwarded: *bool; AllowAdminReports: *bool; AdminReportReceived: bool` |
 | `JoinedGroup` | User joined a group | `Reason: string; Type: string; CreateKey: types.MessageID; Sender: *types.JID; SenderPN: *types.JID; Notify: string; embed types.GroupInfo` |
 | `Contact` | Contact modified | `JID: types.JID; Timestamp: time.Time; Action: *waSyncAction.ContactAction; FromFullSync: bool` |
 | `Picture` | Profile picture changed | `JID: types.JID; Author: types.JID; Timestamp: time.Time; Remove: bool; PictureID: string` |
@@ -528,7 +605,7 @@ A lista inclui nomes cadastrados, aliases e seletores; a coluna de emissão evit
 | `CallTransport` | Call transport information | `embed types.BasicCallMeta; embed types.CallRemoteMeta; Data: *waBinary.Node` |
 | `CallTerminate` | Call terminated by WhatsApp signaling | `embed types.BasicCallMeta; Reason: string; Data: *waBinary.Node` |
 | `CallTerminateEngine` | event={CallID,Reason?} | `custom` |
-| `CallRecordingReady` | event={CallID,MediaKey}; chave do objeto, não exigir URL | `custom` |
+| `CallRecordingReady` | event={CallID,MediaKey}; MediaKey é a chave do objeto no S3 da instância (`calls/<id da instância>/<id da gravação>.wav`), não URL; mesmo valor do `mediaKey` de `/call/record/stop` | `custom` |
 | `CallRecordingStopped` | event={CallID,RecordingID,Reason?}; chamada pode continuar | `custom` |
 | `CallReject` | Call rejected | `embed types.BasicCallMeta; Data: *waBinary.Node` |
 | `CallOfferNotice` | Call notification (group calls) | `embed types.BasicCallMeta; Media: string; Type: string; Data: *waBinary.Node` |
@@ -542,6 +619,10 @@ A lista inclui nomes cadastrados, aliases e seletores; a coluna de emissão evit
 | `NewsletterLeave` | Left newsletter | `id: types.JID; role: types.NewsletterRole` |
 | `NewsletterMuteChange` | Newsletter muted/unmuted | `id: types.JID; mute: types.NewsletterMuteState` |
 | `NewsletterLiveUpdate` | Newsletter live update | `JID: types.JID; Time: time.Time; Messages: []*types.NewsletterMessage` |
+| `NewsletterQuestionResponseReaction` | An admin liked or unliked your response to a channel question; P.v1 = `v1.newsletter.question_response_reaction` | `newsletter_jid: types.JID; question_server_id: int; response_message_id: types.MessageID; reaction_code: string; response: *waE2E.Message; offline: bool; timestamp: time.Time` |
+| `NewsletterQuestionResponseRevoked` | Your response to a channel question was deleted on another device; P.v1 = `v1.newsletter.question_response_revoked` | `newsletter_jid: types.JID; message_id: types.MessageID; question_server_id: int; response_server_id: string; is_sender: bool; timestamp: time.Time` |
+| `NewsletterQuestionResponseState` | A response was starred, unstarred, hidden or unhidden; P.v1 = `v1.newsletter.question_response_state` | `newsletter_id: types.JID (omitted when absent); server_id: int; response_server_id: string; response_state: string` |
+| `NewsletterQuestionResponseBlocked` | The sender of a response was blocked from the channel's questions; P.v1 = `v1.newsletter.question_responder_blocked` | `newsletter_id: types.JID (omitted when absent); server_id: int; response_server_id: string` |
 | `AppState` | App state data received | `Index: []string; embed *waSyncAction.SyncActionValue` |
 | `AppStateSyncComplete` | P.name:string, version:uint64, recovery:bool | `Name: appstate.WAPatchName; Version: uint64; Recovery: bool` |
 | `AppStateSyncError` | P.name:string, error:string, full_sync:bool; raw Error pode serializar objeto vazio | `Name: appstate.WAPatchName; Error: error; FullSync: bool` |
@@ -858,11 +939,29 @@ Este schema de compatibilidade cobre as famílias de envelope e os campos estáv
             "start_time": {
               "type": "integer"
             },
+            "end_time": {
+              "type": "integer"
+            },
+            "location_name": {
+              "type": "string"
+            },
+            "call_link": {
+              "type": "string"
+            },
             "caption": {
               "type": "string"
             },
             "is_canceled": {
               "type": "boolean"
+            },
+            "status": {
+              "type": "string"
+            },
+            "last_updated_ts_usec": {
+              "type": "integer"
+            },
+            "cover_image_handle": {
+              "type": "string"
             },
             "thumbnail_b64": {
               "type": "string"

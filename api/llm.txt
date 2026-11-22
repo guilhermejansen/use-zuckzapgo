@@ -12,6 +12,29 @@
   framing below are exact — copy them verbatim.
 - **Two placeholders** you must fill in: `{BASE_URL}` (e.g. `https://your-host` or
   `http://localhost:8080`) and `{TOKEN}` (the per-instance user token).
+- **Licence**: calls require an **Enterprise** licence on new subscriptions; subscriptions and
+  installations that already had access keep it. When the licence check carries the decision
+  and it denies calls, the `/call/*` routes and `/session/skipcalls/config` answer
+  `403 calls_enterprise_required` and call events stop being delivered to the webhook.
+  `503 calls_license_unavailable` has exactly ONE cause: the check carried a calls decision the
+  gateway could not read — now, or in the last answer kept in the cache. It is transient if the
+  licence server starts answering something readable again, and permanent while it keeps
+  sending an unknown value, so DO NOT retry it in a loop: surface the error and check the
+  LICENCE SERVER'S ANSWER, not the LICENSE_KEY. An invalid or expired licence never produces
+  503: the gateway refuses to start, or exits, with the error in the log.
+  A SUCCESSFUL check that says nothing about calls — field absent, null or empty — is NOT a
+  503: the last decision this installation was given stays in force, and an installation that
+  was never given one keeps calls working.
+  The decision IN FORCE is kept in the licence cache and survives a restart, including a start
+  that comes up on the cache inside the offline grace period. The last RECOGNIZED decision is
+  kept too, and that is the one that applies again on the next successful check: an unreadable
+  answer does not erase the entitlement, but while the licence server cannot be reached the
+  restart comes up with the 503 that was in force, until the next successful check. No environment variable grants the
+  feature. The licence rule, the two ways of running calls and what each one needs installed
+  are in ../docs/calls-overview.md (on the instance: /docs/calls-overview.md).
+- **Route surface**: `/call/*` and `/session/skipcalls/config` always exist. The `/calls/*` and
+  `/session/calls/*` routes exist ONLY when the media-service mode is configured through
+  `GLOBAL_CALLS_API_CONFIG_FILE`; without it they answer 404, whatever the licence says.
 
 ---
 
@@ -92,10 +115,24 @@ ZuckZapGo has **two** families under `/call/*`. Do not mix them up:
 | Family | Endpoints | Purpose | Audio? |
 |---|---|---|---|
 | **Native VoIP engine** ✅ | `/call/config`, `/call/status`, `/call/dial`, `/call/answer`, `/call/hangup`, `/call/play`, `/call/record/start`, `/call/record/stop`, `/call/{id}/stream`, `/call/{id}/video/stream`, `/call/{id}/video/state` | Real media: dial, answer, two-way PCM audio, two-way H.264 video, play files, record | **Yes** — this is the one you want |
-| Legacy signaling (Spec 004) | `/call/reject`, `/call/accept`, `/call/preaccept`, `/call/terminate`, `/call/initiate`, `/call/reject/send` | Raw WhatsApp call-signaling control only | **No.** `/call/initiate` returns **501** by default; `GLOBAL_CALL_INITIATE_DIAL_ALIAS=true` makes it an alias of `/call/dial`. Use `/call/dial` directly for audio. |
+| Legacy signaling (Spec 004) | `/call/reject`, `/call/accept`, `/call/preaccept`, `/call/terminate`, `/call/initiate`, `/call/reject/send` | Raw WhatsApp call-signaling control only. When the engine tracks the call, reject/terminate end it through the engine (the stanza reaches the exact device that called; a terminate of an inbound call still ringing is a reject); a `call_from` with a device is addressed to that device. accept/preaccept go around the engine: with the engine on, answer its calls with `/call/answer` (the legacy accept does not connect the call nor tell the engine) | **No.** `/call/initiate` returns **501** by default; `GLOBAL_CALL_INITIATE_DIAL_ALIAS=true` makes it an alias of `/call/dial`. Use `/call/dial` directly for audio. |
 
 **To make calls with audio, only use the Native VoIP engine endpoints.** Outbound = `POST
 /call/dial` (never `/call/initiate`).
+
+**The other calls mode — a separate media service.** Since 2.5.0 the distribution also ships a
+second mode, in Beta (the Windows app has not been tested on a Windows machine yet), for
+people answering calls in an attendant app: a media service per session
+(Docker image `setupautomatizado/zuckzapgo-callworker`), the provisioning tool inside the API
+image (`/app/callsprovision`), the attendant app for macOS 14+ and Windows, and the calls SDK
+`@conversalabs/calls-sdk` (`calls-sdk-<version>.tgz` on the public release). In that mode the
+audio goes from the app straight to the media service over WebRTC and never through the API,
+so this guide's PCM WebSocket, `/call/play`, `/call/record/start` and the video stream do not
+apply to its calls: they answer `409 remote_media_direct_required` and end the call. Its
+routes (`/calls/*`, `/session/calls/*`) only exist when `GLOBAL_CALLS_API_CONFIG_FILE` is set,
+and answer `404` otherwise. Everything below is the native engine mode. For the media-service
+mode, follow `docs/calls-media-install.md` (served at `{BASE_URL}/docs/calls-media-install.md`)
+and do not invent its routes or fields from this file.
 
 ---
 
@@ -198,8 +235,9 @@ Body: `{ "callId": "..." }` → `data: { "ok": true }`. Records the **peer's** a
 Mutually exclusive with the media WebSocket on the same call.
 - **Requires `callRecord: true`** in `PUT /call/config` (applies at once, no reconnect). Off →
   **403** `call_recording_disabled`, nothing recorded. Recording is never on by default.
-- Requires S3 configured for the instance → otherwise **400**
-  `voip: recording requires object storage (S3) to be configured`. Also **400** when the
+- Requires the instance's own S3 (enabled, with a bucket) → otherwise **400**
+  `voip: recording requires object storage (S3) to be configured`, refused at start before
+  anything is opened. The global S3 is never a recording destination. Also **400** when the
   process recording memory quota is full.
 - Where the audio goes: straight to the instance's own S3 during the call (5 MiB parts plus a
   private checkpoint every 30 s of audio). Nothing is written to local disk, so deploys and
@@ -632,9 +670,9 @@ configure those modes as a working voice-agent recipe.
   (it is the engine's own id; do not transform case).
 - **Remote hangup leaves UI stuck** → also poll `/call/status`; the socket may not close
   promptly. The ended call **disappears** from `calls[]` (you won't see `state:"ended"`).
-- **Recording produced no file / empty `mediaKey`** → `/call/record/start` always returns `ok`,
-  but the WAV upload needs S3 configured; a missing/failed upload yields `mediaKey:""` on
-  `/call/record/stop` (with `ok:true`). Treat empty `mediaKey` as failure. Also, the call must
+- **Recording produced no file / empty `mediaKey`** → without the instance's own S3,
+  `/call/record/start` answers **400** and nothing records; with S3 but a failed upload,
+  `/call/record/stop` can still yield `mediaKey:""` (with `ok:true`). Treat empty `mediaKey` as failure. Also, the call must
   not have an open PCM WebSocket (recording and `/stream` share the single inbound sink).
 - **WS connects then closes immediately** → bad/missing query parameter `token`, or the `call_id` isn't a live
   call (check `/call/status`).

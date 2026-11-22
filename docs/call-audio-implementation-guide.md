@@ -5,6 +5,30 @@ full client examples and availability limits, use the [canonical Calls API guide
 and [OpenAPI](../api/spec.yml) for the installed release. This is an operational guide;
 the earlier cross-project gap audit and implementation proposal are not current API requirements.
 
+> **Licence.** Calls require an **Enterprise** licence on new subscriptions; subscriptions and
+> installations that already had access keep it. When the licence check carries the decision
+> and it denies calls, the `/call/*` routes and `/session/skipcalls/config` answer
+> `403 calls_enterprise_required` and call events stop being delivered to your webhook.
+> `503 calls_license_unavailable` has exactly **one** cause: the check carried a calls decision
+> the gateway could not read, now or in the last answer kept in the cache. It is transient if
+> the licence server answers something readable again, and permanent while it sends an unknown
+> value, so **do not retry in a loop** — check the licence server's answer, not your
+> `LICENSE_KEY`. An invalid or expired licence never produces a `503`: the gateway refuses to
+> start, or exits, with the error in the log. See
+> [calls-overview.md](./calls-overview.md) for the licence rule, the two ways of running calls
+> and what each one needs installed.
+> A successful licence check that says nothing about calls — field absent, `null` or empty —
+> is **not** a `503`: the last decision this installation was given stays in force, and an
+> installation that was never given one keeps calls working. The decision **in force** is kept
+> in the licence cache and survives a restart, including a start that comes up on the cache
+> inside the offline grace period; the last **recognized** decision is kept too and applies
+> again on the next successful check, so an unreadable answer does not erase the entitlement,
+> but while the licence server cannot be reached the restart comes up with the `503` that was
+> in force, until the next successful check.
+> The `/calls/*` and `/session/calls/*` routes exist **only** when the media-service mode is
+> configured through `GLOBAL_CALLS_API_CONFIG_FILE`; without it they answer `404`, whatever the
+> licence says.
+
 ## 1. Architecture
 
 ```text
@@ -14,8 +38,9 @@ Application <-- WSS /call/{call_id}/stream --> PCM audio bridge
 
 The engine runs in the gateway process. The application controls calls over REST and
 exchanges raw audio over the WebSocket. No external call-media sidecar is required.
-The WebSocket does not negotiate WebRTC/SDP/ICE for your application, and the gateway
-does not provide a bundled SIP/PABX service or the new remote-media/desktop platform.
+The WebSocket does not negotiate WebRTC/SDP/ICE for your application, and there is no
+bundled SIP/PABX service. The other calls mode, with a separate media service and the
+attendant app, is a different deployment: see [calls-media-install.md](calls-media-install.md).
 
 | Surface | Contract |
 |---|---|

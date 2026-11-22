@@ -14,7 +14,7 @@ Guia de instalação do ZuckZapGo a partir dos pacotes do [repositório público
 
 O pacote usa uma pasta com o nome da plataforma (`linux-amd64`, por exemplo). Mantenha o executável, `static/` e demais arquivos do mesmo pacote. Os auxiliares [install.sh](../install.sh) e [install.bat](../install.bat) são opcionais; leia-os antes de usar. Para uma primeira configuração com PostgreSQL, consulte o [Quick Start do README](../README.md#quick-start-com-docker-compose).
 
-Este guia trata do gateway existente. Não instala o aplicativo desktop de telefonia, worker de mídia remota ou ponte SIP.
+Este guia trata do gateway. O serviço de mídia e o aplicativo do atendente, do modo de chamadas com serviço de mídia, têm instalação própria: veja [Chamadas com serviço de mídia: instalação](calls-media-install.md). Ponte SIP não existe.
 
 ---
 
@@ -72,6 +72,12 @@ ZUCKZAPGO_ADDRESS=https://api.seudominio.com
 
 # Porta
 ZUCKZAPGO_PORT=8080
+
+# Chamadas de voz. Exigem licença Enterprise em novas assinaturas; instalações que já
+# tinham direito mantêm o acesso. Deixe vazio: é o modo em que a própria API atende as
+# chamadas e entrega o áudio ao seu sistema. Só preencha para o modo com serviço de mídia
+# separado (docs/calls-overview.md); preenchido e inválido impede a subida do gateway.
+GLOBAL_CALLS_API_CONFIG_FILE=
 ```
 
 ### Executar
@@ -186,6 +192,12 @@ LICENSE_KEY=SEU_LICENSE_KEY
 
 # Porta
 ZUCKZAPGO_PORT=8080
+
+# Chamadas de voz. Exigem licença Enterprise em novas assinaturas; instalações que já
+# tinham direito mantêm o acesso. Deixe vazio: é o modo em que a própria API atende as
+# chamadas e entrega o áudio ao seu sistema. Só preencha para o modo com serviço de mídia
+# separado (docs/calls-overview.md); preenchido e inválido impede a subida do gateway.
+GLOBAL_CALLS_API_CONFIG_FILE=
 ```
 
 ### Executar
@@ -328,6 +340,12 @@ LICENSE_KEY=SEU_LICENSE_KEY
 
 # Porta
 ZUCKZAPGO_PORT=8080
+
+# Chamadas de voz. Exigem licença Enterprise em novas assinaturas; instalações que já
+# tinham direito mantêm o acesso. Deixe vazio: é o modo em que a própria API atende as
+# chamadas e entrega o áudio ao seu sistema. Só preencha para o modo com serviço de mídia
+# separado (docs/calls-overview.md); preenchido e inválido impede a subida do gateway.
+GLOBAL_CALLS_API_CONFIG_FILE=
 ```
 
 ### Executar
@@ -551,9 +569,11 @@ LOG_COLOR=true
 # Verificar logs do WhatsApp
 ZUCKZAPGO_DEBUG=DEBUG ./zuckzapgo
 
-# Verificar proxy (se atrás de firewall)
-# .env:
-WA_PROXY=http://proxy.empresa.com:8080
+# Configurar proxy, se estiver atrás de firewall. Não é variável de ambiente:
+# é por sessão, pela API, e não muda com a sessão conectada.
+# curl -X POST "$BASE_URL/session/proxy" -H "token: SEU_USER_TOKEN" \
+#   -H 'Content-Type: application/json' \
+#   --data '{"proxy_url":"http://proxy.empresa.com:8080","enable":true}'
 
 # Leia o estado pela API autenticada: GET /session/status.
 # Confira licença, banco, rede, pareamento e eventual exigência de passkey.
@@ -566,6 +586,7 @@ WA_PROXY=http://proxy.empresa.com:8080
 
 - **Documentação Completa**: [README.md](../README.md)
 - **Configuração Detalhada**: [CONFIGURATION.md](./CONFIGURATION.md)
+- **Chamadas de voz**: [calls-overview.md](./calls-overview.md) — modos de uso, licença e implantação
 - **API Swagger**: `http://localhost:8080/api/`
 - **Changelog**: [CHANGELOG.md](../CHANGELOG.md)
 - **Suporte**: suporte@setupautomatizado.com.br
@@ -584,5 +605,5 @@ Se encontrar problemas:
 
 ---
 
-**Versão do Guia**: 1.0
-**Última Atualização**: 2026-10-20
+**Versão do Guia**: 2.5.0 <!-- x-release-please-version -->
+**Última Atualização**: 2026-11-21

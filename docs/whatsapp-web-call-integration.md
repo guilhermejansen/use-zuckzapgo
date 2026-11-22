@@ -5,6 +5,28 @@ for application clients. Use the [canonical Calls API guide](../api/llm.txt) and
 [OpenAPI](../api/spec.yml) for exact bodies, response schemas and media framing in
 your installed release. The former sidecar design is only historical (§4).
 
+> **Licence.** Calls require an **Enterprise** licence on new subscriptions; subscriptions and
+> installations that already had access keep it. When the licence check carries the decision
+> and it denies calls, the `/call/*` routes and `/session/skipcalls/config` answer
+> `403 calls_enterprise_required` and call events stop being delivered to your webhook.
+> `503 calls_license_unavailable` has exactly **one** cause: the check carried a calls decision
+> the gateway could not read, now or in the last answer kept in the cache; check the licence
+> server's answer, not your `LICENSE_KEY`. An invalid or expired licence never produces a
+> `503`: the gateway refuses to start, or exits, with the error in the log.
+> See [calls-overview.md](./calls-overview.md) for the licence
+> rule, the two ways of running calls and what each one needs installed.
+> A successful licence check that says nothing about calls — field absent, `null` or empty —
+> is **not** a `503`: the last decision this installation was given stays in force, and an
+> installation that was never given one keeps calls working. The decision **in force** is kept
+> in the licence cache and survives a restart, including a start that comes up on the cache
+> inside the offline grace period; the last **recognized** decision is kept too and applies
+> again on the next successful check, so an unreadable answer does not erase the entitlement,
+> but while the licence server cannot be reached the restart comes up with the `503` that was
+> in force, until the next successful check.
+> The `/calls/*` and `/session/calls/*` routes exist **only** when the media-service mode is
+> configured through `GLOBAL_CALLS_API_CONFIG_FILE`; without it they answer `404`, whatever the
+> licence says.
+
 ## 1. Current architecture and configuration
 
 The native engine is attached to each enabled WhatsApp client when it connects.
@@ -84,6 +106,23 @@ curl --fail-with-body -X POST "$BASE_URL/call/hangup" \
 The additive signaling routes remain: `/call/reject/send`, `/call/reject`,
 `/call/accept`, `/call/preaccept` and `/call/terminate`. They send signaling
 commands; they are not substitutes for the native audio stream.
+
+When the native calls engine is on and tracks the call, `/call/reject`,
+`/call/reject/send` and `/call/terminate` end it through the engine: a reject
+while an inbound call still rings, a hangup otherwise. The stanza goes to the
+exact device that called, and the engine drops the call too. Without the engine,
+or for a call it does not track, the legacy stanza is sent as before, to the
+device in `call_from` when it carries one (the `From` of the call offer webhook),
+or to the bare user, which WhatsApp delivers only to the primary device. The
+response body is the same on both paths. A follow-up `message` goes to the
+caller's account (`call_from` without its device), so every device of the caller
+gets it; `message_sent` reports whether it actually went out (`false` when the
+send failed). The reject also applies to
+`/call/terminate`: a callee that has not answered can only decline, and a
+terminate from it never reaches the caller. `/call/accept` and `/call/preaccept`
+always send the raw stanza: with the engine on, answer its calls with
+`POST /call/answer`, because the legacy accept does not connect the call and does
+not tell the engine.
 
 `/call/initiate` returns `501` by default. Use `/call/dial` for native outbound
 media. `GLOBAL_CALL_INITIATE_DIAL_ALIAS=true` explicitly makes initiate an alias

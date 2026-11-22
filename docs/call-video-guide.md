@@ -4,6 +4,28 @@ Companion to [`call-audio-implementation-guide.md`](./call-audio-implementation-
 The audio plane is production-validated; **video is BETA** until proven against a real
 WhatsApp video call (the engine's media path still carries `NOT VALIDATED` markers).
 
+> **Licence.** Calls require an **Enterprise** licence on new subscriptions; subscriptions and
+> installations that already had access keep it. When the licence check carries the decision
+> and it denies calls, the `/call/*` routes and `/session/skipcalls/config` answer
+> `403 calls_enterprise_required`. `503 calls_license_unavailable` has exactly **one** cause:
+> the check carried a calls decision the gateway could not read, now or in the last answer kept
+> in the cache; check the licence server's answer, not your `LICENSE_KEY`. An invalid or expired
+> licence never produces a `503`: the gateway refuses to start, or exits, with the error in the
+> log. See
+> [calls-overview.md](./calls-overview.md) for the licence rule, the two ways of running calls
+> and what each one needs installed.
+> A successful licence check that says nothing about calls — field absent, `null` or empty —
+> is **not** a `503`: the last decision this installation was given stays in force, and an
+> installation that was never given one keeps calls working. The decision **in force** is kept
+> in the licence cache and survives a restart, including a start that comes up on the cache
+> inside the offline grace period; the last **recognized** decision is kept too and applies
+> again on the next successful check, so an unreadable answer does not erase the entitlement,
+> but while the licence server cannot be reached the restart comes up with the `503` that was
+> in force, until the next successful check.
+> The `/calls/*` and `/session/calls/*` routes exist **only** when the media-service mode is
+> configured through `GLOBAL_CALLS_API_CONFIG_FILE`; without it they answer `404`, whatever the
+> licence says.
+
 The engine (`meowcaller` fork under `whatsmeow-private/calls`) carries **encoded H.264
 Annex-B** over the WhatsApp relay. It does **not** encode or decode pixels — an external
 codec (the browser's WebCodecs, ffmpeg, a hardware encoder) produces and consumes the
