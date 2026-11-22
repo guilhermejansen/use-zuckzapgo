@@ -1,0 +1,53 @@
+# =================== SERVIÇO DE MÍDIA DE CHAMADAS (CALLWORKER) ===================
+# Stack de exemplo do serviço de mídia do modo de chamadas com serviço de mídia.
+# Roda na máquina Linux do serviço de mídia, não na da API. Um serviço por sessão do
+# WhatsApp, cada um com o próprio diretório de configuração e o próprio volume.
+#
+# Antes de subir, siga docs/calls-media-install.md: gere a configuração na API, prepare
+# /srv/callworker/worker-1/etc (config.json, media.json, ca.pem, api-verification-key,
+# certificado e chave TLS do endereço público, todos com dono 10001) e faça o registro
+# uma vez com a credencial de uso único. Este arquivo não traz nenhum segredo.
+#
+# Portas abertas na máquina, pela rede do host:
+#   - TCP 9443 de entrada: HTTPS de mídia, para o aplicativo do atendente e o SDK;
+#   - UDP 40000-40100 de entrada e saída: mídia WebRTC (a faixa do media.json);
+#   - saída TCP para a porta de controle da API (9444). Do lado da API, essa porta fica
+#     publicada só na rede privada entre as duas máquinas (ex.: "IP_PRIVADO_DA_API:9444:9444"),
+#     nunca para a Internet: o Docker passa por cima de ufw e firewalld (guia, passo 1.5).
+# Para mais de uma sessão, copie o serviço e o volume trocando worker-1 pelo
+# identificador do outro serviço de mídia, e use outra porta e outra faixa UDP.
+
+services:
+  callworker-worker-1:
+    image: setupautomatizado/zuckzapgo-callworker:v2.5.0
+    container_name: callworker-worker-1
+    restart: unless-stopped
+    # Rede do host: o serviço anuncia aos aplicativos os endereços das interfaces que
+    # enxerga e não tem opção de IP público. Em rede bridge, troque por "ports" com a
+    # faixa UDP publicada com os mesmos números e configure STUN ou TURN no media.json.
+    network_mode: host
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    # O serviço espera até cerca de 10 s para fechar a mídia ao receber SIGTERM.
+    stop_grace_period: 30s
+    volumes:
+      # Configuração, somente leitura, com dono 10001 (config.json e media.json em 0600).
+      - /srv/callworker/worker-1/etc:/etc/callworker:ro
+      # Chave, certificado e diário do serviço. Volume local e exclusivo: nunca dois
+      # processos no mesmo volume, nem o mesmo volume em duas máquinas.
+      - callworker-worker-1:/var/lib/callworker
+    # Comando padrão da imagem: --config=/etc/callworker/config.json
+    # Sem network_mode: host (rede bridge), use:
+    # ports:
+    #   - "9443:9443/tcp"
+    #   - "40000-40100:40000-40100/udp"
+
+volumes:
+  callworker-worker-1:
+    # Nome fixo: o mesmo volume serve ao registro (docker run) e a este compose.
+    name: callworker-worker-1

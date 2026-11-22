@@ -38,13 +38,15 @@ services:
       - ZUCKZAPGO_ADMIN_TOKEN=SEU_ADMIN_TOKEN_AQUI
 
       # =================== IDENTIDADE DA SESSÃO ===================
-      # SESSION_DEVICE_NAME (opcional, NÃO definido por padrão): sobrescreve o osName da
-      # whatsmeow e é literalmente a string que o WhatsApp exibe em "Aparelhos conectados".
+      # SESSION_DEVICE_NAME (opcional, NÃO definido por padrão): sobrescreve o osName e é
+      # literalmente a string que o WhatsApp exibe em "Aparelhos conectados".
       # ANTI-BAN: NUNCA anuncie aqui o nome do produto — isso identifica a frota inteira de
       # uma só vez e serve de gatilho para banimento em massa.
-      # Deixando VAZIO (recomendado), a whatsmeow usa o próprio default NATIVO
-      # (Os="Mac OS 10", PlatformType=DESKTOP): um WhatsApp Desktop no macOS, aparelho
-      # vinculado legítimo. Não injetamos nada e herdamos o upstream automaticamente.
+      # Deixando VAZIO (recomendado), valem os padrões DO GATEWAY: Os="Mac OS 10" (flag
+      # -osname) e PlatformType=DESKTOP — um WhatsApp Desktop no macOS, aparelho vinculado
+      # legítimo. A biblioteca sozinha usaria Os="whatsmeow" e PlatformType=UNKNOWN, e esse
+      # "whatsmeow" identificaria a frota; por isso o gateway define os dois valores.
+      # Esta variável só tem efeito enquanto -osname estiver no padrão "Mac OS 10".
       # Só defina se souber o que está fazendo, e sempre com cara de aparelho real:
       # - SESSION_DEVICE_NAME=
       # ATENÇÃO: DeviceProps só valem em um NOVO pareamento. Sessões já pareadas continuam
@@ -156,8 +158,6 @@ services:
       # WA_PLATFORM_TYPE=SAFARI
 
       # =================== CONFIGURAÇÕES DE WEBHOOK INDIVIDUAL ===================
-      # WEBHOOK_FORMAT: Formato padrão do payload enviado para webhooks individuais (json ou form).
-      - WEBHOOK_FORMAT=json
       # WEBHOOK_TIMEOUT: Tempo máximo de espera por resposta do webhook individual antes de considerar timeout.
       - WEBHOOK_TIMEOUT=30s
       # WEBHOOK_MAX_RETRIES: Número de tentativas adicionais após uma falha no webhook individual.
@@ -214,6 +214,21 @@ services:
       - GLOBAL_CALL_REJECT_MESSAGE=Sorry, I cannot take calls at the moment.
       # GLOBAL_CALL_REJECT_TYPE: Tipo de rejeição aplicado (busy, decline ou unavailable).
       - GLOBAL_CALL_REJECT_TYPE=busy
+
+      # =================== CHAMADAS NATIVAS ===================
+      # Chamadas exigem licença Enterprise em novas assinaturas. Veja docs/calls-overview.md.
+      # GLOBAL_CALL_INITIATE_DIAL_ALIAS: Quando true, a rota antiga POST /call/initiate
+      # passa a discar como POST /call/dial. Com false, ela responde 501, como sempre.
+      - GLOBAL_CALL_INITIATE_DIAL_ALIAS=false
+      # GLOBAL_CALL_RECORDING_MEMORY_QUOTA_MB: Limite de memória, em MiB, para o áudio de
+      # gravações que ainda não foi enviado ao S3 do usuário. Vazio usa 25% do limite de
+      # memória do contêiner, ou 256 MiB quando não há limite. A gravação não usa disco.
+      - GLOBAL_CALL_RECORDING_MEMORY_QUOTA_MB=
+      # GLOBAL_CALLS_API_CONFIG_FILE: Caminho de um arquivo JSON privado (permissão 0600)
+      # que liga o modo com serviço de mídia separado, em que o áudio não passa pelo
+      # gateway. Vazio, o padrão, mantém as chamadas sendo atendidas pela própria API.
+      # Preenchido e inválido impede a subida do gateway, de propósito.
+      - GLOBAL_CALLS_API_CONFIG_FILE=
 
       # =================== COMPORTAMENTO DE API ===================
       # ECHO_API_MESSAGES_ENABLED: Quando true, gera eventos de confirmação para mensagens disparadas via API (echo).
@@ -457,7 +472,7 @@ services:
       # TRACING_SERVICE_NAME: Nome lógico do serviço reportado ao tracer.
       - TRACING_SERVICE_NAME=zuckzapgo
       # TRACING_SERVICE_VERSION: Versão reportada nas tags de tracing.
-      - TRACING_SERVICE_VERSION=v2.4.2 # x-release-please-version
+      - TRACING_SERVICE_VERSION=v2.5.0 # x-release-please-version
       # TRACING_ENVIRONMENT: Identificador do ambiente (development, staging, production).
       - TRACING_ENVIRONMENT=development
 
@@ -474,18 +489,6 @@ services:
       - SENTRY_TRACES_SAMPLE_RATE=1.0
       # SENTRY_PROFILES_SAMPLE_RATE: Percentual de perfis de CPU/memória coletados.
       - SENTRY_PROFILES_SAMPLE_RATE=1.0
-
-      # =================== MÉTRICAS PROMETHEUS ===================
-      # PROMETHEUS_ENABLED: Ativa a exportação de métricas para Prometheus.
-      - PROMETHEUS_ENABLED=false
-      # PROMETHEUS_METRICS_PATH: Path HTTP exposto com as métricas.
-      - PROMETHEUS_METRICS_PATH=/metrics
-      # METRICS_COLLECTION_INTERVAL: Frequência de coleta interna de métricas.
-      - METRICS_COLLECTION_INTERVAL=30s
-      # BUFFER_METRICS_ENABLED: Quando true, inclui métricas específicas do buffer.
-      - BUFFER_METRICS_ENABLED=true
-      # TRANSPORT_METRICS_ENABLED: Quando true, inclui métricas das integrações (RabbitMQ, SQS, etc.).
-      - TRANSPORT_METRICS_ENABLED=true
 
       # =================== PIPELINE GLOBAL DE EVENTOS ===================
       # GLOBAL_EVENT_BUFFER_USE_DATABASE: Se true, usa banco relacional como buffer persistente de eventos.
@@ -525,10 +528,6 @@ services:
       # GLOBAL_EVENT_BUFFER_PARTITION_RETENTION_MONTHS: Meses mantidos por partição histórica do buffer.
       - GLOBAL_EVENT_BUFFER_PARTITION_RETENTION_MONTHS=6
 
-      # =================== CONTROLE DE ENCERRAMENTO ===================
-      # SHUTDOWN_GRACE_PERIOD: Tempo máximo aguardado para finalizar workers antes de encerrar o processo.
-      - SHUTDOWN_GRACE_PERIOD=120s
-
       # =================== EVENT MONITORING SSE CONFIGURATION ===================
       # Enable real-time event monitoring via Server-Sent Events
       - MONITORING_ENABLED=false
@@ -546,10 +545,6 @@ services:
       - MONITORING_CACHE_CLEANUP_INTERVAL=1m
       # Session token TTL (for SSE authentication)
       - MONITORING_SESSION_TOKEN_TTL=5m
-      # Maximum events per page for history endpoint
-      - MONITORING_MAX_PAGE_SIZE=1000
-      # Default page size for history endpoint
-      - MONITORING_DEFAULT_PAGE_SIZE=100
       # Enable/disable persistence for monitoring events (set to false to keep only in-memory stream)
       - MONITORING_STORAGE_ENABLED=true
       # Retention window (in days) for monitoring_events table when storage is enabled
@@ -558,6 +553,10 @@ services:
       - MONITORING_PRUNE_INTERVAL=24h
       # Absolute base URL returned in stream_url (leave empty to fall back to ZUCKZAPGO_ADDRESS or http://localhost:<port>)
       - MONITORING_STREAM_BASE_URL=http://localhost:8080
+    # O encerramento gracioso do gateway pode levar até 45 s (drenagem de gravações de
+    # chamada e fechamento das rotas mobile). O padrão do Docker é 10 s, que cortaria o
+    # processo no meio; por isso este prazo maior.
+    stop_grace_period: 60s
     # OPCIONAL: só para importar o estado legado da 2.1.0. Instalação nova pode remover.
     volumes:
       - network_route_state_zuckzapgo:/app/network-routes
